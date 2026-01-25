@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Base URL-ээс /api нэмэх
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-const API_URL = `${BASE_URL}/api`;
+const API_URL = `${BASE_URL}/api`|| '/api';
 
 // Axios interceptor - Request (Add auth token)
 axios.interceptors.request.use(

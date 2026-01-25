@@ -85,11 +85,29 @@ app.use(errorHandler);
 
 // Server эхлүүлэх
 const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
+if(process.env.NODE_ENV !== 'production'){
+  app.listen(PORT, () => {
   console.log(`🚀 Сервер ${PORT} порт дээр ажиллаж байна`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
 });
+}
+
+
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'client/dist')));
+
+  app.get('*', (req, res) => {
+    res.sendFile(
+      path.join(__dirname, 'client/dist/index.html')
+    );
+  });
+}
+
 
 // Unhandled promise rejection
 process.on('unhandledRejection', (err) => {

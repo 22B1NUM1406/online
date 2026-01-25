@@ -13,7 +13,6 @@ import {getAllOrders, updateOrderStatus, deleteOrder, getAllQuotations, replyToQ
   getAllMarketingServices, createMarketingService, updateMarketingService, deleteMarketingService
 } from '../services/api';
 import { formatPrice, formatDate, getOrderStatusLabel, getOrderStatusColor, getImageUrl } from '../utils/helpers';
-import { CATEGORIES, SIZES, MATERIALS } from '../utils/constants';
 import Loading from '../components/Loading';
 import Notification from '../components/Notification';
 
@@ -41,7 +40,7 @@ const AdminPage = () => {
   const [productForm, setProductForm] = useState({
     name: '',
     price: '',
-    category: 'cards',
+    category: '',
     description: '',
     material: '',
     size: '',
@@ -70,7 +69,7 @@ const AdminPage = () => {
     content: '',
     category: 'other',
     tags: '',
-    status: 'draft',
+    status: 'published',
     featured: false
   });
   
@@ -99,18 +98,25 @@ const AdminPage = () => {
   const loadData = async () => {
     try {
       setLoading(true);
+      
+      // Always load data for stats
+      const [ordersData, quotationsData, messagesData] = await Promise.all([
+        getAllOrders().catch(() => ({ data: [] })),
+        getAllQuotations().catch(() => ({ data: [] })),
+        getAllContactMessages().catch(() => ({ data: [] }))
+      ]);
+      
+      setOrders(ordersData.data);
+      setQuotations(quotationsData.data);
+      setContactMessages(messagesData.data);
+      
+      // Load tab-specific data
       if (activeTab === 'products') {
         const data = await getProducts();
         setProducts(data.data);
-      } else if (activeTab === 'orders') {
-        const data = await getAllOrders();
-        setOrders(data.data);
-      } else if (activeTab === 'quotations') {
-        const data = await getAllQuotations();
-        setQuotations(data.data);
-      } else if (activeTab === 'messages') {
-        const data = await getAllContactMessages();
-        setContactMessages(data.data);
+        // Load categories for product form
+        const catData = await getAllCategoriesFlat();
+        setCategories(catData.data);
       } else if (activeTab === 'categories') {
         const data = await getAllCategoriesFlat();
         setCategories(data.data);
@@ -328,7 +334,7 @@ const AdminPage = () => {
       }
       setShowBlogForm(false);
       setEditingBlog(null);
-      setBlogForm({ title: '', excerpt: '', content: '', category: 'other', tags: '', status: 'draft', featured: false });
+      setBlogForm({ title: '', excerpt: '', content: '', category: 'other', tags: '', status: 'published', featured: false });
       loadData();
     } catch (error) {
       setNotification({ message: error.response?.data?.message || 'Алдаа гарлаа', type: 'error' });
@@ -420,22 +426,30 @@ const AdminPage = () => {
 
   const stats = [
     { label: 'Нийт борлуулалт', value: formatPrice(1250000), icon: DollarSign, color: 'bg-green-500' },
-    { label: 'Захиалга', value: orders.length, icon: ShoppingCart, color: 'bg-blue-500' },
+    { 
+      label: 'Захиалга', 
+      value: orders.length, 
+      icon: ShoppingCart, 
+      color: 'bg-blue-500',
+      onClick: () => setActiveTab('orders')
+    },
     { label: 'Бүтээгдэхүүн', value: products.length, icon: Package, color: 'bg-purple-500' },
     { 
       label: 'Үнийн санал', 
-      value: quotations.filter(q => q.status === 'pending').length, 
+      value: quotations.length, 
       icon: MessageSquare, 
       color: 'bg-orange-500',
       badge: quotations.filter(q => q.status === 'pending').length > 0,
+      badgeText: `${quotations.filter(q => q.status === 'pending').length} шинэ`,
       onClick: () => setActiveTab('quotations')
     },
     { 
       label: 'Мессеж', 
-      value: contactMessages.filter(m => m.status === 'new').length, 
+      value: contactMessages.length, 
       icon: Mail, 
       color: 'bg-pink-500',
       badge: contactMessages.filter(m => m.status === 'new').length > 0,
+      badgeText: `${contactMessages.filter(m => m.status === 'new').length} шинэ`,
       onClick: () => setActiveTab('messages')
     }
   ];
@@ -484,7 +498,7 @@ const AdminPage = () => {
                   <p className="text-2xl font-bold">{stat.value}</p>
                   {stat.badge && (
                     <span className="inline-block mt-2 bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded-full animate-pulse">
-                      Шинэ {stat.value}
+                      {stat.badgeText || `Шинэ ${stat.value}`}
                     </span>
                   )}
                 </div>
@@ -636,8 +650,16 @@ const AdminPage = () => {
                             required
                             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                           >
-                            {CATEGORIES.map(cat => (
-                              <option key={cat.id} value={cat.id}>{cat.name}</option>
+                            <option value="">Ангилал сонгох...</option>
+                            {categories.filter(c => !c.parent).map(cat => (
+                              <optgroup key={cat._id} label={cat.name}>
+                                <option value={cat._id}>{cat.name}</option>
+                                {categories.filter(sub => sub.parent?._id === cat._id).map(sub => (
+                                  <option key={sub._id} value={sub._id}>
+                                    └─ {sub.name}
+                                  </option>
+                                ))}
+                              </optgroup>
                             ))}
                           </select>
                         </div>
@@ -647,16 +669,13 @@ const AdminPage = () => {
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             Хэмжээ
                           </label>
-                          <select
+                          <input
+                            type="text"
                             value={productForm.size}
                             onChange={(e) => setProductForm({...productForm, size: e.target.value})}
                             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          >
-                            <option value="">Сонгох...</option>
-                            {SIZES.map(size => (
-                              <option key={size.id} value={size.name}>{size.name}</option>
-                            ))}
-                          </select>
+                            placeholder="Жишээ: A4, 85x54mm, 210x297mm"
+                          />
                         </div>
 
                         {/* Material */}
@@ -664,16 +683,13 @@ const AdminPage = () => {
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             Материал
                           </label>
-                          <select
+                          <input
+                            type="text"
                             value={productForm.material}
                             onChange={(e) => setProductForm({...productForm, material: e.target.value})}
                             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          >
-                            <option value="">Сонгох...</option>
-                            {MATERIALS.map(material => (
-                              <option key={material} value={material}>{material}</option>
-                            ))}
-                          </select>
+                            placeholder="Жишээ: 300gsm цаас, vinyl, PVC"
+                          />
                         </div>
 
                         {/* Stock */}
@@ -1208,7 +1224,7 @@ const AdminPage = () => {
                       setShowBlogForm(!showBlogForm);
                       if (!showBlogForm) {
                         setEditingBlog(null);
-                        setBlogForm({ title: '', excerpt: '', content: '', category: 'other', tags: '', status: 'draft', featured: false });
+                        setBlogForm({ title: '', excerpt: '', content: '', category: 'other', tags: '', status: 'published', featured: false });
                       }
                     }}
                     className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
@@ -1340,7 +1356,7 @@ const AdminPage = () => {
                           onClick={() => {
                             setShowBlogForm(false);
                             setEditingBlog(null);
-                            setBlogForm({ title: '', excerpt: '', content: '', category: 'other', tags: '', status: 'draft', featured: false });
+                            setBlogForm({ title: '', excerpt: '', content: '', category: 'other', tags: '', status: 'published', featured: false });
                           }}
                           className="px-6 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 font-medium"
                         >

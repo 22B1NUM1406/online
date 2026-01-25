@@ -6,8 +6,6 @@ import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import connectDB from './config/db.js';
 import { errorHandler, notFound } from './middleware/error.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 // Routes
 import authRoutes from './routes/authRoutes.js';
@@ -31,13 +29,26 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(
-  helmet({
-    crossOriginResourcePolicy: false,
-  })
-); // Security headers
+app.use(helmet()); // Security headers
+
+// CORS configuration
+const allowedOrigins = [
+  process.env.CLIENT_URL || 'http://localhost:3000',
+  'http://localhost:5173', // Vite dev
+  'http://localhost:3000'  // CRA dev
+];
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, Postman)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
 app.use(express.json()); // JSON parse
@@ -49,12 +60,14 @@ app.use('/uploads', express.static('uploads'));
 // Logging (development mode)
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
+} else if (process.env.NODE_ENV === 'production') {
+  app.use(morgan('combined')); // Production logging
 }
 
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 минут
-  max: 300, // 300 хүсэлт хэрэглэгч тутамд
+  max: 100, // 100 хүсэлт хэрэглэгч тутамд
   message: 'Хэт олон хүсэлт илгээсэн байна. Түр хүлээнэ үү.',
 });
 
@@ -87,33 +100,51 @@ app.use(errorHandler);
 
 // Server эхлүүлэх
 const PORT = process.env.PORT || 5000;
-if(process.env.NODE_ENV !== 'production'){
-  app.listen(PORT, () => {
+const HOST = '0.0.0.0'; // Important for Render
+
+const server = app.listen(PORT, HOST, () => {
   console.log(`🚀 Сервер ${PORT} порт дээр ажиллаж байна`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+  console.log(`📡 Listening on ${HOST}:${PORT}`);
 });
-}
 
-
-
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'client/dist')));
-
-  app.get('*', (req, res) => {
-    res.sendFile(
-      path.join(__dirname, 'client/dist/index.html')
-    );
+// Graceful shutdown
+const gracefulShutdown = (signal) => {
+  console.log(`\n${signal} хүлээн авлаа. Сервер зогсож байна...`);
+  
+  server.close(() => {
+    console.log('✅ Сервер амжилттай зогслоо');
+    process.exit(0);
   });
-}
+  
+  // Force shutdown after 30 seconds
+  setTimeout(() => {
+    console.error('⚠️ Албадан зогсож байна');
+    process.exit(1);
+  }, 30000);
+};
 
+// Handle termination signals
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 // Unhandled promise rejection
 process.on('unhandledRejection', (err) => {
-  console.error(`❌ Алдаа: ${err.message}`);
-  // Server-ийг зогсоох
+  console.error(`❌ Unhandled Promise Rejection: ${err.message}`);
+  console.error(err.stack);
+  
+  // Close server & exit process
+  server.close(() => {
+    process.exit(1);
+  });
+});
+
+// Uncaught exception
+process.on('uncaughtException', (err) => {
+  console.error(`❌ Uncaught Exception: ${err.message}`);
+  console.error(err.stack);
   process.exit(1);
 });
+
+export default app;

@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, MessageSquare, Send, Upload } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { createQuotation } from '../services/api';
-import { CATEGORIES } from '../utils/constants';
+import { createQuotation, getCategories } from '../services/api';
 import Notification from '../components/Notification';
 
 const QuotationPage = () => {
@@ -12,6 +11,7 @@ const QuotationPage = () => {
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
     name: user?.name || '',
     phone: user?.phone || '',
@@ -19,6 +19,19 @@ const QuotationPage = () => {
     productType: '',
     description: ''
   });
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  const loadCategories = async () => {
+    try {
+      const data = await getCategories();
+      setCategories(data.data);
+    } catch (error) {
+      console.error('Error loading categories:', error);
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -181,8 +194,15 @@ const QuotationPage = () => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Сонгох...</option>
-                {CATEGORIES.map(cat => (
-                  <option key={cat.id} value={cat.name}>{cat.name}</option>
+                {categories.map(cat => (
+                  <optgroup key={cat._id} label={cat.name}>
+                    <option value={cat.name}>{cat.name}</option>
+                    {cat.subcategories && cat.subcategories.map(sub => (
+                      <option key={sub._id} value={sub.name}>
+                        └─ {sub.name}
+                      </option>
+                    ))}
+                  </optgroup>
                 ))}
               </select>
             </div>

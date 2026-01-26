@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+const API_URL = import.meta.env.VITE_API_URL;
 
 const AuthContext = createContext();
 
@@ -29,7 +30,7 @@ export const AuthProvider = ({ children }) => {
   // Load user
   const loadUser = async () => {
     try {
-      const { data } = await axios.get('/api/auth/me');
+      const { data } = await axios.get(`${API_URL}/api/auth/me`);
       setUser(data.data);
     } catch (error) {
       console.error('Load user error:', error);
@@ -42,7 +43,7 @@ export const AuthProvider = ({ children }) => {
   // Login
   const login = async (email, password) => {
     try {
-      const { data } = await axios.post('/api/auth/login', { email, password });
+      const { data } = await axios.post(`${API_URL}/api/auth/login`, { email, password });
       localStorage.setItem('token', data.data.token);
       setToken(data.data.token);
       setUser(data.data);
@@ -58,7 +59,7 @@ export const AuthProvider = ({ children }) => {
   // Register
   const register = async (name, email, password) => {
     try {
-      const { data } = await axios.post('/api/auth/register', { name, email, password });
+      const { data } = await axios.post(`${API_URL}/api/auth/register`, { name, email, password });
       localStorage.setItem('token', data.data.token);
       setToken(data.data.token);
       setUser(data.data);

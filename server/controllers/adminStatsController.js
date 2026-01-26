@@ -53,8 +53,8 @@ export const getDashboardStats = async (req, res) => {
     });
 
     // Contact Messages
-    const totalMessages = await Contact.countDocuments();
-    const unreadMessages = await Contact.countDocuments({ 
+    const totalMessages = await ContactMessage.countDocuments();
+    const unreadMessages = await ContactMessage.countDocuments({ 
       isRead: false
     });
 
@@ -85,7 +85,7 @@ export const getDashboardStats = async (req, res) => {
       .select('name email phone status createdAt');
 
     // Recent Messages
-    const recentMessages = await Contact.find()
+    const recentMessages = await ContactMessage.find()
       .sort({ createdAt: -1 })
       .limit(5)
       .select('name email subject message isRead createdAt');

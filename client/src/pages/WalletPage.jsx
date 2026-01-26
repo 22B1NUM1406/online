@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, CreditCard, Wallet as WalletIcon, TrendingUp } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { topUpWallet, createQPayInvoice } from '../services/api';
+import { topUpWallet, createWalletQPayInvoice } from '../services/api';
 import { formatPrice } from '../utils/helpers';
 import Notification from '../components/Notification';
 
@@ -61,7 +61,7 @@ const WalletPage = () => {
 
     try {
       setLoading(true);
-      const result = await createQPayInvoice(topUpAmount);
+      const result = await createWalletQPayInvoice(topUpAmount);
       
       setNotification({ 
         message: 'QPay invoice үүсгэгдлээ (Demo mode)', 

@@ -274,7 +274,93 @@ export const topUpWallet = async (amount) => {
   return data;
 };
 
-export const createQPayInvoice = async (amount) => {
+export const createWalletQPayInvoice = async (amount) => {
   const { data } = await axios.post(`${API_URL}/wallet/qpay-invoice`, { amount });
+  return data;
+};
+
+// ==================== PAYMENTS ====================
+
+// Create QPay payment for order
+export const createQPayPayment = async (paymentData) => {
+  const { data } = await axios.post(`${API_URL}/payments/qpay/create`, paymentData);
+  return data;
+};
+
+// Check payment status
+export const checkPaymentStatus = async (paymentId) => {
+  const { data } = await axios.get(`${API_URL}/payments/qpay/check/${paymentId}`);
+  return data;
+};
+
+// Get my payments
+export const getMyPayments = async () => {
+  const { data } = await axios.get(`${API_URL}/payments/my-payments`);
+  return data;
+};
+
+// Get single payment
+export const getPayment = async (paymentId) => {
+  const { data} = await axios.get(`${API_URL}/payments/${paymentId}`);
+  return data;
+};
+
+// Cancel payment
+export const cancelPayment = async (paymentId) => {
+  const { data } = await axios.put(`${API_URL}/payments/${paymentId}/cancel`);
+  return data;
+};
+
+// Admin: Get all payments
+export const getAllPayments = async (params = {}) => {
+  const { data } = await axios.get(`${API_URL}/payments/admin/all`, { params });
+  return data;
+};
+
+// ============================================
+// QPay Payment APIs
+// ============================================
+
+// Create QPay invoice
+export const createQPayInvoice = async (orderId) => {
+  const { data } = await axios.post(`${API_URL}/payment/create-invoice`, { orderId });
+  return data;
+};
+
+// Check QPay payment status
+export const checkQPayPayment = async (orderId) => {
+  const { data } = await axios.get(`${API_URL}/payment/check/${orderId}`);
+  return data;
+};
+
+// Cancel QPay invoice
+export const cancelQPayInvoice = async (orderId) => {
+  const { data } = await axios.post(`${API_URL}/payment/cancel/${orderId}`);
+  return data;
+};
+
+// ============================================
+// Admin Statistics APIs
+// ============================================
+
+// Get dashboard statistics
+export const getDashboardStats = async () => {
+  const { data } = await axios.get(`${API_URL}/admin/stats`);
+  return data;
+};
+
+// Get orders statistics
+export const getOrdersStats = async (period = '30') => {
+  const { data } = await axios.get(`${API_URL}/admin/stats/orders`, {
+    params: { period }
+  });
+  return data;
+};
+
+// Get sales analytics
+export const getSalesAnalytics = async (period = 'month') => {
+  const { data } = await axios.get(`${API_URL}/admin/stats/sales`, {
+    params: { period }
+  });
   return data;
 };

@@ -64,9 +64,33 @@ const orderSchema = new mongoose.Schema(
       enum: ['wallet', 'qpay', 'cash'],
       required: true,
     },
+    paymentStatus: {
+      type: String,
+      enum: ['pending', 'paid', 'failed', 'cancelled'],
+      default: 'pending',
+    },
     paymentInfo: {
       transactionId: String,
       paidAt: Date,
+    },
+    // QPay specific fields
+    qpayInvoiceId: {
+      type: String,
+      sparse: true,
+    },
+    qpayQRCode: {
+      type: String,
+    },
+    orderNumber: {
+      type: String,
+      unique: true,
+    },
+    totalAmount: {
+      type: Number,
+    },
+    shippingAddress: {
+      phone: String,
+      address: String,
     },
     notes: {
       type: String,
@@ -77,6 +101,17 @@ const orderSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Generate order number before saving
+orderSchema.pre('save', function(next) {
+  if (!this.orderNumber) {
+    this.orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+  }
+  if (!this.totalAmount && this.total) {
+    this.totalAmount = this.total;
+  }
+  next();
+});
 
 const Order = mongoose.model('Order', orderSchema);
 

@@ -3,9 +3,14 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import rateLimit from 'express-rate-limit';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import connectDB from './config/db.js';
 import { errorHandler, notFound } from './middleware/error.js';
+
+// Get __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Routes
 import authRoutes from './routes/authRoutes.js';
@@ -18,6 +23,8 @@ import contactRoutes from './routes/contactRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import blogRoutes from './routes/blogRoutes.js';
 import marketingServiceRoutes from './routes/marketingServiceRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 // Environment variables
 dotenv.config();
@@ -64,15 +71,6 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('combined')); // Production logging
 }
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 минут
-  max: 100, // 100 хүсэлт хэрэглэгч тутамд
-  message: 'Хэт олон хүсэлт илгээсэн байна. Түр хүлээнэ үү.',
-});
-
-app.use('/api/', limiter);
-
 // Health check route
 app.get('/health', (req, res) => {
   res.json({
@@ -93,10 +91,34 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/marketing-services', marketingServiceRoutes);
+app.use('/api/payment', paymentRoutes);
+app.use('/api/admin', adminRoutes);
 
-// Error handling
-app.use(notFound);
-app.use(errorHandler);
+// Serve React frontend in production
+if (process.env.NODE_ENV === 'production') {
+  const clientBuildPath = path.join(__dirname, '../client/dist');
+  
+  // Serve static files
+  app.use(express.static(clientBuildPath));
+  
+  // Handle React Router - all non-API routes return index.html
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(clientBuildPath, 'index.html'));
+  });
+} else {
+  // Development mode - show API info
+  app.get('/', (req, res) => {
+    res.json({
+      message: 'Print Shop API',
+      version: '1.0.0',
+      endpoints: '/api/*'
+    });
+  });
+}
+
+// Error handling (these must be AFTER all routes including catch-all)
+// app.use(notFound); // Commented out - conflicts with React Router catch-all
+// app.use(errorHandler); // Will handle errors in routes
 
 // Server эхлүүлэх
 const PORT = process.env.PORT || 5000;

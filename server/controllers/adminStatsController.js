@@ -1,6 +1,6 @@
 import Order from '../models/Order.js';
 import Quotation from '../models/Quotation.js';
-import Contact from '../models/Contact.js';
+import ContactMessage from '../models/ContactMessage.js';
 import User from '../models/User.js';
 import Product from '../models/Product.js';
 

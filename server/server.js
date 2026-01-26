@@ -36,32 +36,28 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(
-  helmet({
-    crossOriginResourcePolicy: false,
-  })
-);  // Security headers
+app.use(helmet()); // Security headers
 
 // CORS configuration
 const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:3000',
-  process.env.CLIENT_URL,
+  process.env.CLIENT_URL || 'http://localhost:3000',
+  'http://localhost:5173', // Vite dev
+  'http://localhost:3000'  // CRA dev
 ];
 
 app.use(cors({
-  origin: (origin, callback) => {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, Postman)
     if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      callback(new Error(`CORS blocked: ${origin}`));
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
 }));
-
 app.use(express.json()); // JSON parse
 app.use(express.urlencoded({ extended: true })); // URL encoded parse
 
@@ -98,31 +94,20 @@ app.use('/api/marketing-services', marketingServiceRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Serve React frontend in production
-if (process.env.NODE_ENV === 'production') {
-  const clientBuildPath = path.join(__dirname, '../client/dist');
-  
-  // Serve static files
-  app.use(express.static(clientBuildPath));
-  
-  // Handle React Router - all non-API routes return index.html
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(clientBuildPath, 'index.html'));
+// Development mode - show API info
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Print Shop API',
+    version: '1.0.0',
+    environment: process.env.NODE_ENV || 'development',
+    endpoints: '/api/*',
+    health: '/health'
   });
-} else {
-  // Development mode - show API info
-  app.get('/', (req, res) => {
-    res.json({
-      message: 'Print Shop API',
-      version: '1.0.0',
-      endpoints: '/api/*'
-    });
-  });
-}
+});
 
-// Error handling (these must be AFTER all routes including catch-all)
-// app.use(notFound); // Commented out - conflicts with React Router catch-all
-// app.use(errorHandler); // Will handle errors in routes
+// Error handling
+app.use(notFound);
+app.use(errorHandler);
 
 // Server эхлүүлэх
 const PORT = process.env.PORT || 5000;

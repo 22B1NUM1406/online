@@ -10,18 +10,23 @@ import {getAllOrders, updateOrderStatus, deleteOrder, getAllQuotations, replyToQ
   getAllContactMessages, updateContactMessageStatus, replyToContactMessage, deleteContactMessage,
   getAllCategoriesFlat, createCategory, updateCategory, deleteCategory,
   getAllBlogs, createBlog, updateBlog, deleteBlog,
-  getAllMarketingServices, createMarketingService, updateMarketingService, deleteMarketingService
+  getAllMarketingServices, createMarketingService, updateMarketingService, deleteMarketingService,
+  getDashboardStats
 } from '../services/api';
 import { formatPrice, formatDate, getOrderStatusLabel, getOrderStatusColor, getImageUrl } from '../utils/helpers';
 import Loading from '../components/Loading';
 import Notification from '../components/Notification';
+import DashboardTab from '../components/DashboardTab';
 
 const AdminPage = () => {
   const navigate = useNavigate();
   const { user, isAdmin, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState('products');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
+  
+  // Dashboard stats
+  const [dashboardStats, setDashboardStats] = useState(null);
   
   // Data states
   const [products, setProducts] = useState([]);
@@ -513,10 +518,20 @@ const AdminPage = () => {
         {/* Tabs */}
         <div className="bg-white rounded-xl shadow-lg">
           <div className="border-b">
-            <div className="flex gap-4 px-6 py-3">
+            <div className="flex gap-4 px-6 py-3 overflow-x-auto">
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                className={`px-4 py-2 font-medium border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === 'dashboard'
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                📊 Самбар
+              </button>
               <button
                 onClick={() => setActiveTab('products')}
-                className={`px-4 py-2 font-medium border-b-2 transition-colors ${
+                className={`px-4 py-2 font-medium border-b-2 transition-colors whitespace-nowrap ${
                   activeTab === 'products'
                     ? 'border-blue-600 text-blue-600'
                     : 'border-transparent text-gray-600 hover:text-gray-800'
@@ -588,6 +603,11 @@ const AdminPage = () => {
           </div>
 
           <div className="p-6">
+            {/* Dashboard Tab */}
+            {activeTab === 'dashboard' && (
+              <DashboardTab onTabChange={setActiveTab} />
+            )}
+
             {/* Products Tab */}
             {activeTab === 'products' && (
               <div>

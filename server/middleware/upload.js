@@ -1,25 +1,42 @@
 import multer from 'multer';
 import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// Cloudinary configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
-// Storage configuration
-const storage = multer.diskStorage({
+// Cloudinary storage for images
+const cloudinaryStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'print-shop',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+    transformation: [{ width: 1200, crop: 'limit', quality: 'auto' }]
+  }
+});
+
+// Local storage (fallback for development)
+const localStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // Uploads folder-д хадгална
-    cb(null, path.join(__dirname, '../uploads'));
+    cb(null, 'uploads');
   },
   filename: function (req, file, cb) {
-    // Unique filename үүсгэх
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const ext = path.extname(file.originalname);
     const nameWithoutExt = path.basename(file.originalname, ext);
     cb(null, nameWithoutExt + '-' + uniqueSuffix + ext);
   }
 });
+
+// Use Cloudinary in production, local in development
+const storage = process.env.NODE_ENV === 'production' 
+  ? cloudinaryStorage 
+  : localStorage;
 
 // File filter - Зөвхөн зургууд (Product images)
 const imageFileFilter = (req, file, cb) => {

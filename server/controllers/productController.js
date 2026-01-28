@@ -42,6 +42,7 @@ export const getProducts = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const products = await Product.find(query)
+      .populate('category', 'name slug')
       .sort(sortOption)
       .limit(Number(limit))
       .skip(skip);
@@ -69,7 +70,8 @@ export const getProducts = async (req, res) => {
 // @access  Public
 export const getProduct = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id)
+      .populate('category', 'name slug');
 
     if (!product) {
       return res.status(404).json({

@@ -9,22 +9,9 @@ const productSchema = new mongoose.Schema(
       maxlength: [200, 'Нэр 200 тэмдэгтээс ихгүй байх ёстой'],
     },
     category: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Category',
       required: [true, 'Ангилал сонгоно уу'],
-      enum: [
-        'cards',        // Нэрийн хуудас
-        'catalog',      // Каталог
-        'flyer',        // Флаер
-        'brochure',     // Брошюр
-        'banner',       // Баннер
-        'poster',       // Постер
-        'envelope',     // Дугтуй
-        'letterhead',   // Толгой хуудас
-        'sticker',      // Наалт
-        'packaging',    // Савлагаа
-        'logo',         // Лого дизайн
-        'custom'        // Тусгай захиалга
-      ],
     },
     price: {
       type: Number,

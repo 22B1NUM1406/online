@@ -87,12 +87,12 @@ const HomePage = () => {
                 Дизайнаас эхлээд хэвлэл хүртэл бүх үйлчилгээ
               </p>
               <div className="flex gap-4">
-                <button 
-                  onClick={() => window.location.href = '/quotation'}
-                  className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all shadow-xl"
+                <Link to="/quotation" 
+    
+                 className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all shadow-xl"
                 >
                   Үнийн санал авах
-                </button>
+                </Link>
                
               </div>
               

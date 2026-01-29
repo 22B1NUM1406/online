@@ -144,7 +144,7 @@ export const createCategory = async (req, res) => {
 
     // Image upload
     if (req.file) {
-      categoryData.image = `/uploads/${req.file.filename}`;
+      categoryData.image = req.file.path;;
     }
 
     const category = await Category.create(categoryData);
@@ -199,7 +199,7 @@ export const updateCategory = async (req, res) => {
 
     // Image upload
     if (req.file) {
-      updateData.image = `/uploads/${req.file.filename}`;
+      updateData.image = req.file.path;;
     }
 
     category = await Category.findByIdAndUpdate(req.params.id, updateData, {

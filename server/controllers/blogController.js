@@ -181,7 +181,7 @@ export const createBlog = async (req, res) => {
 
     // Featured image upload
     if (req.file) {
-      blogData.featuredImage = `/uploads/${req.file.filename}`;
+      blogData.featuredImage = req.file.path;
     }
 
     const blog = await Blog.create(blogData);
@@ -227,7 +227,7 @@ export const updateBlog = async (req, res) => {
 
     // Featured image upload
     if (req.file) {
-      updateData.featuredImage = `/uploads/${req.file.filename}`;
+      updateData.featuredImage = req.file.path;
     }
 
     blog = await Blog.findByIdAndUpdate(req.params.id, updateData, {

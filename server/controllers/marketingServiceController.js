@@ -117,7 +117,7 @@ export const createMarketingService = async (req, res) => {
 
     // Image upload
     if (req.file) {
-      serviceData.image = `/uploads/${req.file.filename}`;
+      serviceData.image =req.file.path;
     }
 
     const service = await MarketingService.create(serviceData);
@@ -166,7 +166,7 @@ export const updateMarketingService = async (req, res) => {
 
     // Image upload
     if (req.file) {
-      updateData.image = `/uploads/${req.file.filename}`;
+      updateData.image = req.file.path;
     }
 
     service = await MarketingService.findByIdAndUpdate(req.params.id, updateData, {

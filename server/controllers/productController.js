@@ -101,7 +101,8 @@ export const createProduct = async (req, res) => {
 
     // Image upload хийсэн бол
     if (req.file) {
-      productData.image = `/uploads/${req.file.filename}`;
+      // Cloudinary URL (production) or local path (development)
+      productData.image = req.file.path;
     }
 
     const product = await Product.create(productData);
@@ -137,7 +138,8 @@ export const updateProduct = async (req, res) => {
 
     // Шинэ зураг upload хийсэн бол
     if (req.file) {
-      updateData.image = `/uploads/${req.file.filename}`;
+      // Cloudinary URL (production) or local path (development)
+      updateData.image = req.file.path;
     }
 
     product = await Product.findByIdAndUpdate(req.params.id, updateData, {

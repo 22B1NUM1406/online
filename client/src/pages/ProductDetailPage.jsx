@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, ShoppingCart, Star, Truck, Shield, Heart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
 import { getProduct } from '../services/api';
 import { formatPrice, getImageUrl } from '../utils/helpers';
@@ -12,11 +13,15 @@ const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   const { isAuthenticated } = useAuth();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [notification, setNotification] = useState(null);
+  const [heartAnimating, setHeartAnimating] = useState(false);
+
+  const inWishlist = product ? isInWishlist(product._id) : false;
 
   useEffect(() => {
     loadProduct();
@@ -45,6 +50,28 @@ const ProductDetailPage = () => {
     
     addToCart(product, quantity);
     setNotification({ message: 'Сагсанд нэмэгдлээ!', type: 'success' });
+  };
+
+  const handleWishlistToggle = async () => {
+    if (!isAuthenticated) {
+      setNotification({ message: 'Нэвтэрсний дараа wishlist-д нэмнэ үү', type: 'info' });
+      setTimeout(() => navigate('/login'), 1500);
+      return;
+    }
+    
+    setHeartAnimating(true);
+    const result = await toggleWishlist(product._id);
+    
+    setTimeout(() => setHeartAnimating(false), 300);
+    
+    if (result.success) {
+      setNotification({ 
+        message: inWishlist ? 'Wishlist-с хасагдлаа' : 'Wishlist-д нэмэгдлээ', 
+        type: 'success' 
+      });
+    } else {
+      setNotification({ message: result.message, type: 'error' });
+    }
   };
 
   if (loading) {
@@ -88,8 +115,18 @@ const ProductDetailPage = () => {
                   {product.badge}
                 </div>
               )}
-              <button className="absolute top-4 right-4 bg-white p-3 rounded-full shadow-lg hover:bg-red-50 transition-colors">
-                <Heart size={24} className="text-gray-600 hover:text-red-500" />
+              <button 
+                onClick={handleWishlistToggle}
+                className={`absolute top-4 right-4 bg-white p-3 rounded-full shadow-lg transition-all duration-300 ${
+                  heartAnimating ? 'scale-125' : 'scale-100'
+                } ${inWishlist ? 'bg-red-50' : 'hover:bg-red-50'}`}
+              >
+                <Heart 
+                  size={24} 
+                  className={`transition-colors ${
+                    inWishlist ? 'text-red-500 fill-red-500' : 'text-gray-600 hover:text-red-500'
+                  }`}
+                />
               </button>
             </div>
 

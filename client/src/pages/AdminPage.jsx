@@ -197,7 +197,7 @@ const AdminPage = () => {
     setProductForm({
       name: product.name,
       price: product.price,
-      category: product.category,
+      category: typeof product.category === 'object' ? product.category._id : product.category,
       description: product.description || '',
       material: product.material || '',
       size: product.size || '',
@@ -819,7 +819,9 @@ const AdminPage = () => {
                         <div className="flex-1">
                           <h4 className="font-semibold">{product.name}</h4>
                           <p className="text-lg font-bold text-blue-600">{formatPrice(product.price)}</p>
-                          <p className="text-sm text-gray-600">{product.category}</p>
+                          <p className="text-sm text-gray-600">
+                            {typeof product.category === 'object' ? product.category?.name : product.category}
+                          </p>
                         </div>
                         <div className="flex gap-2">
                           <button

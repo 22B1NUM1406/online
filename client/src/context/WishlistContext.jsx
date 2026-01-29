@@ -1,6 +1,11 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import axios from 'axios';
+import { 
+  getWishlist as getWishlistAPI,
+  addToWishlist as addToWishlistAPI,
+  removeFromWishlist as removeFromWishlistAPI,
+  clearWishlist as clearWishlistAPI
+} from '../services/api';
 
 const WishlistContext = createContext();
 
@@ -30,7 +35,7 @@ export const WishlistProvider = ({ children }) => {
   const loadWishlist = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get('/api/wishlist');
+      const data = await getWishlistAPI();
       setWishlist(data.data.items || []);
     } catch (error) {
       console.error('Error loading wishlist:', error);
@@ -43,7 +48,7 @@ export const WishlistProvider = ({ children }) => {
   // Add to wishlist
   const addToWishlist = async (productId) => {
     try {
-      const { data } = await axios.post(`/api/wishlist/${productId}`);
+      const data = await addToWishlistAPI(productId);
       setWishlist(data.data.items || []);
       return { success: true, message: data.message };
     } catch (error) {
@@ -57,7 +62,7 @@ export const WishlistProvider = ({ children }) => {
   // Remove from wishlist
   const removeFromWishlist = async (productId) => {
     try {
-      const { data } = await axios.delete(`/api/wishlist/${productId}`);
+      const data = await removeFromWishlistAPI(productId);
       setWishlist(data.data.items || []);
       return { success: true, message: data.message };
     } catch (error) {
@@ -91,7 +96,7 @@ export const WishlistProvider = ({ children }) => {
   // Clear wishlist
   const clearWishlist = async () => {
     try {
-      await axios.delete('/api/wishlist');
+      await clearWishlistAPI();
       setWishlist([]);
       return { success: true, message: 'Wishlist цэвэрлэгдлээ' };
     } catch (error) {

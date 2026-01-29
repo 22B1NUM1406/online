@@ -104,6 +104,14 @@ const AdminPage = () => {
     try {
       setLoading(true);
       
+      // Load dashboard stats
+      if (!dashboardStats) {
+        const statsData = await getDashboardStats().catch(() => null);
+        if (statsData) {
+          setDashboardStats(statsData.data);
+        }
+      }
+      
       // Always load data for stats
       const [ordersData, quotationsData, messagesData] = await Promise.all([
         getAllOrders().catch(() => ({ data: [] })),
@@ -430,7 +438,12 @@ const AdminPage = () => {
   };
 
   const stats = [
-    { label: 'Нийт борлуулалт', value: formatPrice(1250000), icon: DollarSign, color: 'bg-green-500' },
+    { 
+      label: 'Нийт борлуулалт', 
+      value: formatPrice(dashboardStats?.overview?.totalSales || 0), 
+      icon: DollarSign, 
+      color: 'bg-green-500' 
+    },
     { label: 'Захиалга', value: orders.length, icon: ShoppingCart, color: 'bg-blue-500' },
     { label: 'Бүтээгдэхүүн', value: products.length, icon: Package, color: 'bg-purple-500' },
     { 

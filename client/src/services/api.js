@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base URL-ээс /api нэмэх
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://online-production-0222.up.railway.app';
 const API_URL = `${BASE_URL}/api`;
 
 // Axios interceptor - Request (Add auth token)
@@ -276,6 +276,32 @@ export const topUpWallet = async (amount) => {
 
 export const createWalletQPayInvoice = async (amount) => {
   const { data } = await axios.post(`${API_URL}/wallet/qpay-invoice`, { amount });
+  return data;
+};
+
+// ==================== WISHLIST ====================
+
+// Get wishlist
+export const getWishlist = async () => {
+  const { data } = await axios.get(`${API_URL}/wishlist`);
+  return data;
+};
+
+// Add to wishlist
+export const addToWishlist = async (productId) => {
+  const { data } = await axios.post(`${API_URL}/wishlist/${productId}`);
+  return data;
+};
+
+// Remove from wishlist
+export const removeFromWishlist = async (productId) => {
+  const { data } = await axios.delete(`${API_URL}/wishlist/${productId}`);
+  return data;
+};
+
+// Clear wishlist
+export const clearWishlist = async () => {
+  const { data } = await axios.delete(`${API_URL}/wishlist`);
   return data;
 };
 

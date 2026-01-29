@@ -69,19 +69,7 @@ const Header = () => {
               </div>
             </Link>
             
-            {/* Search Bar - Desktop */}
-            <div className="hidden md:flex flex-1 max-w-2xl mx-8">
-              <div className="relative w-full">
-                <input 
-                  type="text" 
-                  placeholder="Үйлчилгээ, бүтээгдэхүүн хайх..."
-                  className="w-full px-4 py-2.5 pr-12 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
-                />
-                <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition-colors">
-                  <Search size={18} />
-                </button>
-              </div>
-            </div>
+           
             
             {/* Right Side Actions */}
             <div className="flex items-center gap-4">

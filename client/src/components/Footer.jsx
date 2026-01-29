@@ -4,28 +4,26 @@ import { Link } from 'react-router-dom';
 const Footer = () => {
   return (
     <>
-      {/* Newsletter Section */}
-      <section className="relative py-16 mt-12 bg-gradient-to-br from-blue-900 to-purple-900">
-        <div className="relative max-w-7xl mx-auto px-4 z-10">
-          <div className="max-w-2xl mx-auto text-center">
-            <Mail size={48} className="mx-auto mb-4 text-white" />
-            <h2 className="text-3xl font-bold text-white mb-4">Урамшууллын мэдээлэл авах</h2>
-            <p className="text-gray-200 mb-8">
-              Шинэ үйлчилгээ, хямдралын мэдээллийг цаг алдалгүй хүлээн авах
-            </p>
-            <div className="flex gap-3 max-w-md mx-auto">
-              <input 
-                type="email" 
-                placeholder="И-мэйл хаягаа оруулна уу" 
-                className="flex-1 px-4 py-3 rounded-lg bg-white/10 text-white placeholder:text-white/70 backdrop-blur-sm border border-white/20 focus:outline-none focus:border-white/40"
-              />
-              <button className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-                Бүртгүүлэх
-              </button>
-            </div>
+      {/* Footer Banner with Image */}
+      <div className="relative h-64 md:h-80 overflow-hidden bg-gray-900">
+        <img 
+          src="/footer.jpg" 
+          alt="Print Shop" 
+          className="w-full h-full object-cover opacity-70"
+          onError={(e) => {
+            e.target.style.display = 'none';
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center text-white z-10">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Чанартай хэвлэлийн үйлчилгээ</h2>
+            <p className="text-xl text-gray-200">Монголын тэргүүлэгч хэвлэлийн компани</p>
           </div>
         </div>
-      </section>
+      </div>
+
+     
 
       {/* Main Footer */}
       <footer className="bg-gray-900 text-white pt-16 pb-8">

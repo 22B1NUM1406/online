@@ -431,13 +431,7 @@ const AdminPage = () => {
 
   const stats = [
     { label: 'Нийт борлуулалт', value: formatPrice(1250000), icon: DollarSign, color: 'bg-green-500' },
-    { 
-      label: 'Захиалга', 
-      value: orders.length, 
-      icon: ShoppingCart, 
-      color: 'bg-blue-500',
-      onClick: () => setActiveTab('orders')
-    },
+    { label: 'Захиалга', value: orders.length, icon: ShoppingCart, color: 'bg-blue-500' },
     { label: 'Бүтээгдэхүүн', value: products.length, icon: Package, color: 'bg-purple-500' },
     { 
       label: 'Үнийн санал', 
@@ -445,8 +439,7 @@ const AdminPage = () => {
       icon: MessageSquare, 
       color: 'bg-orange-500',
       badge: quotations.filter(q => q.status === 'pending').length > 0,
-      badgeText: `${quotations.filter(q => q.status === 'pending').length} шинэ`,
-      onClick: () => setActiveTab('quotations')
+      badgeText: `${quotations.filter(q => q.status === 'pending').length} шинэ`
     },
     { 
       label: 'Мессеж', 
@@ -454,8 +447,7 @@ const AdminPage = () => {
       icon: Mail, 
       color: 'bg-pink-500',
       badge: contactMessages.filter(m => m.status === 'new').length > 0,
-      badgeText: `${contactMessages.filter(m => m.status === 'new').length} шинэ`,
-      onClick: () => setActiveTab('messages')
+      badgeText: `${contactMessages.filter(m => m.status === 'new').length} шинэ`
     }
   ];
 
@@ -494,8 +486,7 @@ const AdminPage = () => {
           {stats.map((stat, index) => (
             <div 
               key={index} 
-              className={`bg-white rounded-xl shadow-lg p-6 ${stat.onClick ? 'cursor-pointer hover:shadow-xl transition-shadow' : ''}`}
-              onClick={stat.onClick}
+              className="bg-white rounded-xl shadow-lg p-6"
             >
               <div className="flex items-center justify-between">
                 <div>

@@ -39,7 +39,7 @@ export const createQuotation = async (req, res) => {
     if (req.file) {
       quotationData.designFile = {
         fileName: req.file.originalname,
-        fileUrl: `/uploads/${req.file.filename}`,
+        fileUrl: req.file.path,
         fileSize: req.file.size,
       };
     }

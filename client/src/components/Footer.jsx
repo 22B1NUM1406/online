@@ -7,7 +7,7 @@ const Footer = () => {
       {/* Footer Banner with Image */}
       <div className="relative h-64 md:h-80 overflow-hidden bg-gray-900">
         <img 
-          src="/footer.jpg" 
+          src="/footer.png" 
           alt="Print Shop" 
           className="w-full h-full object-cover opacity-70"
           onError={(e) => {

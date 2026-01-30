@@ -64,7 +64,7 @@ const Header = () => {
                 <span className="text-white font-bold text-xl">B</span>
               </div>
               <div>
-                <div className="text-xl font-bold text-gray-800">Biz print pro</div>
+                <div className="text-xl font-bold text-gray-800">BIZ PRINT PRO</div>
                 <div className="text-xs text-gray-500">Хэвлэлийн компани</div>
               </div>
             </Link>
@@ -194,7 +194,7 @@ const Header = () => {
                   to="/biz-print"
                   className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
                 >
-                  BIZ PRINT PRO 
+                  Biz Print
                 </Link>
                 <Link 
                   to="/biz-marketing"

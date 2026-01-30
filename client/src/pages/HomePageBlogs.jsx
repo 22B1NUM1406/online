@@ -23,10 +23,11 @@ const HomePage = () => {
     { value: 'tips', label: 'Зөвлөмж' },
   ];
 
+  // Hero слайдууд - таны local зургуудыг энд оруулна
   const heroSlides = [
     {
       id: 1,
-      image: "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=1200&h=600&fit=crop",
+      image: "/images/hero/hero1.jpg", // Таны local зам
       title: "Мэргэжлийн хэвлэлийн үйлчилгээ",
       subtitle: "Таны санааг",
       highlight: "бодит болгоно",
@@ -35,95 +36,55 @@ const HomePage = () => {
     },
     {
       id: 2,
-      image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop",
+      image: "/images/hero/hero2.jpg",
       title: "Хурдан бөгөөд чанартай",
       subtitle: "Хэвлэлийн ажил",
-      highlight: "түргэн шуурхай",
+      highlight: "хурдан шуурхай",
       description: "Орчин үеийн тоног төхөөрөмж, мэргэжлийн баг",
       badge: "⚡ Хурдан шуурхай үйлчилгээ"
     },
     {
       id: 3,
-      image: "https://images.unsplash.com/photo-1545235617-9465d2a55698?w=1200&h=600&fit=crop",
+      image: "/images/hero/hero3.jpg",
       title: "Шинэлэг дизайн",
       subtitle: "Бүтээлч шийдэл",
-      highlight: "онцлог загвар",
+      highlight: "онцгой хэвлэл",
       description: "Таны бизнест тохирсон өвөрмөц дизайн",
       badge: "✨ Өвөрмөц дизайн"
     },
     {
       id: 4,
-      image: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=1200&h=600&fit=crop",
+      image: "/images/hero/hero4.jpg",
       title: "Хамтын ажиллагаа",
-      subtitle: "Хамтдаа",
-      highlight: "амжилтын төлөө",
+      subtitle: "Таны бизнест",
+      highlight: "өсөлт авчирна",
       description: "Олон жилийн туршлагатай мэргэжилтнүүд",
-      badge: "🤝 Хамтын өсөлт хөгжил"
+      badge: "🤝 Хамтдаа амжилтын төлөө"
     }
   ];
 
+  // Хамтрагч байгууллагууд - таны local лого зургууд
   const partners = [
-    {
-      id: 1,
-      name: "Mongol Shuudan",
-      logo: "https://images.unsplash.com/photo-1567446537710-0e9b8d4d8c4d?w=200&h=100&fit=crop&crop=center",
-      website: "https://example.com"
-    },
-    {
-      id: 2,
-      name: "Gobi Cashmere",
-      logo: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=200&h=100&fit=crop&crop=center",
-      website: "https://example.com"
-    },
-    {
-      id: 3,
-      name: "APU",
-      logo: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=200&h=100&fit=crop&crop=center",
-      website: "https://example.com"
-    },
-    {
-      id: 4,
-      name: "Khan Bank",
-      logo: "https://images.unsplash.com/photo-1567446537710-0e9b8d4d8c4d?w=200&h=100&fit=crop&crop=center",
-      website: "https://example.com"
-    },
-    {
-      id: 5,
-      name: "Tavan Bogd",
-      logo: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=200&h=100&fit=crop&crop=center",
-      website: "https://example.com"
-    },
-    {
-      id: 6,
-      name: "MCS Group",
-      logo: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=200&h=100&fit=crop&crop=center",
-      website: "https://example.com"
-    },
-    {
-      id: 7,
-      name: "Nomin Holding",
-      logo: "https://images.unsplash.com/photo-1567446537710-0e9b8d4d8c4d?w=200&h=100&fit=crop&crop=center",
-      website: "https://example.com"
-    },
-    {
-      id: 8,
-      name: "Skytel",
-      logo: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=200&h=100&fit=crop&crop=center",
-      website: "https://example.com"
-    }
+    { id: 1, name: "Mongol Shuudan", logo: "/images/partners/mongol-shuudan.png" },
+    { id: 2, name: "Gobi Cashmere", logo: "/images/partners/gobi-cashmere.png" },
+    { id: 3, name: "APU", logo: "/images/partners/apu.png" },
+    { id: 4, name: "Khan Bank", logo: "/images/partners/khan-bank.png" },
+    { id: 5, name: "Tavan Bogd", logo: "/images/partners/tavan-bogd.png" },
+    { id: 6, name: "MCS Group", logo: "/images/partners/mcs-group.png" },
+    { id: 7, name: "Skytel", logo: "/images/partners/skytel.png" },
   ];
 
   useEffect(() => {
     loadBlogs();
     
-    // Auto slide for hero section
+    // Hero section auto slide
     const slideInterval = setInterval(() => {
-      nextSlide();
+      setCurrentSlide(prev => (prev + 1) % heroSlides.length);
     }, 5000);
 
-    // Auto slide for partners
+    // Partners auto slide
     const partnerInterval = setInterval(() => {
-      nextPartner();
+      setCurrentPartner(prev => (prev + 1) % partners.length);
     }, 3000);
 
     return () => {
@@ -168,15 +129,11 @@ const HomePage = () => {
   };
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    setCurrentSlide(prev => (prev + 1) % heroSlides.length);
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
-  };
-
-  const nextPartner = () => {
-    setCurrentPartner((prev) => (prev + 1) % (partners.length - 3));
+    setCurrentSlide(prev => (prev - 1 + heroSlides.length) % heroSlides.length);
   };
 
   return (
@@ -189,14 +146,14 @@ const HomePage = () => {
         />
       )}
 
-      {/* Hero Section with Carousel */}
+      {/* Hero Carousel Section */}
       <section className="relative overflow-hidden">
         <div className="relative h-[600px]">
           {heroSlides.map((slide, index) => (
             <div
               key={slide.id}
               className={`absolute inset-0 transition-opacity duration-1000 ${
-                index === currentSlide ? 'opacity-100' : 'opacity-0'
+                index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
               }`}
             >
               <div 
@@ -207,7 +164,7 @@ const HomePage = () => {
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30"></div>
               </div>
               
-              <div className="max-w-7xl mx-auto px-4 h-full flex items-center relative z-10">
+              <div className="max-w-7xl mx-auto px-4 h-full flex items-center relative z-20">
                 <div className="text-white max-w-2xl">
                   <div className="inline-block bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
                     <span className="text-sm font-semibold">{slide.badge}</span>
@@ -242,19 +199,19 @@ const HomePage = () => {
           {/* Navigation Buttons */}
           <button
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-3 transition-all z-20"
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-3 transition-all z-30"
           >
             <ChevronLeft className="text-white" size={24} />
           </button>
           <button
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-3 transition-all z-20"
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-3 transition-all z-30"
           >
             <ChevronRight className="text-white" size={24} />
           </button>
           
           {/* Dots Indicator */}
-          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 z-20">
+          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 z-30">
             {heroSlides.map((_, index) => (
               <button
                 key={index}
@@ -272,69 +229,7 @@ const HomePage = () => {
 
       <BizPrintPage />
 
-      {/* Partners Section */}
-      <section className="py-12 bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">Хамтран ажиллагч байгууллагууд</h2>
-          </div>
-          
-          <div className="relative overflow-hidden">
-            <div 
-              className="flex gap-8 transition-transform duration-500"
-              style={{ transform: `translateX(-${currentPartner * 25}%)` }}
-            >
-              {partners.map((partner) => (
-                <div
-                  key={partner.id}
-                  className="flex-shrink-0 w-64 bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:-translate-y-1"
-                >
-                  <div className="h-20 flex items-center justify-center mb-4">
-                    <img 
-                      src={partner.logo} 
-                      alt={partner.name}
-                      className="max-h-full max-w-full object-contain"
-                      onError={(e) => {
-                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(partner.name)}&background=4F46E5&color=fff&size=128`;
-                      }}
-                    />
-                  </div>
-                  <h3 className="text-center font-semibold text-gray-800">{partner.name}</h3>
-                </div>
-              ))}
-            </div>
-            
-            {/* Partners Navigation */}
-            <button
-              onClick={() => setCurrentPartner(prev => Math.max(0, prev - 1))}
-              className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white shadow-lg rounded-full p-3 hover:shadow-xl transition-all -translate-x-1/2 z-10"
-            >
-              <ChevronLeft size={24} />
-            </button>
-            <button
-              onClick={() => setCurrentPartner(prev => Math.min(partners.length - 4, prev + 1))}
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white shadow-lg rounded-full p-3 hover:shadow-xl transition-all translate-x-1/2 z-10"
-            >
-              <ChevronRight size={24} />
-            </button>
-          </div>
-          
-          {/* Partners Dots */}
-          <div className="flex justify-center gap-2 mt-6">
-            {Array.from({ length: partners.length - 3 }).map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentPartner(index)}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  index === currentPartner 
-                    ? 'bg-blue-600 w-6' 
-                    : 'bg-gray-300 hover:bg-gray-400'
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      
 
       {/* Blogs Section */}
       <div className="max-w-7xl mx-auto px-4 py-12">
@@ -449,6 +344,58 @@ const HomePage = () => {
           </div>
         )}
       </div>
+      {/* Partners Carousel Section */}
+      <section className="py-12 bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">Хамтран ажиллагч байгууллагууд</h2>
+          
+          </div>
+          
+          <div className="relative overflow-hidden">
+            <div className="flex gap-8">
+              {/* Duplicate partners for seamless loop */}
+              {[...partners, ...partners].map((partner, index) => (
+                <div
+                  key={`${partner.id}-${index}`}
+                  className="flex-shrink-0 w-64 bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:-translate-y-1 animate-marquee"
+                  style={{ 
+                    animationDelay: `${index * 0.1}s`,
+                    transform: `translateX(-${currentPartner * 100}px)`
+                  }}
+                >
+                  <div className="h-20 flex items-center justify-center mb-4">
+                    <img 
+                      src={partner.logo} 
+                      alt={partner.name}
+                      className="max-h-full max-w-full object-contain"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.parentElement.innerHTML = `
+                          <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg">
+                            <span class="text-lg font-semibold text-gray-700">${partner.name}</span>
+                          </div>
+                        `;
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Custom CSS for marquee animation */}
+          <style jsx>{`
+            @keyframes marquee {
+              0% { transform: translateX(0); }
+              100% { transform: translateX(-50%); }
+            }
+            .animate-marquee {
+              animation: marquee 30s linear infinite;
+            }
+          `}</style>
+        </div>
+      </section>
     </div>
   );
 };

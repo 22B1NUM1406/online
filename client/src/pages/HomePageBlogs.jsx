@@ -28,7 +28,7 @@ const HomePage = () => {
   const heroSlides = [
     {
       id: 1,
-      image: "/images/hero/hero1.jpg", // Таны local зам
+      image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=600&fit=crop", // Таны local зам
       title: "Мэргэжлийн хэвлэлийн үйлчилгээ",
       subtitle: "Таны санааг",
       highlight: "бодит болгоно",
@@ -37,7 +37,7 @@ const HomePage = () => {
     },
     {
       id: 2,
-      image: "/images/hero/hero2.jpg",
+      image: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=1200&h=600&fit=crop",
       title: "Хурдан бөгөөд чанартай",
       subtitle: "Хэвлэлийн ажил",
       highlight: "хурдан шуурхай",
@@ -46,7 +46,7 @@ const HomePage = () => {
     },
     {
       id: 3,
-      image: "/images/hero/hero3.jpg",
+      image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1200&h=600&fit=crop",
       title: "Шинэлэг дизайн",
       subtitle: "Бүтээлч шийдэл",
       highlight: "онцгой хэвлэл",
@@ -55,7 +55,7 @@ const HomePage = () => {
     },
     {
       id: 4,
-      image: "/images/hero/hero4.jpg",
+      image: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=1200&h=600&fit=crop",
       title: "Хамтын ажиллагаа",
       subtitle: "Таны бизнест",
       highlight: "өсөлт авчирна",
@@ -240,78 +240,6 @@ const HomePage = () => {
 
       <BizPrintPage />
 
-      {/* Partners Carousel Section */}
-      <section className="py-12 bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">Хамтран ажиллагч байгууллагууд</h2>
-          </div>
-          
-          <div className="relative">
-            {/* Навигацийн товчнууд */}
-            <button
-              onClick={prevPartners}
-              className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 bg-white shadow-lg hover:shadow-xl rounded-full p-3 z-10 transition-all hover:scale-110"
-            >
-              <ChevronLeft size={24} className="text-gray-700" />
-            </button>
-            
-            <button
-              onClick={nextPartners}
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 bg-white shadow-lg hover:shadow-xl rounded-full p-3 z-10 transition-all hover:scale-110"
-            >
-              <ChevronRight size={24} className="text-gray-700" />
-            </button>
-
-            {/* Partners Container */}
-            <div 
-              ref={partnersContainerRef}
-              className="flex gap-6 overflow-x-auto scrollbar-hide py-4 px-8"
-              style={{ scrollBehavior: 'smooth' }}
-            >
-              {/* Partners жагсаалт */}
-              {partners.map((partner) => (
-                <div
-                  key={partner.id}
-                  className="flex-shrink-0 w-48 bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                >
-                  <div className="h-28 flex items-center justify-center p-4">
-                    <img 
-                      src={partner.logo} 
-                      alt={partner.name}
-                      className="max-h-full max-w-full object-contain"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        e.target.parentElement.innerHTML = `
-                          <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg">
-                            <span class="text-base font-semibold text-gray-700 text-center">${partner.name}</span>
-                          </div>
-                        `;
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Auto scroll animation */}
-            <style jsx>{`
-              @keyframes scroll {
-                0% { transform: translateX(0); }
-                100% { transform: translateX(calc(-250px * ${partners.length})); }
-              }
-              .scrollbar-hide {
-                -ms-overflow-style: none;
-                scrollbar-width: none;
-              }
-              .scrollbar-hide::-webkit-scrollbar {
-                display: none;
-              }
-            `}</style>
-          </div>
-        </div>
-      </section>
-
       {/* Blogs Section */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Section Header */}
@@ -423,6 +351,77 @@ const HomePage = () => {
           </div>
         )}
       </div>
+       {/* Partners Carousel Section */}
+      <section className="py-12 bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">Хамтран ажиллагч байгууллагууд</h2>
+          </div>
+          
+          <div className="relative">
+            {/* Навигацийн товчнууд */}
+            <button
+              onClick={prevPartners}
+              className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 bg-white shadow-lg hover:shadow-xl rounded-full p-3 z-10 transition-all hover:scale-110"
+            >
+              <ChevronLeft size={24} className="text-gray-700" />
+            </button>
+            
+            <button
+              onClick={nextPartners}
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 bg-white shadow-lg hover:shadow-xl rounded-full p-3 z-10 transition-all hover:scale-110"
+            >
+              <ChevronRight size={24} className="text-gray-700" />
+            </button>
+
+            {/* Partners Container */}
+            <div 
+              ref={partnersContainerRef}
+              className="flex gap-6 overflow-x-auto scrollbar-hide py-4 px-8"
+              style={{ scrollBehavior: 'smooth' }}
+            >
+              {/* Partners жагсаалт */}
+              {partners.map((partner) => (
+                <div
+                  key={partner.id}
+                  className="flex-shrink-0 w-48 bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                >
+                  <div className="h-28 flex items-center justify-center p-4">
+                    <img 
+                      src={partner.logo} 
+                      alt={partner.name}
+                      className="max-h-full max-w-full object-contain"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.parentElement.innerHTML = `
+                          <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg">
+                            <span class="text-base font-semibold text-gray-700 text-center">${partner.name}</span>
+                          </div>
+                        `;
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Auto scroll animation */}
+            <style jsx>{`
+              @keyframes scroll {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(calc(-250px * ${partners.length})); }
+              }
+              .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+              }
+              .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+              }
+            `}</style>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

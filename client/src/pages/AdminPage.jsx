@@ -893,60 +893,93 @@ const AdminPage = () => {
             )}
 
             {/* Quotations Tab */}
-            {activeTab === 'quotations' && (
-              <div>
-                <h2 className="text-xl font-bold mb-6">Үнийн санал удирдах</h2>
-                {loading ? (
-                  <Loading />
-                ) : quotations.length === 0 ? (
-                  <div className="text-center py-12 text-gray-500">Үнийн санал байхгүй байна</div>
-                ) : (
-                  <div className="space-y-4">
-                    {quotations.map(quotation => (
-                      <div key={quotation._id} className="border rounded-lg p-6">
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="flex-1">
-                            <div className="font-bold mb-1">{quotation.name}</div>
-                            <div className="text-sm text-gray-600 mb-2">{quotation.phone} - {quotation.email}</div>
-                            <div className="text-sm text-gray-700 mb-2">
-                              <span className="font-medium">Төрөл:</span> {quotation.productType}
-                            </div>
-                            <div className="text-sm text-gray-600 mb-3">{quotation.description}</div>
-                            
-                            {quotation.designFile && (
-                              <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-                                <div className="text-sm font-medium text-blue-800 mb-1">Дизайн файл:</div>
-                                <a 
-                                  href={`http://localhost:5000${quotation.designFile.fileUrl}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-sm text-blue-600 hover:underline"
-                                >
-                                  📎 {quotation.designFile.fileName}
-                                </a>
-                              </div>
-                            )}
-                            
-                            <div className={`inline-block px-3 py-1 rounded-full text-sm font-medium mt-3 ${
-                              quotation.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'
-                            }`}>
-                              {quotation.status === 'pending' ? 'Хүлээгдэж буй' : 'Хариулсан'}
-                            </div>
-                          </div>
-                          <button
-                            onClick={() => handleDeleteQuotation(quotation._id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Устгах"
-                          >
-                            <Trash2 size={20} />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+{activeTab === 'quotations' && (
+  <div>
+    <h2 className="text-xl font-bold mb-6">Үнийн санал удирдах</h2>
+
+    {loading ? (
+      <Loading />
+    ) : quotations.length === 0 ? (
+      <div className="text-center py-12 text-gray-500">
+        Үнийн санал байхгүй байна
+      </div>
+    ) : (
+      <div className="space-y-4">
+        {quotations.map((quotation) => (
+          <div key={quotation._id} className="border rounded-lg p-6">
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex-1">
+                <div className="font-bold mb-1">{quotation.name}</div>
+                <div className="text-sm text-gray-600 mb-2">
+                  {quotation.phone} - {quotation.email}
+                </div>
+
+                <div className="text-sm text-gray-700 mb-2">
+                  <span className="font-medium">Төрөл:</span>{" "}
+                  {quotation.productType}
+                </div>
+
+                <div className="text-sm text-gray-600 mb-3">
+                  {quotation.description}
+                </div>
+
+                {/* DESIGN FILE */}
+                {quotation.designFile?.fileUrl && (
+                  <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                    <div className="text-sm font-medium text-blue-800 mb-2">
+                      Дизайн файл:
+                    </div>
+
+                    {/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(
+                      quotation.designFile.fileUrl
+                    ) ? (
+                      <img
+                        src={quotation.designFile.fileUrl}
+                        alt="Design"
+                        className="max-w-xs rounded-lg border"
+                      />
+                    ) : (
+                      <a
+                        href={quotation.designFile.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-600 hover:underline"
+                      >
+                        📎 {quotation.designFile.fileName}
+                      </a>
+                    )}
                   </div>
                 )}
+
+                {/* STATUS */}
+                <div
+                  className={`inline-block px-3 py-1 rounded-full text-sm font-medium mt-3 ${
+                    quotation.status === "pending"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-green-100 text-green-700"
+                  }`}
+                >
+                  {quotation.status === "pending"
+                    ? "Хүлээгдэж буй"
+                    : "Хариулсан"}
+                </div>
               </div>
-            )}
+
+              <button
+                onClick={() => handleDeleteQuotation(quotation._id)}
+                className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                title="Устгах"
+              >
+                <Trash2 size={20} />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
 
             {/* Messages Tab */}
             {activeTab === 'messages' && (

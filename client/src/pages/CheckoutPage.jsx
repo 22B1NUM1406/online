@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, ChevronRight, Wallet, CreditCard, Check } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { createOrder } from '../services/api';
+import { createOrder, createQPayInvoice } from '../services/api';
 import { formatPrice } from '../utils/helpers';
 import Notification from '../components/Notification';
 
@@ -66,21 +66,54 @@ const CheckoutPage = () => {
       };
 
       const result = await createOrder(orderData);
+      const orderId = result.data._id;
       
-      // Update wallet balance if paid with wallet
+      // Handle payment method
       if (formData.paymentMethod === 'wallet') {
+        // Wallet payment - instant
         updateWallet(user.wallet - getCartTotal());
+        clearCart();
+        setNotification({ 
+          message: 'Захиалга амжилттай илгээгдлээ!', 
+          type: 'success' 
+        });
+        setTimeout(() => navigate('/profile'), 1500);
+        
+      } else if (formData.paymentMethod === 'qpay') {
+        // QPay payment - redirect to payment page
+        try {
+          const qpayResult = await createQPayInvoice(orderId);
+          
+          clearCart();
+          
+          // Navigate to payment page with QPay data
+          navigate(`/payment/${orderId}`, {
+            state: {
+              qrImage: qpayResult.data.qr_image,
+              qrText: qpayResult.data.qr_text,
+              urls: qpayResult.data.urls,
+              invoiceId: qpayResult.data.invoice_id,
+              orderNumber: qpayResult.data.order?.orderNumber,
+              amount: qpayResult.data.order?.amount || getCartTotal()
+            }
+          });
+        } catch (qpayError) {
+          console.error('QPay error:', qpayError);
+          setNotification({ 
+            message: 'QPay invoice үүсгэхэд алдаа гарлаа', 
+            type: 'error' 
+          });
+        }
+      } else {
+        // Other payment methods (cash, etc)
+        clearCart();
+        setNotification({ 
+          message: 'Захиалга амжилттай илгээгдлээ!', 
+          type: 'success' 
+        });
+        setTimeout(() => navigate('/profile'), 1500);
       }
       
-      clearCart();
-      setNotification({ 
-        message: 'Захиалга амжилттай илгээгдлээ!', 
-        type: 'success' 
-      });
-      
-      setTimeout(() => {
-        navigate('/profile');
-      }, 1500);
     } catch (error) {
       console.error('Order error:', error);
       setNotification({ 

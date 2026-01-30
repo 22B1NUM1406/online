@@ -225,7 +225,7 @@ const QuotationPage = () => {
                 >
                   <Upload size={20} className="text-gray-400" />
                   <span className="text-gray-600">
-                    {selectedFile ? selectedFile.name : 'Файл сонгох (Зураг, PDF, Word, PPT, PSD, AI)'}
+                    {selectedFile ? selectedFile.name : 'Файл сонгох (Зураг)'}
                   </span>
                 </label>
                 {selectedFile && (

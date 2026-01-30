@@ -438,12 +438,7 @@ const AdminPage = () => {
   };
 
   const stats = [
-    { 
-      label: 'Нийт борлуулалт', 
-      value: formatPrice(dashboardStats?.overview?.totalSales || 0), 
-      icon: DollarSign, 
-      color: 'bg-green-500' 
-    },
+  
     { label: 'Захиалга', value: orders.length, icon: ShoppingCart, color: 'bg-blue-500' },
     { label: 'Бүтээгдэхүүн', value: products.length, icon: Package, color: 'bg-purple-500' },
     { 

@@ -186,15 +186,6 @@ const LoginPage = () => {
               {isLogin ? 'Бүртгэл үүсгэх' : 'Нэвтрэх хэсэгт буцах'}
             </button>
           </div>
-
-          {/* Demo accounts info */}
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600 font-medium mb-2">Demo хэрэглэгч:</p>
-            <div className="space-y-1 text-xs text-gray-500">
-              <p>👤 Admin: admin@printshop.mn / admin123</p>
-              <p>👤 User: user@printshop.mn / user123</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>

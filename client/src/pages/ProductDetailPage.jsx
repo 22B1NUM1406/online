@@ -252,7 +252,7 @@ const ProductDetailPage = () => {
                   <Shield className="text-blue-600" size={24} />
                   <div>
                     <div className="font-semibold text-sm">Баталгаат</div>
-                    <div className="text-xs text-gray-600">Чанарт итгэлтэй</div>
+                    <div className="text-xs text-gray-600">Бүх бүтээгдэхүүн баталгаатай</div>
                   </div>
                 </div>
               </div>
@@ -260,11 +260,8 @@ const ProductDetailPage = () => {
           </div>
         </div>
 
-        {/* Related Products Section (Optional) */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Холбоотой бүтээгдэхүүн</h2>
-          <p className="text-gray-500">Удахгүй...</p>
-        </div>
+      
+       
       </div>
     </div>
   );

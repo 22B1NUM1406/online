@@ -95,7 +95,7 @@ const ContactPage = () => {
         <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700 text-white py-16 relative overflow-hidden rounded-2xl shadow-xl p-12 text-white mb-12">
           <h1 className="text-5xl font-bold mb-4">Холбоо барих</h1>
           <p className="text-xl text-blue-100">
-            Бидэнтэй холбогдоход таатай байна
+            Бид тантай холбогдоход бэлэн байна. Дизайн, хэвлэлтийн талаархи асуулт, санал хүсэлтээ доорх маягтаар илгээнэ үү.
           </p>
         </div>
 
@@ -216,16 +216,7 @@ const ContactPage = () => {
               </form>
             </div>
 
-            {/* Map */}
-            <div className="bg-white rounded-xl shadow-lg p-4 mt-8">
-              <div className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center">
-                <div className="text-center text-gray-500">
-                  <MapPin size={48} className="mx-auto mb-2" />
-                  <p>Google Map байрлал</p>
-                  <p className="text-sm">(Production дээр нэмэгдэнэ)</p>
-                </div>
-              </div>
-            </div>
+           
           </div>
         </div>
       </div>

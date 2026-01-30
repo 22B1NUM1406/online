@@ -5,6 +5,7 @@ import { getBlogs } from '../services/api';
 import { getImageUrl } from '../utils/helpers';
 import Loading from '../components/Loading';
 import Notification from '../components/Notification';
+import BizPrintPage from './BizPrintPage';
 
 const HomePage = () => {
   const [blogs, setBlogs] = useState([]);
@@ -86,16 +87,7 @@ const HomePage = () => {
               <p className="text-xl mb-8 text-blue-100">
                 Дизайнаас эхлээд хэвлэл хүртэл бүх үйлчилгээ
               </p>
-              <div className="flex gap-4">
-                <Link to="/quotation" 
-    
-                 className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all shadow-xl"
-                >
-                  Үнийн санал авах
-                </Link>
-               
-              </div>
-              
+            
               <div className="grid grid-cols-3 gap-4 mt-12">
                 <div className="text-center">
                   <div className="text-3xl font-bold">10+</div>
@@ -121,7 +113,9 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-      
+      <BizPrintPage />
+
+      {/* Blogs Section */}
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Category Filter */}

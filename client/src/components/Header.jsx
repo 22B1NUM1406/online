@@ -61,11 +61,11 @@ const Header = () => {
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">P</span>
+                <span className="text-white font-bold text-xl">B</span>
               </div>
               <div>
-                <div className="text-xl font-bold text-gray-800">PRINT SHOP</div>
-                <div className="text-xs text-gray-500">Хэвлэлийн төв</div>
+                <div className="text-xl font-bold text-gray-800">Biz print pro</div>
+                <div className="text-xs text-gray-500">Хэвлэлийн компани</div>
               </div>
             </Link>
             
@@ -194,7 +194,7 @@ const Header = () => {
                   to="/biz-print"
                   className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
                 >
-                  Biz Print
+                  BIZ PRINT PRO 
                 </Link>
                 <Link 
                   to="/biz-marketing"

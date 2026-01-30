@@ -38,16 +38,16 @@ const HomePage = () => {
       image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop",
       title: "Хурдан бөгөөд чанартай",
       subtitle: "Хэвлэлийн ажил",
-      highlight: "хурдан дуусна",
+      highlight: "түргэн шуурхай",
       description: "Орчин үеийн тоног төхөөрөмж, мэргэжлийн баг",
-      badge: "⚡ Хурдан үйлчилгээ"
+      badge: "⚡ Хурдан шуурхай үйлчилгээ"
     },
     {
       id: 3,
       image: "https://images.unsplash.com/photo-1545235617-9465d2a55698?w=1200&h=600&fit=crop",
       title: "Шинэлэг дизайн",
       subtitle: "Бүтээлч шийдэл",
-      highlight: "онцгой хэвлэл",
+      highlight: "онцлог загвар",
       description: "Таны бизнест тохирсон өвөрмөц дизайн",
       badge: "✨ Өвөрмөц дизайн"
     },
@@ -55,10 +55,10 @@ const HomePage = () => {
       id: 4,
       image: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=1200&h=600&fit=crop",
       title: "Хамтын ажиллагаа",
-      subtitle: "Бидэнтэй хамт",
-      highlight: "амжилтад хүрнэ",
+      subtitle: "Хамтдаа",
+      highlight: "амжилтын төлөө",
       description: "Олон жилийн туршлагатай мэргэжилтнүүд",
-      badge: "🤝 Хамтдаа амжилттай"
+      badge: "🤝 Хамтын өсөлт хөгжил"
     }
   ];
 
@@ -276,8 +276,7 @@ const HomePage = () => {
       <section className="py-12 bg-gradient-to-br from-gray-50 to-gray-100">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">Хамтран ажилладаг байгууллагууд</h2>
-            <p className="text-gray-600">Манай үйлчилгээг итгэж хамтрагчид</p>
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">Хамтран ажиллагч байгууллагууд</h2>
           </div>
           
           <div className="relative overflow-hidden">
@@ -346,16 +345,7 @@ const HomePage = () => {
             <p className="text-gray-600">Хэвлэлийн талаарх мэдээ, зөвлөгөө, заавар</p>
           </div>
           
-          <div className="mt-4 md:mt-0 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-            <input
-              type="text"
-              placeholder="Блогийн нэрээр хайх..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
+         
         </div>
 
         {/* Category Filter */}

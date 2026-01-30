@@ -36,8 +36,8 @@ const Footer = () => {
                   <Printer className="text-white" size={24} />
                 </div>
                 <div>
-                  <div className="text-xl font-bold">PRINT SHOP</div>
-                  <div className="text-xs text-gray-400">Хэвлэлийн төв</div>
+                  <div className="text-xl font-bold">BIZ PRINT PRO</div>
+                  <div className="text-xs text-gray-400">Хэвлэлийн компани</div>
                 </div>
               </div>
               <p className="text-gray-400 mb-4">
@@ -111,7 +111,7 @@ const Footer = () => {
           {/* Bottom Bar */}
           <div className="border-t border-gray-800 pt-8">
             <p className="text-center text-gray-400 text-sm">
-              © 2024 PRINT SHOP. Бүх эрх хуулиар хамгаалагдсан.
+              © 2024 BIZ PRINT PRO. Бүх эрх хуулиар хамгаалагдсан.
             </p>
           </div>
         </div>

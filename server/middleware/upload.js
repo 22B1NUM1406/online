@@ -56,6 +56,23 @@ const imageFileFilter = (req, file, cb) => {
   }
 };
 
+// File filter - Бүх төрлийн файл (Design files for quotations)
+// ХЯЛБАРЧИЛСАН file filter
+const designFileFilter = (req, file, cb) => {
+  // Бүх файлыг зөвшөөрөх (debugging-д зориулж)
+  console.log('File received:', {
+    originalname: file.originalname,
+    mimetype: file.mimetype,
+    size: file.size
+  });
+  
+  // Хялбар шалгалт - зөвхөн хэт том файлыг шалгах
+  if (file.size > 10 * 1024 * 1024) { // 10MB
+    cb(new Error('Файлын хэмжээ хэт том. 10MB-аас бага файл оруулна уу.'), false);
+  } else {
+    cb(null, true); // Бүх файлыг зөвшөөрөх
+  }
+};
 
 // Multer configuration - Images only
 const uploadImage = multer({

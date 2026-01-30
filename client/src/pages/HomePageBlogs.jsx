@@ -19,8 +19,7 @@ const HomePage = () => {
     { value: 'news', label: 'Мэдээ' },
     { value: 'tutorial', label: 'Заавар' },
     { value: 'tips', label: 'Зөвлөмж' },
-    { value: 'case-study', label: 'Туршилт' },
-    { value: 'announcement', label: 'Мэдэгдэл' },
+   
   ];
 
   useEffect(() => {

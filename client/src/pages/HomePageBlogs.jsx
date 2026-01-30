@@ -24,11 +24,10 @@ const HomePage = () => {
     { value: 'tips', label: 'Зөвлөмж' },
   ];
 
-  // Hero слайдууд - таны local зургуудыг энд оруулна
   const heroSlides = [
     {
       id: 1,
-      image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=600&fit=crop", // Таны local зам
+      image: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200&h=600&fit=crop", 
       title: "Мэргэжлийн хэвлэлийн үйлчилгээ",
       subtitle: "Таны санааг",
       highlight: "бодит болгоно",

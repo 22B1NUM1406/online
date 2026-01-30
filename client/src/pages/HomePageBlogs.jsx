@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Calendar, User, Eye, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getBlogs } from '../services/api';
@@ -15,6 +15,7 @@ const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentPartner, setCurrentPartner] = useState(0);
+  const partnersContainerRef = useRef(null);
 
   const categories = [
     { value: 'all', label: 'Бүгд' },
@@ -82,14 +83,8 @@ const HomePage = () => {
       setCurrentSlide(prev => (prev + 1) % heroSlides.length);
     }, 5000);
 
-    // Partners auto slide
-    const partnerInterval = setInterval(() => {
-      setCurrentPartner(prev => (prev + 1) % partners.length);
-    }, 3000);
-
     return () => {
       clearInterval(slideInterval);
-      clearInterval(partnerInterval);
     };
   }, []);
 
@@ -134,6 +129,22 @@ const HomePage = () => {
 
   const prevSlide = () => {
     setCurrentSlide(prev => (prev - 1 + heroSlides.length) % heroSlides.length);
+  };
+
+  const nextPartners = () => {
+    if (partnersContainerRef.current) {
+      const container = partnersContainerRef.current;
+      const scrollAmount = 300; // Гүйлгэх хэмжээ
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  const prevPartners = () => {
+    if (partnersContainerRef.current) {
+      const container = partnersContainerRef.current;
+      const scrollAmount = 300; // Гүйлгэх хэмжээ
+      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    }
   };
 
   return (
@@ -229,7 +240,77 @@ const HomePage = () => {
 
       <BizPrintPage />
 
-      
+      {/* Partners Carousel Section */}
+      <section className="py-12 bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">Хамтран ажиллагч байгууллагууд</h2>
+          </div>
+          
+          <div className="relative">
+            {/* Навигацийн товчнууд */}
+            <button
+              onClick={prevPartners}
+              className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 bg-white shadow-lg hover:shadow-xl rounded-full p-3 z-10 transition-all hover:scale-110"
+            >
+              <ChevronLeft size={24} className="text-gray-700" />
+            </button>
+            
+            <button
+              onClick={nextPartners}
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 bg-white shadow-lg hover:shadow-xl rounded-full p-3 z-10 transition-all hover:scale-110"
+            >
+              <ChevronRight size={24} className="text-gray-700" />
+            </button>
+
+            {/* Partners Container */}
+            <div 
+              ref={partnersContainerRef}
+              className="flex gap-6 overflow-x-auto scrollbar-hide py-4 px-8"
+              style={{ scrollBehavior: 'smooth' }}
+            >
+              {/* Partners жагсаалт */}
+              {partners.map((partner) => (
+                <div
+                  key={partner.id}
+                  className="flex-shrink-0 w-48 bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                >
+                  <div className="h-28 flex items-center justify-center p-4">
+                    <img 
+                      src={partner.logo} 
+                      alt={partner.name}
+                      className="max-h-full max-w-full object-contain"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.parentElement.innerHTML = `
+                          <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg">
+                            <span class="text-base font-semibold text-gray-700 text-center">${partner.name}</span>
+                          </div>
+                        `;
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Auto scroll animation */}
+            <style jsx>{`
+              @keyframes scroll {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(calc(-250px * ${partners.length})); }
+              }
+              .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+              }
+              .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+              }
+            `}</style>
+          </div>
+        </div>
+      </section>
 
       {/* Blogs Section */}
       <div className="max-w-7xl mx-auto px-4 py-12">
@@ -239,8 +320,6 @@ const HomePage = () => {
             <h2 className="text-3xl font-bold text-gray-800 mb-2">Сүүлийн блог нийтлэлүүд</h2>
             <p className="text-gray-600">Хэвлэлийн талаарх мэдээ, зөвлөгөө, заавар</p>
           </div>
-          
-         
         </div>
 
         {/* Category Filter */}
@@ -344,58 +423,6 @@ const HomePage = () => {
           </div>
         )}
       </div>
-      {/* Partners Carousel Section */}
-      <section className="py-12 bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">Хамтран ажиллагч байгууллагууд</h2>
-          
-          </div>
-          
-          <div className="relative overflow-hidden">
-            <div className="flex gap-8">
-              {/* Duplicate partners for seamless loop */}
-              {[...partners, ...partners].map((partner, index) => (
-                <div
-                  key={`${partner.id}-${index}`}
-                  className="flex-shrink-0 w-64 bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:-translate-y-1 animate-marquee"
-                  style={{ 
-                    animationDelay: `${index * 0.1}s`,
-                    transform: `translateX(-${currentPartner * 100}px)`
-                  }}
-                >
-                  <div className="h-20 flex items-center justify-center mb-4">
-                    <img 
-                      src={partner.logo} 
-                      alt={partner.name}
-                      className="max-h-full max-w-full object-contain"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        e.target.parentElement.innerHTML = `
-                          <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg">
-                            <span class="text-lg font-semibold text-gray-700">${partner.name}</span>
-                          </div>
-                        `;
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Custom CSS for marquee animation */}
-          <style jsx>{`
-            @keyframes marquee {
-              0% { transform: translateX(0); }
-              100% { transform: translateX(-50%); }
-            }
-            .animate-marquee {
-              animation: marquee 30s linear infinite;
-            }
-          `}</style>
-        </div>
-      </section>
     </div>
   );
 };

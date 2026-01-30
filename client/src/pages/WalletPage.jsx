@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, CreditCard, Wallet as WalletIcon, TrendingUp } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { topUpWallet, createWalletQPayInvoice } from '../services/api';
@@ -8,6 +8,7 @@ import Notification from '../components/Notification';
 
 const WalletPage = () => {
   const { user, updateWallet } = useAuth();
+  const navigate = useNavigate();
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
@@ -63,17 +64,23 @@ const WalletPage = () => {
       setLoading(true);
       const result = await createWalletQPayInvoice(topUpAmount);
       
-      setNotification({ 
-        message: 'QPay invoice үүсгэгдлээ (Demo mode)', 
-        type: 'info' 
-      });
-      
-      // In production, redirect to QPay or show QR code
-      console.log('QPay Invoice:', result.data);
+      if (result.success) {
+        // Navigate to wallet payment page with QR code
+        navigate('/wallet/payment', {
+          state: {
+            qrImage: result.data.qr_image,
+            qrText: result.data.qr_text,
+            urls: result.data.urls,
+            invoiceId: result.data.invoice_id,
+            amount: topUpAmount,
+            type: 'wallet'
+          }
+        });
+      }
     } catch (error) {
       console.error('QPay error:', error);
       setNotification({ 
-        message: 'Алдаа гарлаа', 
+        message: error.response?.data?.message || 'QPay invoice үүсгэхэд алдаа гарлаа', 
         type: 'error' 
       });
     } finally {

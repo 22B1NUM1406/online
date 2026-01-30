@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
-import { WishlistProvider } from './context/WishlistContext';
+import { WishlistProvider } from './context/WishlistProvider';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -15,8 +15,10 @@ import LoginPage from './pages/LoginPage';
 import CartPage from './pages/CartPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import CheckoutPage from './pages/CheckoutPage';
+import PaymentPage from './pages/PaymentPage';
 import ProfilePage from './pages/ProfilePage';
 import WalletPage from './pages/WalletPage';
+import WalletPaymentPage from './pages/WalletPaymentPage';
 import QuotationPage from './pages/QuotationPage';
 import AdminPage from './pages/AdminPage';
 import WishlistPage from './pages/WishlistPage';
@@ -63,6 +65,14 @@ function App() {
                   } 
                 />
                 <Route 
+                  path="/payment/:orderId" 
+                  element={
+                    <ProtectedRoute>
+                      <PaymentPage />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
                   path="/profile" 
                   element={
                     <ProtectedRoute>
@@ -75,6 +85,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <WalletPage />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/wallet/payment" 
+                  element={
+                    <ProtectedRoute>
+                      <WalletPaymentPage />
                     </ProtectedRoute>
                   } 
                 />

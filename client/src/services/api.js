@@ -279,6 +279,12 @@ export const createWalletQPayInvoice = async (amount) => {
   return data;
 };
 
+// Check wallet QPay payment
+export const checkWalletQPayPayment = async (invoiceId) => {
+  const { data } = await axios.get(`${API_URL}/wallet/qpay-check/${invoiceId}`);
+  return data;
+};
+
 // ==================== WISHLIST ====================
 
 // Get wishlist

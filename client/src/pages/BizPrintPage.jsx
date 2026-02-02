@@ -14,6 +14,9 @@ const BizPrintPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [expandedCategories, setExpandedCategories] = useState({});
+  const [showAll, setShowAll] = useState(false);
+
+  const INITIAL_DISPLAY_COUNT = 6; // Анхдаа 6 бүтээгдэхүүн харуулах
 
   useEffect(() => {
     loadData();
@@ -21,6 +24,7 @@ const BizPrintPage = () => {
 
   useEffect(() => {
     loadProducts();
+    setShowAll(false); // Категори эсвэл хайлт солих үед буцааж хураах
   }, [selectedCategory, searchTerm]);
 
   const loadData = async () => {
@@ -85,7 +89,7 @@ const BizPrintPage = () => {
       )}
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700 text-white py-16 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-12">
         <div className="max-w-7xl mx-auto px-4">
           <h1 className="text-3xl md:text-4xl font-bold mb-3">
             Biz Print
@@ -248,11 +252,38 @@ const BizPrintPage = () => {
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {products.map((product) => (
-                  <ProductCard key={product._id} product={product} />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {(showAll ? products : products.slice(0, INITIAL_DISPLAY_COUNT)).map((product) => (
+                    <ProductCard key={product._id} product={product} />
+                  ))}
+                </div>
+
+                {/* Show More/Less Button */}
+                {products.length > INITIAL_DISPLAY_COUNT && (
+                  <div className="mt-8 text-center">
+                    <button
+                      onClick={() => setShowAll(!showAll)}
+                      className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                    >
+                      <span className="font-semibold">
+                        {showAll ? 'Хураах' : 'Дэлгэрэнгүй харах'}
+                      </span>
+                      <ChevronDown 
+                        className={`w-5 h-5 transition-transform duration-300 ${
+                          showAll ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </button>
+                    <p className="mt-3 text-sm text-gray-500">
+                      {showAll 
+                        ? `${products.length} бүтээгдэхүүн харагдаж байна`
+                        : `${INITIAL_DISPLAY_COUNT} / ${products.length} бүтээгдэхүүн`
+                      }
+                    </p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

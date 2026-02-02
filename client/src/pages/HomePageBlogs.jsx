@@ -237,7 +237,6 @@ const HomePage = () => {
         </div>
       </section>
 
-      <BizPrintPage />
 
       {/* Blogs Section */}
       <div className="max-w-7xl mx-auto px-4 py-12">

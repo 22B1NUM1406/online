@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   LogOut, Package, ShoppingCart, MessageSquare, DollarSign, 
-  Plus, Edit, Trash2, Search, Upload, Mail, CheckCircle, XCircle
+  Plus, Edit, Trash2, Search, Upload, Mail, CheckCircle, XCircle, X
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import {getAllOrders, updateOrderStatus, deleteOrder, getAllQuotations, replyToQuotation,
@@ -77,6 +77,8 @@ const AdminPage = () => {
     status: 'published',
     featured: false
   });
+  const [blogImage, setBlogImage] = useState(null);
+  const [blogImagePreview, setBlogImagePreview] = useState('');
   
   // Marketing Service form states
   const [showServiceForm, setShowServiceForm] = useState(false);
@@ -91,6 +93,8 @@ const AdminPage = () => {
     icon: 'TrendingUp',
     featured: false
   });
+  const [serviceImage, setServiceImage] = useState(null);
+  const [serviceImagePreview, setServiceImagePreview] = useState('');
 
   useEffect(() => {
     if (!isAdmin) {
@@ -332,26 +336,57 @@ const AdminPage = () => {
   const handleBlogSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Tags string to array
-      const blogData = {
-        ...blogForm,
-        tags: blogForm.tags ? blogForm.tags.split(',').map(t => t.trim()) : []
-      };
+      const formData = new FormData();
+      
+      // Add text fields
+      formData.append('title', blogForm.title);
+      formData.append('excerpt', blogForm.excerpt);
+      formData.append('content', blogForm.content);
+      formData.append('category', blogForm.category);
+      formData.append('tags', blogForm.tags ? blogForm.tags.split(',').map(t => t.trim()).join(',') : '');
+      formData.append('status', blogForm.status);
+      formData.append('featured', blogForm.featured);
+      
+      // Add image if selected
+      if (blogImage) {
+        formData.append('image', blogImage);
+      }
 
       if (editingBlog) {
-        await updateBlog(editingBlog._id, blogData);
+        await updateBlog(editingBlog._id, formData);
         setNotification({ message: 'Блог шинэчлэгдлээ', type: 'success' });
       } else {
-        await createBlog(blogData);
+        await createBlog(formData);
         setNotification({ message: 'Блог нэмэгдлээ', type: 'success' });
       }
+      
+      // Reset form
       setShowBlogForm(false);
       setEditingBlog(null);
       setBlogForm({ title: '', excerpt: '', content: '', category: 'other', tags: '', status: 'published', featured: false });
+      setBlogImage(null);
+      setBlogImagePreview('');
       loadData();
     } catch (error) {
       setNotification({ message: error.response?.data?.message || 'Алдаа гарлаа', type: 'error' });
     }
+  };
+
+  const handleBlogImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setBlogImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBlogImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveBlogImage = () => {
+    setBlogImage(null);
+    setBlogImagePreview('');
   };
 
   const handleEditBlog = (blog) => {
@@ -365,6 +400,10 @@ const AdminPage = () => {
       status: blog.status,
       featured: blog.featured || false
     });
+    // Set existing image preview
+    if (blog.image) {
+      setBlogImagePreview(blog.image);
+    }
     setShowBlogForm(true);
   };
 
@@ -383,26 +422,58 @@ const AdminPage = () => {
   const handleServiceSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Features string to array
-      const serviceData = {
-        ...serviceForm,
-        features: serviceForm.features ? serviceForm.features.split('\n').map(f => f.trim()).filter(f => f) : []
-      };
+      const formData = new FormData();
+      
+      // Add text fields
+      formData.append('name', serviceForm.name);
+      formData.append('description', serviceForm.description);
+      formData.append('shortDescription', serviceForm.shortDescription);
+      formData.append('features', serviceForm.features ? serviceForm.features.split('\n').map(f => f.trim()).filter(f => f).join('\n') : '');
+      formData.append('price', serviceForm.price);
+      formData.append('category', serviceForm.category);
+      formData.append('icon', serviceForm.icon);
+      formData.append('featured', serviceForm.featured);
+      
+      // Add image if selected
+      if (serviceImage) {
+        formData.append('image', serviceImage);
+      }
 
       if (editingService) {
-        await updateMarketingService(editingService._id, serviceData);
+        await updateMarketingService(editingService._id, formData);
         setNotification({ message: 'Үйлчилгээ шинэчлэгдлээ', type: 'success' });
       } else {
-        await createMarketingService(serviceData);
+        await createMarketingService(formData);
         setNotification({ message: 'Үйлчилгээ нэмэгдлээ', type: 'success' });
       }
+      
+      // Reset form
       setShowServiceForm(false);
       setEditingService(null);
       setServiceForm({ name: '', description: '', shortDescription: '', features: '', price: '', category: 'other', icon: 'TrendingUp', featured: false });
+      setServiceImage(null);
+      setServiceImagePreview('');
       loadData();
     } catch (error) {
       setNotification({ message: error.response?.data?.message || 'Алдаа гарлаа', type: 'error' });
     }
+  };
+
+  const handleServiceImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setServiceImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setServiceImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveServiceImage = () => {
+    setServiceImage(null);
+    setServiceImagePreview('');
   };
 
   const handleEditService = (service) => {
@@ -417,6 +488,10 @@ const AdminPage = () => {
       icon: service.icon || 'TrendingUp',
       featured: service.featured || false
     });
+    // Set existing image preview
+    if (service.image) {
+      setServiceImagePreview(service.image);
+    }
     setShowServiceForm(true);
   };
 
@@ -438,7 +513,12 @@ const AdminPage = () => {
   };
 
   const stats = [
-  
+    { 
+      label: 'Нийт борлуулалт', 
+      value: formatPrice(dashboardStats?.overview?.totalSales || 0), 
+      icon: DollarSign, 
+      color: 'bg-green-500' 
+    },
     { label: 'Захиалга', value: orders.length, icon: ShoppingCart, color: 'bg-blue-500' },
     { label: 'Бүтээгдэхүүн', value: products.length, icon: Package, color: 'bg-purple-500' },
     { 
@@ -893,93 +973,60 @@ const AdminPage = () => {
             )}
 
             {/* Quotations Tab */}
-{activeTab === 'quotations' && (
-  <div>
-    <h2 className="text-xl font-bold mb-6">Үнийн санал удирдах</h2>
-
-    {loading ? (
-      <Loading />
-    ) : quotations.length === 0 ? (
-      <div className="text-center py-12 text-gray-500">
-        Үнийн санал байхгүй байна
-      </div>
-    ) : (
-      <div className="space-y-4">
-        {quotations.map((quotation) => (
-          <div key={quotation._id} className="border rounded-lg p-6">
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex-1">
-                <div className="font-bold mb-1">{quotation.name}</div>
-                <div className="text-sm text-gray-600 mb-2">
-                  {quotation.phone} - {quotation.email}
-                </div>
-
-                <div className="text-sm text-gray-700 mb-2">
-                  <span className="font-medium">Төрөл:</span>{" "}
-                  {quotation.productType}
-                </div>
-
-                <div className="text-sm text-gray-600 mb-3">
-                  {quotation.description}
-                </div>
-
-                {/* DESIGN FILE */}
-                {quotation.designFile?.fileUrl && (
-                  <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-                    <div className="text-sm font-medium text-blue-800 mb-2">
-                      Дизайн файл:
-                    </div>
-
-                    {/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(
-                      quotation.designFile.fileUrl
-                    ) ? (
-                      <img
-                        src={quotation.designFile.fileUrl}
-                        alt="Design"
-                        className="max-w-xs rounded-lg border"
-                      />
-                    ) : (
-                      <a
-                        href={quotation.designFile.fileUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-blue-600 hover:underline"
-                      >
-                        📎 {quotation.designFile.fileName}
-                      </a>
-                    )}
+            {activeTab === 'quotations' && (
+              <div>
+                <h2 className="text-xl font-bold mb-6">Үнийн санал удирдах</h2>
+                {loading ? (
+                  <Loading />
+                ) : quotations.length === 0 ? (
+                  <div className="text-center py-12 text-gray-500">Үнийн санал байхгүй байна</div>
+                ) : (
+                  <div className="space-y-4">
+                    {quotations.map(quotation => (
+                      <div key={quotation._id} className="border rounded-lg p-6">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <div className="font-bold mb-1">{quotation.name}</div>
+                            <div className="text-sm text-gray-600 mb-2">{quotation.phone} - {quotation.email}</div>
+                            <div className="text-sm text-gray-700 mb-2">
+                              <span className="font-medium">Төрөл:</span> {quotation.productType}
+                            </div>
+                            <div className="text-sm text-gray-600 mb-3">{quotation.description}</div>
+                            
+                            {quotation.designFile && (
+                              <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                                <div className="text-sm font-medium text-blue-800 mb-1">Дизайн файл:</div>
+                                <a 
+                                  href={`http://localhost:5000${quotation.designFile.fileUrl}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm text-blue-600 hover:underline"
+                                >
+                                  📎 {quotation.designFile.fileName}
+                                </a>
+                              </div>
+                            )}
+                            
+                            <div className={`inline-block px-3 py-1 rounded-full text-sm font-medium mt-3 ${
+                              quotation.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'
+                            }`}>
+                              {quotation.status === 'pending' ? 'Хүлээгдэж буй' : 'Хариулсан'}
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => handleDeleteQuotation(quotation._id)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Устгах"
+                          >
+                            <Trash2 size={20} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
-
-                {/* STATUS */}
-                <div
-                  className={`inline-block px-3 py-1 rounded-full text-sm font-medium mt-3 ${
-                    quotation.status === "pending"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : "bg-green-100 text-green-700"
-                  }`}
-                >
-                  {quotation.status === "pending"
-                    ? "Хүлээгдэж буй"
-                    : "Хариулсан"}
-                </div>
               </div>
-
-              <button
-                onClick={() => handleDeleteQuotation(quotation._id)}
-                className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-                title="Устгах"
-              >
-                <Trash2 size={20} />
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-)}
-
+            )}
 
             {/* Messages Tab */}
             {activeTab === 'messages' && (
@@ -1398,6 +1445,52 @@ const AdminPage = () => {
                         </label>
                       </div>
 
+                      {/* Image Upload Section */}
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Зураг
+                        </label>
+                        
+                        {blogImagePreview ? (
+                          <div className="relative">
+                            <img 
+                              src={blogImagePreview} 
+                              alt="Preview" 
+                              className="w-full h-48 object-cover rounded-lg"
+                            />
+                            <button
+                              type="button"
+                              onClick={handleRemoveBlogImage}
+                              className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                            >
+                              <X size={16} />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleBlogImageChange}
+                              className="hidden"
+                              id="blog-image-upload"
+                            />
+                            <label 
+                              htmlFor="blog-image-upload"
+                              className="cursor-pointer flex flex-col items-center gap-2"
+                            >
+                              <Upload className="w-12 h-12 text-gray-400" />
+                              <span className="text-sm text-gray-600">
+                                Зураг upload хийх (PNG, JPG, GIF)
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                Максимум 5MB
+                              </span>
+                            </label>
+                          </div>
+                        )}
+                      </div>
+
                       <div className="flex gap-3">
                         <button
                           type="submit"
@@ -1641,6 +1734,52 @@ const AdminPage = () => {
                         <label htmlFor="serviceFeatured" className="text-sm font-medium text-gray-700">
                           Онцлох үйлчилгээ
                         </label>
+                      </div>
+
+                      {/* Image Upload Section */}
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Зураг
+                        </label>
+                        
+                        {serviceImagePreview ? (
+                          <div className="relative">
+                            <img 
+                              src={serviceImagePreview} 
+                              alt="Preview" 
+                              className="w-full h-48 object-cover rounded-lg"
+                            />
+                            <button
+                              type="button"
+                              onClick={handleRemoveServiceImage}
+                              className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                            >
+                              <X size={16} />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-purple-500 transition-colors">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleServiceImageChange}
+                              className="hidden"
+                              id="service-image-upload"
+                            />
+                            <label 
+                              htmlFor="service-image-upload"
+                              className="cursor-pointer flex flex-col items-center gap-2"
+                            >
+                              <Upload className="w-12 h-12 text-gray-400" />
+                              <span className="text-sm text-gray-600">
+                                Зураг upload хийх (PNG, JPG, GIF)
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                Максимум 5MB
+                              </span>
+                            </label>
+                          </div>
+                        )}
                       </div>
 
                       <div className="flex gap-3">

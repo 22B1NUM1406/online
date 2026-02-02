@@ -132,7 +132,7 @@ const ContactPage = () => {
                 <a
                  href="https://x.com/BizprintproB?fbclid=IwY2xjawPtmFtleHRuA2FlbQIxMABicmlkETFGMHZhSm94aHEySUVsS1pxc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHsEUtoB36o3bCMb7tIAOssl9efGzqYS61LZEhJaPMaCD6wNnH7uH10fbND16_aem_s5NAmwjtZgY4mPua2RSztQ" 
                   target="_blank" 
-                   className="w-10 h-10 bg-black-600 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors"
+                   className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors"
                 ><Twitter className="text-white" size={20}/></a>
                  <a
                  href="https://www.linkedin.com/company/biz-print-pro/" 

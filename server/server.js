@@ -64,6 +64,11 @@ app.use(cors({
       return callback(null, true);
     }
     
+    // Allow bizco.mn custom domain (with and without www)
+    if (origin && (origin.includes('bizco.mn'))) {
+      return callback(null, true);
+    }
+    
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,

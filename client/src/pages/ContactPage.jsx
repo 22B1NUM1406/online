@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Phone, Mail, Clock, Facebook, Send } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, Mail, Clock,Linkedin, Twitter, Facebook, Send } from 'lucide-react';
 import { useState } from 'react';
 import axios from 'axios';
 import Notification from '../components/Notification';
@@ -129,6 +129,14 @@ const ContactPage = () => {
                 >
                   <Facebook className="text-white" size={20} />
                 </a>
+                <a
+                 href="https://x.com/BizprintproB?fbclid=IwY2xjawPtmFtleHRuA2FlbQIxMABicmlkETFGMHZhSm94aHEySUVsS1pxc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHsEUtoB36o3bCMb7tIAOssl9efGzqYS61LZEhJaPMaCD6wNnH7uH10fbND16_aem_s5NAmwjtZgY4mPua2RSztQ" 
+                  target="_blank" 
+                ><Twitter size={20}/></a>
+                 <a
+                 href="https://www.linkedin.com/company/biz-print-pro/" 
+                  target="_blank" 
+                ><Linkedin size={20}/></a>
                 <a 
                   href="https://instagram.com" 
                   target="_blank" 

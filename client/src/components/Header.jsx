@@ -32,11 +32,11 @@ const Header = () => {
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <Phone size={14} />
-                <span>+976 7000-5060</span>
+                <span>+976 7200-0444</span>
               </div>
               <div className="hidden md:flex items-center gap-2">
                 <Mail size={14} />
-                <span>info@printshop.mn</span>
+                <span>bizprintpro@gmail.com</span>
               </div>
             </div>
             <div className="text-xs text-blue-100">

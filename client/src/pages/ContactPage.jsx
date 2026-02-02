@@ -52,20 +52,20 @@ const ContactPage = () => {
     {
       icon: MapPin,
       title: 'Хаяг',
-      content: 'Улаанбаатар хот, Сүхбаатар дүүрэг, 1-р хороо',
-      detail: 'Ard Tower, 5 давхар'
+      content: 'СБД 9-р хороо, Алтайн гудамж',
+      detail: 'Их тойруу худалдааны төвийн замын чанх хойно, B Center, 5 давхарт, 505тоот'
     },
     {
       icon: Phone,
       title: 'Утас',
-      content: '+976 7000-5060',
-      detail: '+976 8888-9999'
+      content: '+976 7200-0444',
+      detail: '+976 7200-0444'
     },
     {
       icon: Mail,
       title: 'И-мэйл',
-      content: 'info@printshop.mn',
-      detail: 'sales@printshop.mn'
+      content: 'bizprintpro@gmail.com',
+      detail: 'bizprintpro@gmail.com'
     },
     {
       icon: Clock,
@@ -122,7 +122,7 @@ const ContactPage = () => {
               <h3 className="font-bold text-gray-800 mb-4">Сошиал хаяг</h3>
               <div className="flex gap-3">
                 <a 
-                  href="https://facebook.com" 
+                  href="https://www.facebook.com/bizprintpro" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors"

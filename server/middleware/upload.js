@@ -57,20 +57,32 @@ const imageFileFilter = (req, file, cb) => {
 };
 
 // File filter - Бүх төрлийн файл (Design files for quotations)
-// ХЯЛБАРЧИЛСАН file filter
 const designFileFilter = (req, file, cb) => {
-  // Бүх файлыг зөвшөөрөх (debugging-д зориулж)
-  console.log('File received:', {
-    originalname: file.originalname,
-    mimetype: file.mimetype,
-    size: file.size
-  });
-  
-  // Хялбар шалгалт - зөвхөн хэт том файлыг шалгах
-  if (file.size > 10 * 1024 * 1024) { // 10MB
-    cb(new Error('Файлын хэмжээ хэт том. 10MB-аас бага файл оруулна уу.'), false);
+  const allowedTypes = [
+    // Images
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/gif',
+    'image/webp',
+    'image/svg+xml',
+    // Documents
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-powerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    // Design files
+    'application/illustrator',
+    'application/postscript',
+    'image/vnd.adobe.photoshop',
+    'application/x-photoshop'
+  ];
+
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
   } else {
-    cb(null, true); // Бүх файлыг зөвшөөрөх
+    cb(new Error('Зөвшөөрөгдөөгүй файлын төрөл. Зураг, PDF, Word, PowerPoint, AI, PSD файл оруулна уу.'), false);
   }
 };
 
@@ -93,7 +105,7 @@ const uploadDesign = multer({
 });
 
 // Single file upload (images)
-export const uploadSingle = uploadImage.single('file');
+export const uploadSingle = uploadImage.single('image');
 
 // Multiple files upload
 export const uploadMultiple = uploadImage.array('files', 5);

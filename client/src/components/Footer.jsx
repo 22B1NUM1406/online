@@ -1,4 +1,4 @@
-import { Printer, Facebook, Mail, Phone, MapPin } from 'lucide-react';
+import { Printer, Facebook, Mail, Instagram ,Phone, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
@@ -45,16 +45,16 @@ const Footer = () => {
               </p>
               <div className="flex gap-3">
                 <a 
-                  href="#" 
+                  href="https://www.facebook.com/bizprintpro" 
                   className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors"
                 >
                   <Facebook size={20} />
                 </a>
                 <a 
-                  href="#" 
+                  href="https://www.instagram.com/?fbclid=IwY2xjawPtk3lleHRuA2FlbQIxMABicmlkETFGMHZhSm94aHEySUVsS1pxc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHsyvxbEU_l78wSkHLIufzvpM3FIG6niqHxNh_DVK8OkJA6CGFmKogkb0TGdB_aem_h4JI7y_0qZzsMpgK2W022A" 
                   className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors"
                 >
-                  <Mail size={20} />
+                  <Instagram size={20} />
                 </a>
               </div>
             </div>
@@ -65,11 +65,11 @@ const Footer = () => {
               <div className="space-y-3 text-gray-400">
                 <div className="flex items-center gap-2">
                   <Phone size={18} />
-                  <span>+976 7000-5060</span>
+                  <span>+976 7200-0444</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Mail size={18} />
-                  <span>info@printshop.mn</span>
+                  <span>bizprintpro@gmail.com</span>
                 </div>
               </div>
             </div>
@@ -102,7 +102,7 @@ const Footer = () => {
               <div className="flex items-start gap-2 text-gray-400">
                 <MapPin size={18} className="mt-1 flex-shrink-0" />
                 <p>
-                  Улаанбаатар хот, Сонгинохайрхан дүүрэг 12-р хороо
+                  СБД 9-р хороо, Алтайн гудамж, Их тойруу худалдааны төвийн замын чанх хойно, BCenter, 5 давхарт, 505тоот
                 </p>
               </div>
             </div>

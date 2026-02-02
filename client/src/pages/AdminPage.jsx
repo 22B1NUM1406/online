@@ -513,12 +513,7 @@ const AdminPage = () => {
   };
 
   const stats = [
-    { 
-      label: 'Нийт борлуулалт', 
-      value: formatPrice(dashboardStats?.overview?.totalSales || 0), 
-      icon: DollarSign, 
-      color: 'bg-green-500' 
-    },
+    
     { label: 'Захиалга', value: orders.length, icon: ShoppingCart, color: 'bg-blue-500' },
     { label: 'Бүтээгдэхүүн', value: products.length, icon: Package, color: 'bg-purple-500' },
     { 
@@ -1394,11 +1389,11 @@ const AdminPage = () => {
                             onChange={(e) => setBlogForm({...blogForm, category: e.target.value})}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                           >
-                            <option value="other">Бусад</option>
+                           
                             <option value="news">Мэдээ</option>
                             <option value="tutorial">Заавар</option>
                             <option value="tips">Зөвлөмж</option>
-                            <option value="case-study">Туршилт</option>
+                            
                             <option value="announcement">Мэдэгдэл</option>
                           </select>
                         </div>
@@ -1554,7 +1549,7 @@ const AdminPage = () => {
                                 blog.category === 'news' ? 'Мэдээ' :
                                 blog.category === 'tutorial' ? 'Заавар' :
                                 blog.category === 'tips' ? 'Зөвлөмж' :
-                                blog.category === 'case-study' ? 'Туршилт' :
+                               
                                 blog.category === 'announcement' ? 'Мэдэгдэл' : 'Бусад'
                               }</span>
                               <span>Үзсэн: {blog.views}</span>

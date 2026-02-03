@@ -302,16 +302,6 @@ const HomePage = () => {
                 </div>
               ))}
             </div>
-
-            <div className="text-center mt-12">
-              <Link
-                to="/biz-print"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 to-pink-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all duration-300"
-              >
-                Бүх хямдралыг үзэх
-                <ArrowRight size={20} />
-              </Link>
-            </div>
           </div>
         </div>
       )}

@@ -347,9 +347,9 @@ const AdminPage = () => {
       formData.append('status', blogForm.status);
       formData.append('featured', blogForm.featured);
       
-      // Add image if selected
+      // Add image if selected (FIXED: use 'file' not 'image')
       if (blogImage) {
-        formData.append('image', blogImage);
+        formData.append('file', blogImage);
       }
 
       if (editingBlog) {
@@ -434,9 +434,9 @@ const AdminPage = () => {
       formData.append('icon', serviceForm.icon);
       formData.append('featured', serviceForm.featured);
       
-      // Add image if selected
+      // Add image if selected (FIXED: use 'file' not 'image')
       if (serviceImage) {
-        formData.append('image', serviceImage);
+        formData.append('file', serviceImage);
       }
 
       if (editingService) {
@@ -513,7 +513,6 @@ const AdminPage = () => {
   };
 
   const stats = [
-    
     { label: 'Захиалга', value: orders.length, icon: ShoppingCart, color: 'bg-blue-500' },
     { label: 'Бүтээгдэхүүн', value: products.length, icon: Package, color: 'bg-purple-500' },
     { 
@@ -565,7 +564,7 @@ const AdminPage = () => {
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat, index) => (
             <div 
               key={index} 
@@ -991,8 +990,8 @@ const AdminPage = () => {
                             {quotation.designFile && (
                               <div className="mt-3 p-3 bg-blue-50 rounded-lg">
                                 <div className="text-sm font-medium text-blue-800 mb-1">Дизайн файл:</div>
-                                <a                                  
-                                href={getImageUrl(quotation.designFile.fileUrl)}
+                                <a 
+                                  href={getImageUrl(quotation.designFile.fileUrl)}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-sm text-blue-600 hover:underline"
@@ -1389,11 +1388,11 @@ const AdminPage = () => {
                             onChange={(e) => setBlogForm({...blogForm, category: e.target.value})}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                           >
-                           
+                            <option value="other">Бусад</option>
                             <option value="news">Мэдээ</option>
                             <option value="tutorial">Заавар</option>
                             <option value="tips">Зөвлөмж</option>
-                            
+                            <option value="case-study">Туршилт</option>
                             <option value="announcement">Мэдэгдэл</option>
                           </select>
                         </div>
@@ -1549,7 +1548,7 @@ const AdminPage = () => {
                                 blog.category === 'news' ? 'Мэдээ' :
                                 blog.category === 'tutorial' ? 'Заавар' :
                                 blog.category === 'tips' ? 'Зөвлөмж' :
-                               
+                                blog.category === 'case-study' ? 'Туршилт' :
                                 blog.category === 'announcement' ? 'Мэдэгдэл' : 'Бусад'
                               }</span>
                               <span>Үзсэн: {blog.views}</span>

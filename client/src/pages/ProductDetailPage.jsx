@@ -318,7 +318,6 @@ const ProductDetailPage = () => {
             </div>
           </div>
         </div>
-
         {/* Related Products Section (Optional) */}
         <div className="mt-12">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">Холбоотой бүтээгдэхүүн</h2>

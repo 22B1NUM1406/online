@@ -6,6 +6,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
 import { getProduct } from '../services/api';
 import { formatPrice, getImageUrl } from '../utils/helpers';
+import { SHARE_IMAGE } from '../utils/placeholders';
 import Loading from '../components/Loading';
 import Notification from '../components/Notification';
 import MetaTags from '../components/MetaTags';
@@ -84,17 +85,41 @@ const ProductDetailPage = () => {
     return null;
   }
 
-  // Prepare share data
-  const shareUrl = `${window.location.origin}/products/${product._id}`;
-  const shareTitle = product.name;
-  const shareDescription = product.description || `${product.name} - ${formatPrice(product.price)}`;
-  const shareImage = getImageUrl(product.image);
+  // Prepare share data with proper fallbacks
+  const shareUrl = product._id
+    ? `${window.location.origin}/products/${product._id}`
+    : window.location.href;
+
+  const shareTitle = product.name || 'Product';
+
+  const shareDescription = product.description 
+    || `${product.name} - ${formatPrice(product.price)}`
+    || 'Check out this product';
+
+  // Get product image with fallback
+  const getProductImage = () => {
+    if (product.image) {
+      const url = getImageUrl(product.image);
+      if (url && !url.includes('placeholder')) return url;
+    }
+    return SHARE_IMAGE; // Use online placeholder
+  };
+
+  const shareImage = getProductImage();
+
+  // Debug logging
+  console.log('📦 Product Share Data:', {
+    url: shareUrl,
+    title: shareTitle,
+    description: shareDescription.substring(0, 50) + '...',
+    image: shareImage
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       {/* Meta Tags for SEO & Social Sharing */}
       <MetaTags
-        title={product.name}
+        title={shareTitle}
         description={shareDescription}
         image={shareImage}
         url={shareUrl}

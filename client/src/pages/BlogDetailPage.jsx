@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, User, Eye, Tag } from 'lucide-react';
 import { getBlogBySlug } from '../services/api';
 import { getImageUrl } from '../utils/helpers';
+import { SHARE_IMAGE } from '../utils/placeholders';
 import Loading from '../components/Loading';
 import Notification from '../components/Notification';
 import MetaTags from '../components/MetaTags';
@@ -66,17 +67,46 @@ const BlogDetailPage = () => {
     );
   }
 
-  // Prepare share data
-  const shareUrl = `${window.location.origin}/blogs/${blog.slug}`;
-  const shareTitle = blog.title;
-  const shareDescription = blog.excerpt || blog.content?.substring(0, 200) || blog.title;
-  const shareImage = getImageUrl(blog.featuredImage || blog.image);
+  // Prepare share data with proper fallbacks
+  const shareUrl = blog.slug 
+    ? `${window.location.origin}/blogs/${blog.slug}`
+    : window.location.href;
+
+  const shareTitle = blog.title || 'Blog Post';
+
+  const shareDescription = blog.excerpt 
+    || (blog.content ? blog.content.substring(0, 200) : '')
+    || blog.title 
+    || 'Read our latest blog post';
+
+  // Get blog image with multiple fallbacks
+  const getBlogImage = () => {
+    if (blog.featuredImage) {
+      const url = getImageUrl(blog.featuredImage);
+      if (url && !url.includes('placeholder')) return url;
+    }
+    if (blog.image) {
+      const url = getImageUrl(blog.image);
+      if (url && !url.includes('placeholder')) return url;
+    }
+    return SHARE_IMAGE; // Use online placeholder
+  };
+
+  const shareImage = getBlogImage();
+
+  // Debug logging (remove in production if needed)
+  console.log('📊 Blog Share Data:', {
+    url: shareUrl,
+    title: shareTitle,
+    description: shareDescription.substring(0, 50) + '...',
+    image: shareImage
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Meta Tags for SEO & Social Sharing */}
       <MetaTags
-        title={blog.title}
+        title={shareTitle}
         description={shareDescription}
         image={shareImage}
         url={shareUrl}

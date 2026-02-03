@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle, Star, TrendingUp, Mail, Phone } from 'lucide-react';
 import { getMarketingServiceBySlug } from '../services/api';
 import { getImageUrl } from '../utils/helpers';
+import { SHARE_IMAGE } from '../utils/placeholders';
 import Loading from '../components/Loading';
 import Notification from '../components/Notification';
 import MetaTags from '../components/MetaTags';
@@ -70,17 +71,42 @@ const ServiceDetailPage = () => {
     );
   }
 
-  // Prepare share data
-  const shareUrl = `${window.location.origin}/services/${service.slug}`;
-  const shareTitle = service.name;
-  const shareDescription = service.shortDescription || service.description?.substring(0, 200) || service.name;
-  const shareImage = getImageUrl(service.image);
+  // Prepare share data with proper fallbacks
+  const shareUrl = service.slug
+    ? `${window.location.origin}/services/${service.slug}`
+    : window.location.href;
+
+  const shareTitle = service.name || 'Service';
+
+  const shareDescription = service.shortDescription 
+    || (service.description ? service.description.substring(0, 200) : '')
+    || service.name
+    || 'Check out our service';
+
+  // Get service image with fallback
+  const getServiceImage = () => {
+    if (service.image) {
+      const url = getImageUrl(service.image);
+      if (url && !url.includes('placeholder')) return url;
+    }
+    return SHARE_IMAGE; // Use online placeholder
+  };
+
+  const shareImage = getServiceImage();
+
+  // Debug logging
+  console.log('📊 Service Share Data:', {
+    url: shareUrl,
+    title: shareTitle,
+    description: shareDescription.substring(0, 50) + '...',
+    image: shareImage
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Meta Tags for SEO & Social Sharing */}
       <MetaTags
-        title={service.name}
+        title={shareTitle}
         description={shareDescription}
         image={shareImage}
         url={shareUrl}

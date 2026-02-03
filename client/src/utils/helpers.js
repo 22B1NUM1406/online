@@ -77,20 +77,32 @@ export const isValidPhone = (phone) => {
 };
 
 // Get full image URL
+import { PLACEHOLDER_IMAGE } from './placeholders';
+
 export const getImageUrl = (imagePath) => {
-  if (!imagePath) return '/placeholder.png'; // Default placeholder
+  // If no path, return placeholder
+  if (!imagePath) {
+    return PLACEHOLDER_IMAGE;
+  }
   
-  // Хэрэв бүрэн URL байвал тэр чигээр буцаа
+  // If full URL (Cloudinary, etc), return as-is
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
     return imagePath;
   }
   
-  // Хэрэв /uploads/ байвал backend URL-тэй нэгтгэ
+  // If local /uploads/ path, construct full URL
   if (imagePath.startsWith('/uploads/')) {
-    const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    return `${BASE_URL}${imagePath}`;
+    // Get base URL and remove /api suffix if present
+    const apiUrl = import.meta.env.VITE_API_URL || window.location.origin;
+    const baseUrl = apiUrl.replace(/\/api\/?$/, '');
+    return `${baseUrl}${imagePath}`;
   }
   
-  // Бусад тохиолдолд тэр чигээр
-  return imagePath;
+  // If relative path starting with /, make it absolute
+  if (imagePath.startsWith('/')) {
+    return `${window.location.origin}${imagePath}`;
+  }
+  
+  // Fallback: return placeholder
+  return PLACEHOLDER_IMAGE;
 };

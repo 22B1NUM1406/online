@@ -8,6 +8,8 @@ import { getProduct } from '../services/api';
 import { formatPrice, getImageUrl } from '../utils/helpers';
 import Loading from '../components/Loading';
 import Notification from '../components/Notification';
+import MetaTags from '../components/MetaTags';
+import ShareButtons from '../components/ShareButtons';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -82,8 +84,23 @@ const ProductDetailPage = () => {
     return null;
   }
 
+  // Prepare share data
+  const shareUrl = `${window.location.origin}/products/${product._id}`;
+  const shareTitle = product.name;
+  const shareDescription = product.description || `${product.name} - ${formatPrice(product.price)}`;
+  const shareImage = getImageUrl(product.image);
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
+      {/* Meta Tags for SEO & Social Sharing */}
+      <MetaTags
+        title={product.name}
+        description={shareDescription}
+        image={shareImage}
+        url={shareUrl}
+        type="product"
+      />
+
       {notification && (
         <Notification 
           type={notification.type}
@@ -252,16 +269,32 @@ const ProductDetailPage = () => {
                   <Shield className="text-blue-600" size={24} />
                   <div>
                     <div className="font-semibold text-sm">Баталгаат</div>
-                    <div className="text-xs text-gray-600">Бүх бүтээгдэхүүн баталгаатай</div>
+                    <div className="text-xs text-gray-600">Чанарт итгэлтэй</div>
                   </div>
+                </div>
+              </div>
+
+              {/* Share Section */}
+              <div className="mt-6 pt-6 border-t">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-700 font-medium">Найзуудтайгаа хуваалцах</span>
+                  <ShareButtons
+                    url={shareUrl}
+                    title={shareTitle}
+                    description={shareDescription}
+                    image={shareImage}
+                  />
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-      
-       
+        {/* Related Products Section (Optional) */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Холбоотой бүтээгдэхүүн</h2>
+          <p className="text-gray-500">Удахгүй...</p>
+        </div>
       </div>
     </div>
   );

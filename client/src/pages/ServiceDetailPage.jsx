@@ -5,6 +5,8 @@ import { getMarketingServiceBySlug } from '../services/api';
 import { getImageUrl } from '../utils/helpers';
 import Loading from '../components/Loading';
 import Notification from '../components/Notification';
+import MetaTags from '../components/MetaTags';
+import ShareButtons from '../components/ShareButtons';
 
 const ServiceDetailPage = () => {
   const { slug } = useParams();
@@ -68,8 +70,23 @@ const ServiceDetailPage = () => {
     );
   }
 
+  // Prepare share data
+  const shareUrl = `${window.location.origin}/services/${service.slug}`;
+  const shareTitle = service.name;
+  const shareDescription = service.shortDescription || service.description?.substring(0, 200) || service.name;
+  const shareImage = getImageUrl(service.image);
+
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Meta Tags for SEO & Social Sharing */}
+      <MetaTags
+        title={service.name}
+        description={shareDescription}
+        image={shareImage}
+        url={shareUrl}
+        type="website"
+      />
+
       {notification && (
         <Notification 
           type={notification.type}
@@ -239,6 +256,20 @@ const ServiceDetailPage = () => {
                     <span>Баталгаатай үр дүн</span>
                   </li>
                 </ul>
+              </div>
+
+              {/* Share Card */}
+              <div className="bg-white rounded-2xl shadow-lg p-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Хуваалцах</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Энэ үйлчилгээг найзууддаа хуваалцаарай
+                </p>
+                <ShareButtons
+                  url={shareUrl}
+                  title={shareTitle}
+                  description={shareDescription}
+                  image={shareImage}
+                />
               </div>
             </div>
           </div>

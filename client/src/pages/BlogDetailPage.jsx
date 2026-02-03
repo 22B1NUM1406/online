@@ -5,6 +5,8 @@ import { getBlogBySlug } from '../services/api';
 import { getImageUrl } from '../utils/helpers';
 import Loading from '../components/Loading';
 import Notification from '../components/Notification';
+import MetaTags from '../components/MetaTags';
+import ShareButtons from '../components/ShareButtons';
 
 const BlogDetailPage = () => {
   const { slug } = useParams();
@@ -64,8 +66,23 @@ const BlogDetailPage = () => {
     );
   }
 
+  // Prepare share data
+  const shareUrl = `${window.location.origin}/blogs/${blog.slug}`;
+  const shareTitle = blog.title;
+  const shareDescription = blog.excerpt || blog.content?.substring(0, 200) || blog.title;
+  const shareImage = getImageUrl(blog.featuredImage || blog.image);
+
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Meta Tags for SEO & Social Sharing */}
+      <MetaTags
+        title={blog.title}
+        description={shareDescription}
+        image={shareImage}
+        url={shareUrl}
+        type="article"
+      />
+
       {notification && (
         <Notification 
           type={notification.type}
@@ -113,29 +130,39 @@ const BlogDetailPage = () => {
             </h1>
 
             {/* Meta Info */}
-            <div className="flex flex-wrap items-center gap-6 text-gray-600 mb-8 pb-8 border-b">
-              <div className="flex items-center gap-2">
-                <User size={18} />
-                <span className="font-medium">{blog.author?.name || 'Admin'}</span>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <Calendar size={18} />
-                <span>{formatDate(blog.publishedAt || blog.createdAt)}</span>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <Eye size={18} />
-                <span>{blog.views} үзсэн</span>
+            <div className="flex flex-wrap items-center justify-between gap-6 text-gray-600 mb-8 pb-8 border-b">
+              <div className="flex flex-wrap items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <User size={18} />
+                  <span className="font-medium">{blog.author?.name || 'Admin'}</span>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <Calendar size={18} />
+                  <span>{formatDate(blog.publishedAt || blog.createdAt)}</span>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <Eye size={18} />
+                  <span>{blog.views} үзсэн</span>
+                </div>
+
+                <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+                  {blog.category === 'news' ? 'Мэдээ' :
+                   blog.category === 'tutorial' ? 'Заавар' :
+                   blog.category === 'tips' ? 'Зөвлөмж' :
+                   blog.category === 'case-study' ? 'Туршилт' :
+                   blog.category === 'announcement' ? 'Мэдэгдэл' : 'Бусад'}
+                </div>
               </div>
 
-              <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                {blog.category === 'news' ? 'Мэдээ' :
-                 blog.category === 'tutorial' ? 'Заавар' :
-                 blog.category === 'tips' ? 'Зөвлөмж' :
-                 blog.category === 'case-study' ? 'Туршилт' :
-                 blog.category === 'announcement' ? 'Мэдэгдэл' : 'Бусад'}
-              </div>
+              {/* Share Buttons */}
+              <ShareButtons
+                url={shareUrl}
+                title={shareTitle}
+                description={shareDescription}
+                image={shareImage}
+              />
             </div>
 
             {/* Excerpt */}

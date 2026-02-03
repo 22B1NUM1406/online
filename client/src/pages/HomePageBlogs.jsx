@@ -1,63 +1,150 @@
-import { useState, useEffect } from 'react';
-import { ChevronRight, Star, TrendingUp, Zap, Award, Shield, Truck, ArrowRight } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import ProductCard from '../components/ProductCard';
+import { Search, Calendar, User, Eye, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { getBlogs } from '../services/api';
+import { getImageUrl } from '../utils/helpers';
 import Loading from '../components/Loading';
 import Notification from '../components/Notification';
-import { getProducts, getCategories } from '../services/api';
+import BizPrintPage from './BizPrintPage';
 
 const HomePage = () => {
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState('all');
   const [notification, setNotification] = useState(null);
-  const [showAll, setShowAll] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentPartner, setCurrentPartner] = useState(0);
+  const partnersContainerRef = useRef(null);
 
-  const INITIAL_DISPLAY_COUNT = 8;
+  const categories = [
+    { value: 'all', label: 'Бүгд' },
+    { value: 'news', label: 'Мэдээ' },
+    { value: 'tutorial', label: 'Заавар' },
+    { value: 'tips', label: 'Зөвлөмж' },
+  ];
+
+  const heroSlides = [
+    {
+      id: 1,
+      image: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200&h=600&fit=crop", 
+      title: "Мэргэжлийн хэвлэлийн үйлчилгээ",
+      subtitle: "Таны санааг",
+      highlight: "бодит болгоно",
+      description: "Дизайнаас эхлээд хэвлэл хүртэл бүх үйлчилгээ",
+      badge: "🎨 Мэргэжлийн хэвлэлийн үйлчилгээ"
+    },
+    {
+      id: 2,
+      image: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=1200&h=600&fit=crop",
+      title: "Хурдан бөгөөд чанартай",
+      subtitle: "Хэвлэлийн ажил",
+      highlight: "хурдан шуурхай",
+      description: "Орчин үеийн тоног төхөөрөмж, мэргэжлийн баг",
+      badge: "⚡ Хурдан шуурхай үйлчилгээ"
+    },
+    {
+      id: 3,
+      image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1200&h=600&fit=crop",
+      title: "Шинэлэг дизайн",
+      subtitle: "Бүтээлч шийдэл",
+      highlight: "онцгой хэвлэл",
+      description: "Таны бизнест тохирсон өвөрмөц дизайн",
+      badge: "✨ Өвөрмөц дизайн"
+    },
+    {
+      id: 4,
+      image: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=1200&h=600&fit=crop",
+      title: "Хамтын ажиллагаа",
+      subtitle: "Таны бизнест",
+      highlight: "өсөлт авчирна",
+      description: "Олон жилийн туршлагатай мэргэжилтнүүд",
+      badge: "🤝 Хамтдаа амжилтын төлөө"
+    }
+  ];
+
+  // Хамтрагч байгууллагууд - таны local лого зургууд
+  const partners = [
+    { id: 1, name: "Mongol Shuudan", logo: "/images/partners/mongol-shuudan.png" },
+    { id: 2, name: "Gobi Cashmere", logo: "/images/partners/gobi-cashmere.png" },
+    { id: 3, name: "APU", logo: "/images/partners/apu.png" },
+    { id: 4, name: "Khan Bank", logo: "/images/partners/khan-bank.png" },
+    { id: 5, name: "Tavan Bogd", logo: "/images/partners/tavan-bogd.png" },
+    { id: 6, name: "MCS Group", logo: "/images/partners/mcs-group.png" },
+    { id: 7, name: "Skytel", logo: "/images/partners/skytel.png" },
+  ];
 
   useEffect(() => {
-    loadData();
+    loadBlogs();
+    
+    // Hero section auto slide
+    const slideInterval = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % heroSlides.length);
+    }, 5000);
+
+    return () => {
+      clearInterval(slideInterval);
+    };
   }, []);
 
   useEffect(() => {
-    loadProducts();
-    setShowAll(false);
-  }, [activeCategory]);
+    loadBlogs();
+  }, [selectedCategory, searchTerm]);
 
-  const loadData = async () => {
+  const loadBlogs = async () => {
     try {
       setLoading(true);
-      const [productsData, categoriesData] = await Promise.all([
-        getProducts(),
-        getCategories()
-      ]);
-      setProducts(productsData.data);
-      setCategories(categoriesData.data);
+      const params = {};
+      if (selectedCategory !== 'all') params.category = selectedCategory;
+      if (searchTerm) params.search = searchTerm;
+      
+      const data = await getBlogs(params);
+      setBlogs(data.data);
     } catch (error) {
-      console.error('Error loading data:', error);
-      setNotification({ message: 'Өгөгдөл ачааллахад алдаа гарлаа', type: 'error' });
+      console.error('Error loading blogs:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Блог ачааллахад алдаа гарлаа';
+      showNotification(errorMessage, 'error');
     } finally {
       setLoading(false);
     }
   };
 
-  const loadProducts = async () => {
-    try {
-      setLoading(true);
-      const params = activeCategory !== 'all' ? { category: activeCategory } : {};
-      const data = await getProducts(params);
-      setProducts(data.data);
-    } catch (error) {
-      console.error('Error loading products:', error);
-      setNotification({ message: 'Бүтээгдэхүүн ачааллахад алдаа гарлаа', type: 'error' });
-    } finally {
-      setLoading(false);
+  const showNotification = (message, type = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('mn-MN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  const nextSlide = () => {
+    setCurrentSlide(prev => (prev + 1) % heroSlides.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide(prev => (prev - 1 + heroSlides.length) % heroSlides.length);
+  };
+
+  const nextPartners = () => {
+    if (partnersContainerRef.current) {
+      const container = partnersContainerRef.current;
+      const scrollAmount = 300; // Гүйлгэх хэмжээ
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
 
-  // Get featured/top categories
-  const topCategories = categories.filter(c => !c.parent).slice(0, 6);
+  const prevPartners = () => {
+    if (partnersContainerRef.current) {
+      const container = partnersContainerRef.current;
+      const scrollAmount = 300; // Гүйлгэх хэмжээ
+      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -69,288 +156,270 @@ const HomePage = () => {
         />
       )}
 
-      {/* Hero Section - Modern Gradient Banner */}
-      <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 text-white overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-            backgroundSize: '40px 40px'
-          }} />
+      {/* Hero Carousel Section */}
+      <section className="relative overflow-hidden">
+        <div className="relative h-[600px]">
+          {heroSlides.map((slide, index) => (
+            <div
+              key={slide.id}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
+              }`}
+            >
+              <div 
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: `url(${slide.image})` }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30"></div>
+              </div>
+              
+              <div className="max-w-7xl mx-auto px-4 h-full flex items-center relative z-20">
+                <div className="text-white max-w-2xl">
+                  <div className="inline-block bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+                    <span className="text-sm font-semibold">{slide.badge}</span>
+                  </div>
+                  <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight">
+                    {slide.subtitle}<br />
+                    <span className="text-blue-300">{slide.highlight}</span>
+                  </h1>
+                  <p className="text-xl mb-8 text-gray-200">
+                    {slide.description}
+                  </p>
+                  
+                  <div className="grid grid-cols-3 gap-6 mt-12">
+                    <div className="text-center bg-white/10 backdrop-blur-sm p-4 rounded-xl">
+                      <div className="text-3xl font-bold">10+</div>
+                      <div className="text-blue-200 text-sm">Жилийн туршлага</div>
+                    </div>
+                    <div className="text-center bg-white/10 backdrop-blur-sm p-4 rounded-xl">
+                      <div className="text-3xl font-bold">5000+</div>
+                      <div className="text-blue-200 text-sm">Төсөл</div>
+                    </div>
+                    <div className="text-center bg-white/10 backdrop-blur-sm p-4 rounded-xl">
+                      <div className="text-3xl font-bold">99%</div>
+                      <div className="text-blue-200 text-sm">Сэтгэл ханамж</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+          
+          {/* Navigation Buttons */}
+          <button
+            onClick={prevSlide}
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-3 transition-all z-30"
+          >
+            <ChevronLeft className="text-white" size={24} />
+          </button>
+          <button
+            onClick={nextSlide}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-3 transition-all z-30"
+          >
+            <ChevronRight className="text-white" size={24} />
+          </button>
+          
+          {/* Dots Indicator */}
+          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 z-30">
+            {heroSlides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-3 h-3 rounded-full transition-all ${
+                  index === currentSlide 
+                    ? 'bg-white w-8' 
+                    : 'bg-white/50 hover:bg-white/70'
+                }`}
+              />
+            ))}
+          </div>
         </div>
+      </section>
 
-        <div className="max-w-7xl mx-auto px-4 py-20 relative z-10">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            {/* Left Content */}
-            <div>
-              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6 animate-pulse">
-                <Zap size={16} className="text-yellow-300" />
-                <span className="text-sm font-medium">Мэргэжлийн хэвлэл үйлдвэрлэл</span>
-              </div>
-              
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-                Таны бизнесийн
-                <span className="block text-yellow-300">хэвлэлийн шийдэл</span>
-              </h1>
-              
-              <p className="text-xl text-blue-100 mb-8 leading-relaxed">
-                Нэрийн хуудас, флаер, баннер болон бусад хэвлэлийн бүтээгдэхүүнийг
-                өндөр чанартай, түргэн шуурхай үйлдвэрлэнэ
-              </p>
 
-              <div className="flex flex-wrap gap-4">
-                <Link
-                  to="/biz-print"
-                  className="inline-flex items-center gap-2 bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all duration-300"
-                >
-                  Бүтээгдэхүүн үзэх
-                  <ArrowRight size={20} />
-                </Link>
-                <Link
-                  to="/quotation"
-                  className="inline-flex items-center gap-2 bg-blue-800/50 backdrop-blur-sm text-white px-8 py-4 rounded-xl font-bold text-lg border-2 border-white/30 hover:bg-blue-700/50 transition-all duration-300"
-                >
-                  Үнийн санал авах
-                </Link>
-              </div>
-
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-white/20">
-                <div>
-                  <div className="text-3xl font-bold text-yellow-300">1000+</div>
-                  <div className="text-sm text-blue-200">Захиалга</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-yellow-300">500+</div>
-                  <div className="text-sm text-blue-200">Үйлчлүүлэгч</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-yellow-300">24/7</div>
-                  <div className="text-sm text-blue-200">Дэмжлэг</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Content - Feature Cards */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 hover:bg-white/20 transition-all duration-300 hover:scale-105">
-                <div className="bg-yellow-400 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
-                  <Award className="text-blue-900" size={24} />
-                </div>
-                <h3 className="font-bold text-lg mb-2">Өндөр чанар</h3>
-                <p className="text-blue-100 text-sm">Дэлхийн стандартын тоног төхөөрөмж</p>
-              </div>
-
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 hover:bg-white/20 transition-all duration-300 hover:scale-105 mt-8">
-                <div className="bg-green-400 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
-                  <Truck className="text-blue-900" size={24} />
-                </div>
-                <h3 className="font-bold text-lg mb-2">Үнэгүй хүргэлт</h3>
-                <p className="text-blue-100 text-sm">200,000₮-с дээш захиалгад</p>
-              </div>
-
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 hover:bg-white/20 transition-all duration-300 hover:scale-105">
-                <div className="bg-purple-400 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
-                  <Shield className="text-blue-900" size={24} />
-                </div>
-                <h3 className="font-bold text-lg mb-2">Баталгаатай</h3>
-                <p className="text-blue-100 text-sm">100% чанарын баталгаа</p>
-              </div>
-
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 hover:bg-white/20 transition-all duration-300 hover:scale-105 mt-8">
-                <div className="bg-pink-400 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
-                  <TrendingUp className="text-blue-900" size={24} />
-                </div>
-                <h3 className="font-bold text-lg mb-2">Маркетинг</h3>
-                <p className="text-blue-100 text-sm">Дижитал маркетингийн үйлчилгээ</p>
-              </div>
-            </div>
+      {/* Blogs Section */}
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+          <div>
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">Сүүлийн блог нийтлэлүүд</h2>
+            <p className="text-gray-600">Хэвлэлийн талаарх мэдээ, зөвлөгөө, заавар</p>
           </div>
         </div>
 
-        {/* Wave Bottom */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 120" className="w-full h-12">
-            <path fill="#f9fafb" d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"></path>
-          </svg>
-        </div>
-      </div>
-
-      {/* Categories Section */}
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Бүтээгдэхүүний ангилал</h2>
-          <p className="text-gray-600 text-lg">Таны хэрэгцээнд тохирсон бүтээгдэхүүнийг сонгоно уу</p>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-12">
-          {topCategories.map((category) => (
+        {/* Category Filter */}
+        <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
+          {categories.map((cat) => (
             <button
-              key={category._id}
-              onClick={() => setActiveCategory(category._id)}
-              className={`group relative overflow-hidden rounded-2xl p-6 transition-all duration-300 ${
-                activeCategory === category._id
-                  ? 'bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-2xl scale-105'
-                  : 'bg-white hover:bg-gray-50 text-gray-700 shadow-lg hover:shadow-xl hover:scale-105'
+              key={cat.value}
+              onClick={() => setSelectedCategory(cat.value)}
+              className={`px-4 py-2 rounded-full whitespace-nowrap transition-all ${
+                selectedCategory === cat.value
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'bg-white text-gray-700 hover:bg-gray-100'
               }`}
             >
-              <div className="text-center">
-                <div className={`text-4xl mb-3 ${
-                  activeCategory === category._id ? 'animate-bounce' : ''
-                }`}>
-                  {category.icon === 'CreditCard' ? '💳' :
-                   category.icon === 'FileText' ? '📄' :
-                   category.icon === 'Image' ? '🖼️' :
-                   category.icon === 'Book' ? '📚' :
-                   category.icon === 'Gift' ? '🎁' :
-                   category.icon === 'Package' ? '📦' : '📋'}
-                </div>
-                <div className="font-bold text-sm">{category.name}</div>
-              </div>
-              {activeCategory === category._id && (
-                <div className="absolute top-2 right-2">
-                  <Star className="text-yellow-300 fill-yellow-300" size={16} />
-                </div>
-              )}
+              {cat.label}
             </button>
           ))}
         </div>
 
-        {/* All Products Button */}
-        <div className="text-center">
-          <button
-            onClick={() => setActiveCategory('all')}
-            className={`inline-flex items-center gap-2 px-8 py-3 rounded-xl font-bold transition-all duration-300 ${
-              activeCategory === 'all'
-                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-xl scale-105'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:scale-105'
-            }`}
-          >
-            Бүх бүтээгдэхүүн
-            <ChevronRight size={20} />
-          </button>
-        </div>
-      </div>
-
-      {/* Products Grid */}
-      <div className="max-w-7xl mx-auto px-4 pb-16">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold text-gray-900">
-            {activeCategory === 'all' ? 'Бүх бүтээгдэхүүн' : 'Сонгосон ангилал'}
-          </h2>
-          <div className="text-gray-600">
-            {products.length} бүтээгдэхүүн
-          </div>
-        </div>
-
+        {/* Blogs Grid */}
         {loading ? (
-          <div className="flex justify-center items-center py-20">
-            <Loading />
-          </div>
-        ) : products.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="text-6xl mb-4">📦</div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">Бүтээгдэхүүн олдсонгүй</h3>
-            <p className="text-gray-600">Өөр ангилал сонгоно уу</p>
+          <Loading />
+        ) : blogs.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">📝</div>
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">
+              Блог олдсонгүй
+            </h3>
+            <p className="text-gray-500">
+              Удахгүй шинэ блог нэмэгдэх болно
+            </p>
           </div>
         ) : (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {(showAll ? products : products.slice(0, INITIAL_DISPLAY_COUNT)).map(product => (
-                <ProductCard key={product._id} product={product} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {blogs.map((blog) => (
+              <Link
+                key={blog._id}
+                to={`/blog/${blog.slug}`}
+                className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 group"
+              >
+                {/* Image */}
+                <div className="relative overflow-hidden bg-gray-200 h-48">
+                  {blog.featuredImage ? (
+                    <img
+                      src={getImageUrl(blog.featuredImage)}
+                      alt={blog.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/400x300?text=Blog+Image';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-500">
+                      <span className="text-6xl">📝</span>
+                    </div>
+                  )}
+                  {blog.featured && (
+                    <div className="absolute top-3 left-3 bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                      Онцлох
+                    </div>
+                  )}
+                </div>
+
+                {/* Content */}
+                <div className="p-5">
+                  <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
+                    <span className="flex items-center gap-1">
+                      <Calendar size={14} />
+                      {formatDate(blog.publishedAt || blog.createdAt)}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Eye size={14} />
+                      {blog.views}
+                    </span>
+                  </div>
+
+                  <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                    {blog.title}
+                  </h3>
+
+                  {blog.excerpt && (
+                    <p className="text-sm text-gray-600 line-clamp-2 mb-3">
+                      {blog.excerpt}
+                    </p>
+                  )}
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <User size={14} />
+                      <span>{blog.author?.name || 'Admin'}</span>
+                    </div>
+
+                    <span className="flex items-center gap-1 text-blue-600 text-sm font-medium group-hover:gap-2 transition-all">
+                      Унших
+                      <ArrowRight size={16} />
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+       {/* Partners Carousel Section */}
+      <section className="py-12 bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">Хамтран ажиллагч байгууллагууд</h2>
+          </div>
+          
+          <div className="relative">
+            {/* Навигацийн товчнууд */}
+            <button
+              onClick={prevPartners}
+              className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 bg-white shadow-lg hover:shadow-xl rounded-full p-3 z-10 transition-all hover:scale-110"
+            >
+              <ChevronLeft size={24} className="text-gray-700" />
+            </button>
+            
+            <button
+              onClick={nextPartners}
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 bg-white shadow-lg hover:shadow-xl rounded-full p-3 z-10 transition-all hover:scale-110"
+            >
+              <ChevronRight size={24} className="text-gray-700" />
+            </button>
+
+            {/* Partners Container */}
+            <div 
+              ref={partnersContainerRef}
+              className="flex gap-6 overflow-x-auto scrollbar-hide py-4 px-8"
+              style={{ scrollBehavior: 'smooth' }}
+            >
+              {/* Partners жагсаалт */}
+              {partners.map((partner) => (
+                <div
+                  key={partner.id}
+                  className="flex-shrink-0 w-48 bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                >
+                  <div className="h-28 flex items-center justify-center p-4">
+                    <img 
+                      src={partner.logo} 
+                      alt={partner.name}
+                      className="max-h-full max-w-full object-contain"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.parentElement.innerHTML = `
+                          <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg">
+                            <span class="text-base font-semibold text-gray-700 text-center">${partner.name}</span>
+                          </div>
+                        `;
+                      }}
+                    />
+                  </div>
+                </div>
               ))}
             </div>
 
-            {/* Show More Button */}
-            {products.length > INITIAL_DISPLAY_COUNT && (
-              <div className="mt-12 text-center">
-                <button
-                  onClick={() => setShowAll(!showAll)}
-                  className="inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all duration-300"
-                >
-                  <span>{showAll ? 'Хураах' : 'Бүгдийг харах'}</span>
-                  <ChevronRight 
-                    className={`transition-transform duration-300 ${
-                      showAll ? 'rotate-90' : ''
-                    }`}
-                    size={24}
-                  />
-                </button>
-                <p className="mt-4 text-gray-600">
-                  {showAll 
-                    ? `${products.length} бүтээгдэхүүн харагдаж байна`
-                    : `${INITIAL_DISPLAY_COUNT} / ${products.length} бүтээгдэхүүн`
-                  }
-                </p>
-              </div>
-            )}
-          </>
-        )}
-      </div>
-
-      {/* CTA Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Бизнесээ өсгөх бэлэн үү?
-          </h2>
-          <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
-            Манай мэргэжилтнүүд таны бизнесийн хэрэгцээнд тохирсон шийдлийг санал болгоно
-          </p>
-          <div className="flex flex-wrap gap-4 justify-center">
-            <Link
-              to="/quotation"
-              className="inline-flex items-center gap-2 bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all duration-300"
-            >
-              Үнийн санал авах
-              <ArrowRight size={20} />
-            </Link>
-            <Link
-              to="/contact"
-              className="inline-flex items-center gap-2 bg-blue-800/50 backdrop-blur-sm text-white px-8 py-4 rounded-xl font-bold text-lg border-2 border-white/30 hover:bg-blue-700/50 transition-all duration-300"
-            >
-              Холбоо барих
-            </Link>
+            {/* Auto scroll animation */}
+            <style jsx>{`
+              @keyframes scroll {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(calc(-250px * ${partners.length})); }
+              }
+              .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+              }
+              .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+              }
+            `}</style>
           </div>
         </div>
-      </div>
-
-      {/* Features Section */}
-      <div className="max-w-7xl mx-auto px-4 py-20">
-        <div className="grid md:grid-cols-4 gap-8">
-          <div className="text-center group">
-            <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-              <Truck className="text-white" size={32} />
-            </div>
-            <h3 className="font-bold text-lg mb-2">Үнэгүй хүргэлт</h3>
-            <p className="text-gray-600 text-sm">200,000₮-с дээш захиалгад хүргэлт үнэгүй</p>
-          </div>
-
-          <div className="text-center group">
-            <div className="bg-gradient-to-br from-purple-500 to-purple-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-              <Shield className="text-white" size={32} />
-            </div>
-            <h3 className="font-bold text-lg mb-2">Баталгаатай</h3>
-            <p className="text-gray-600 text-sm">Чанарт бүрэн итгэлтэй, баталгаа олгоно</p>
-          </div>
-
-          <div className="text-center group">
-            <div className="bg-gradient-to-br from-green-500 to-green-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-              <Award className="text-white" size={32} />
-            </div>
-            <h3 className="font-bold text-lg mb-2">Өндөр чанар</h3>
-            <p className="text-gray-600 text-sm">Дэлхийн стандартын материал ашиглана</p>
-          </div>
-
-          <div className="text-center group">
-            <div className="bg-gradient-to-br from-pink-500 to-pink-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-              <TrendingUp className="text-white" size={32} />
-            </div>
-            <h3 className="font-bold text-lg mb-2">Мэргэжлийн дэмжлэг</h3>
-            <p className="text-gray-600 text-sm">24/7 үйлчилгээ, мэргэжлийн зөвлөгөө</p>
-          </div>
-        </div>
-      </div>
+      </section>
     </div>
   );
 };

@@ -991,8 +991,8 @@ const AdminPage = () => {
                             {quotation.designFile && (
                               <div className="mt-3 p-3 bg-blue-50 rounded-lg">
                                 <div className="text-sm font-medium text-blue-800 mb-1">Дизайн файл:</div>
-                                <a 
-                                  href={`http://localhost:5000${quotation.designFile.fileUrl}`}
+                                <a                                  
+                                href={getImageUrl(quotation.designFile.fileUrl)}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-sm text-blue-600 hover:underline"

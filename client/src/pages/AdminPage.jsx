@@ -51,7 +51,10 @@ const AdminPage = () => {
     size: '',
     format: '',
     stock: '',
-    image: ''
+    image: '',
+    featured: false,
+    discount: '',
+    oldPrice: ''
   });
   
   // Category form states
@@ -163,6 +166,14 @@ const AdminPage = () => {
       submitData.append('size', productForm.size);
       submitData.append('format', productForm.format);
       submitData.append('stock', productForm.stock);
+      submitData.append('featured', productForm.featured);
+      
+      if (productForm.discount) {
+        submitData.append('discount', productForm.discount);
+      }
+      if (productForm.oldPrice) {
+        submitData.append('oldPrice', productForm.oldPrice);
+      }
       
       if (selectedImage) {
         submitData.append('image', selectedImage);
@@ -183,8 +194,9 @@ const AdminPage = () => {
       setSelectedImage(null);
       setImagePreview(null);
       setProductForm({ 
-        name: '', price: '', category: 'cards', description: '', 
-        material: '', size: '', format: '', stock: '', image: '' 
+        name: '', price: '', category: '', description: '', 
+        material: '', size: '', format: '', stock: '', image: '',
+        featured: false, discount: '', oldPrice: ''
       });
       loadData();
     } catch (error) {
@@ -215,7 +227,10 @@ const AdminPage = () => {
       size: product.size || '',
       format: product.format || '',
       stock: product.stock || '',
-      image: product.image || ''
+      image: product.image || '',
+      featured: product.featured || false,
+      discount: product.discount || '',
+      oldPrice: product.oldPrice || ''
     });
     setImagePreview(product.image || null);
     setSelectedImage(null);
@@ -848,6 +863,92 @@ const AdminPage = () => {
                             </div>
                           )}
                         </div>
+                      </div>
+
+                      {/* Featured Product Toggle */}
+                      <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <input
+                          type="checkbox"
+                          id="featured"
+                          checked={productForm.featured}
+                          onChange={(e) => setProductForm({...productForm, featured: e.target.checked})}
+                          className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                        />
+                        <label htmlFor="featured" className="flex-1 cursor-pointer">
+                          <div className="font-semibold text-gray-900">⭐ Онцлох бүтээгдэхүүн</div>
+                          <div className="text-sm text-gray-600">Нүүр хуудсанд онцлох хэсэгт харагдана</div>
+                        </label>
+                      </div>
+
+                      {/* Discount Section */}
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-4 space-y-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">🏷️</span>
+                          <h4 className="font-semibold text-gray-900">Хямдрал</h4>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                          {/* Discount Percentage */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Хямдралын хувь (%)
+                            </label>
+                            <input
+                              type="number"
+                              placeholder="0"
+                              min="0"
+                              max="100"
+                              value={productForm.discount}
+                              onChange={(e) => {
+                                const discount = e.target.value;
+                                setProductForm({...productForm, discount});
+                                
+                                // Auto-calculate oldPrice if discount is set
+                                if (discount && productForm.price) {
+                                  const price = parseFloat(productForm.price);
+                                  const discountPercent = parseFloat(discount);
+                                  const oldPrice = Math.round(price / (1 - discountPercent / 100));
+                                  setProductForm(prev => ({...prev, oldPrice: oldPrice.toString()}));
+                                }
+                              }}
+                              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                            />
+                          </div>
+
+                          {/* Old Price */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Хуучин үнэ (₮)
+                            </label>
+                            <input
+                              type="number"
+                              placeholder="70000"
+                              value={productForm.oldPrice}
+                              onChange={(e) => setProductForm({...productForm, oldPrice: e.target.value})}
+                              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Discount Preview */}
+                        {productForm.discount && productForm.price && (
+                          <div className="bg-white p-3 rounded border border-red-300">
+                            <div className="text-sm text-gray-600 mb-1">Үзүүлэх байдал:</div>
+                            <div className="flex items-center gap-3">
+                              <span className="text-2xl font-bold text-red-600">
+                                {formatPrice(parseFloat(productForm.price))}
+                              </span>
+                              {productForm.oldPrice && (
+                                <span className="text-lg text-gray-400 line-through">
+                                  {formatPrice(parseFloat(productForm.oldPrice))}
+                                </span>
+                              )}
+                              <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                -{productForm.discount}%
+                              </span>
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       {/* Buttons */}

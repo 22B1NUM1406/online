@@ -80,6 +80,11 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    featured: {
+      type: Boolean,
+      default: false,
+      index: true, // Index for faster queries
+    },
   },
   {
     timestamps: true,

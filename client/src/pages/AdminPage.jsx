@@ -17,6 +17,7 @@ import { formatPrice, formatDate, getOrderStatusLabel, getOrderStatusColor, getI
 import Loading from '../components/Loading';
 import Notification from '../components/Notification';
 import DashboardTab from '../components/DashboardTab';
+import EnhancedTextarea from '../components/EnhancedTextarea';
 
 const AdminPage = () => {
   const navigate = useNavigate();
@@ -816,18 +817,29 @@ const AdminPage = () => {
                       </div>
 
                       {/* Description */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Тайлбар
-                        </label>
-                        <textarea
-                          placeholder="Бүтээгдэхүүний дэлгэрэнгүй тайлбар..."
-                          value={productForm.description}
-                          onChange={(e) => setProductForm({...productForm, description: e.target.value})}
-                          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          rows="3"
-                        />
-                      </div>
+                      {/* Description */}
+                      <EnhancedTextarea
+                        value={productForm.description}
+                        onChange={(e) => setProductForm({...productForm, description: e.target.value})}
+                        label="Тайлбар"
+                        placeholder="Бүтээгдэхүүний дэлгэрэнгүй тайлбар...
+
+Жишээ:
+Өндөр чанартай нэрийн хуудас
+
+Онцлог:
+• 300gsm цаас
+• Дөрвөлжин буланг
+• Глянц эсвэл мат гадаргуу
+
+Захиалга:
+1. Дизайн файл илгээх
+2. Тоо хэмжээ сонгох
+3. Материал сонгох"
+                        rows={8}
+                        maxLength={2000}
+                        showInstructions={true}
+                      />
 
                       {/* Image Upload */}
                       <div>

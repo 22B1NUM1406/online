@@ -11,6 +11,7 @@ import Loading from '../components/Loading';
 import Notification from '../components/Notification';
 import MetaTags from '../components/MetaTags';
 import ShareButtons from '../components/ShareButtons';
+import TextDisplay from '../components/TextDisplay';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -215,7 +216,10 @@ const ProductDetailPage = () => {
               {/* Description */}
               <div className="bg-gray-50 rounded-xl p-6 mb-6">
                 <h3 className="font-bold text-lg mb-3">Дэлгэрэнгүй</h3>
-                <p className="text-gray-600 mb-4">{product.description}</p>
+                <TextDisplay 
+                  text={product.description}
+                  className="text-gray-600 mb-4"
+                />
                 
                 <div className="space-y-2">
                   {product.material && (

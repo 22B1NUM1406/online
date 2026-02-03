@@ -5,7 +5,7 @@ import Product from '../models/Product.js';
 // @access  Public
 export const getProducts = async (req, res) => {
   try {
-    const { category, search, minPrice, maxPrice, sort, page = 1, limit = 20 } = req.query;
+    const { category, search, minPrice, maxPrice, sort, page = 1, limit = 20, featured, hasDiscount } = req.query;
 
     // Query үүсгэх
     let query = { isActive: true };
@@ -13,6 +13,16 @@ export const getProducts = async (req, res) => {
     // Category filter
     if (category && category !== 'all') {
       query.category = category;
+    }
+
+    // Featured filter
+    if (featured === 'true') {
+      query.featured = true;
+    }
+
+    // Discount filter
+    if (hasDiscount === 'true') {
+      query.discount = { $gt: 0 };
     }
 
     // Search filter

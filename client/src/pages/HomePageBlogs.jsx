@@ -1,20 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Calendar, User, Eye, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
-import { getBlogs } from '../services/api';
-import { getImageUrl } from '../utils/helpers';
+import { Search, Calendar, User, Eye, ArrowRight, ChevronLeft, ChevronRight, Star, Zap } from 'lucide-react';
+import { getBlogs, getProducts } from '../services/api';
+import { getImageUrl, formatPrice } from '../utils/helpers';
+import ProductCard from '../components/ProductCard';
 import Loading from '../components/Loading';
 import Notification from '../components/Notification';
-import BizPrintPage from './BizPrintPage';
 
 const HomePage = () => {
   const [blogs, setBlogs] = useState([]);
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [discountProducts, setDiscountProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [currentPartner, setCurrentPartner] = useState(0);
   const partnersContainerRef = useRef(null);
 
   const categories = [
@@ -63,7 +64,6 @@ const HomePage = () => {
     }
   ];
 
-  // Хамтрагч байгууллагууд - таны local лого зургууд
   const partners = [
     { id: 1, name: "Mongol Shuudan", logo: "/images/partners/mongol-shuudan.png" },
     { id: 2, name: "Gobi Cashmere", logo: "/images/partners/gobi-cashmere.png" },
@@ -75,7 +75,7 @@ const HomePage = () => {
   ];
 
   useEffect(() => {
-    loadBlogs();
+    loadData();
     
     // Hero section auto slide
     const slideInterval = setInterval(() => {
@@ -91,21 +91,37 @@ const HomePage = () => {
     loadBlogs();
   }, [selectedCategory, searchTerm]);
 
-  const loadBlogs = async () => {
+  const loadData = async () => {
     try {
       setLoading(true);
+      const [blogsData, featuredData, discountData] = await Promise.all([
+        getBlogs({ limit: 6 }),
+        getProducts({ featured: true }),
+        getProducts({ hasDiscount: true })
+      ]);
+      
+      setBlogs(blogsData.data || []);
+      setFeaturedProducts(featuredData.data?.slice(0, 4) || []);
+      setDiscountProducts(discountData.data?.slice(0, 4) || []);
+    } catch (error) {
+      console.error('Error loading data:', error);
+      showNotification('Өгөгдөл ачааллахад алдаа гарлаа', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadBlogs = async () => {
+    try {
       const params = {};
       if (selectedCategory !== 'all') params.category = selectedCategory;
       if (searchTerm) params.search = searchTerm;
       
       const data = await getBlogs(params);
-      setBlogs(data.data);
+      setBlogs(data.data || []);
     } catch (error) {
       console.error('Error loading blogs:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Блог ачааллахад алдаа гарлаа';
-      showNotification(errorMessage, 'error');
-    } finally {
-      setLoading(false);
+      showNotification('Блог ачааллахад алдаа гарлаа', 'error');
     }
   };
 
@@ -132,17 +148,13 @@ const HomePage = () => {
 
   const nextPartners = () => {
     if (partnersContainerRef.current) {
-      const container = partnersContainerRef.current;
-      const scrollAmount = 300; // Гүйлгэх хэмжээ
-      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      partnersContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
     }
   };
 
   const prevPartners = () => {
     if (partnersContainerRef.current) {
-      const container = partnersContainerRef.current;
-      const scrollAmount = 300; // Гүйлгэх хэмжээ
-      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      partnersContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
     }
   };
 
@@ -237,6 +249,72 @@ const HomePage = () => {
         </div>
       </section>
 
+      {/* Featured Products Section */}
+      {featuredProducts.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4 py-16">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-yellow-100 px-4 py-2 rounded-full mb-4">
+              <Star className="text-yellow-600 fill-yellow-600" size={20} />
+              <span className="text-yellow-800 font-semibold">Онцлох</span>
+            </div>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              ⭐ Онцлох бүтээгдэхүүн
+            </h2>
+            <p className="text-gray-600 text-lg">
+              Манай хамгийн алдартай болон өндөр чанартай бүтээгдэхүүнүүд
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {featuredProducts.map(product => (
+              <ProductCard key={product._id} product={product} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Discount Products Section */}
+      {discountProducts.length > 0 && (
+        <div className="bg-gradient-to-br from-red-50 to-pink-50 py-16">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 bg-red-100 px-4 py-2 rounded-full mb-4 animate-pulse">
+                <Zap className="text-red-600" size={20} />
+                <span className="text-red-800 font-semibold">Хямдрал</span>
+              </div>
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                🏷️ Хямдралтай бүтээгдэхүүн
+              </h2>
+              <p className="text-gray-600 text-lg">
+                Онцгой үнээр санал болгож байна - Хугацаатай!
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {discountProducts.map(product => (
+                <div key={product._id} className="relative">
+                  {product.discount && (
+                    <div className="absolute -top-2 -right-2 z-10 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg animate-bounce">
+                      -{product.discount}%
+                    </div>
+                  )}
+                  <ProductCard product={product} />
+                </div>
+              ))}
+            </div>
+
+            <div className="text-center mt-12">
+              <Link
+                to="/biz-print"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 to-pink-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all duration-300"
+              >
+                Бүх хямдралыг үзэх
+                <ArrowRight size={20} />
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Blogs Section */}
       <div className="max-w-7xl mx-auto px-4 py-12">
@@ -283,7 +361,7 @@ const HomePage = () => {
             {blogs.map((blog) => (
               <Link
                 key={blog._id}
-                to={`/blog/${blog.slug}`}
+                to={`/blogs/${blog.slug}`}
                 className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 group"
               >
                 {/* Image */}
@@ -318,7 +396,7 @@ const HomePage = () => {
                     </span>
                     <span className="flex items-center gap-1">
                       <Eye size={14} />
-                      {blog.views}
+                      {blog.views || 0}
                     </span>
                   </div>
 
@@ -349,7 +427,8 @@ const HomePage = () => {
           </div>
         )}
       </div>
-       {/* Partners Carousel Section */}
+
+      {/* Partners Carousel Section */}
       <section className="py-12 bg-gradient-to-br from-gray-50 to-gray-100">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-8">
@@ -357,7 +436,7 @@ const HomePage = () => {
           </div>
           
           <div className="relative">
-            {/* Навигацийн товчнууд */}
+            {/* Navigation buttons */}
             <button
               onClick={prevPartners}
               className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 bg-white shadow-lg hover:shadow-xl rounded-full p-3 z-10 transition-all hover:scale-110"
@@ -378,7 +457,6 @@ const HomePage = () => {
               className="flex gap-6 overflow-x-auto scrollbar-hide py-4 px-8"
               style={{ scrollBehavior: 'smooth' }}
             >
-              {/* Partners жагсаалт */}
               {partners.map((partner) => (
                 <div
                   key={partner.id}
@@ -403,12 +481,8 @@ const HomePage = () => {
               ))}
             </div>
 
-            {/* Auto scroll animation */}
+            {/* Hide scrollbar */}
             <style jsx>{`
-              @keyframes scroll {
-                0% { transform: translateX(0); }
-                100% { transform: translateX(calc(-250px * ${partners.length})); }
-              }
               .scrollbar-hide {
                 -ms-overflow-style: none;
                 scrollbar-width: none;

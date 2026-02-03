@@ -176,26 +176,7 @@ const WalletPage = () => {
                 Төлбөрийн хэлбэр
               </label>
 
-              {/* Demo Mode - Direct Top Up */}
-              <button
-                type="submit"
-                disabled={loading || !amount}
-                className="w-full flex items-center justify-between p-4 border-2 border-blue-500 rounded-lg hover:bg-blue-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <WalletIcon className="text-blue-600" size={24} />
-                  </div>
-                  <div className="text-left">
-                    <div className="font-semibold text-gray-800">Шууд цэнэглэх</div>
-                    <div className="text-sm text-gray-600">Demo mode - шууд нэмэгдэнэ</div>
-                  </div>
-                </div>
-                <div className="text-blue-600 font-bold">
-                  {loading ? 'Түр хүлээнэ үү...' : 'Цэнэглэх'}
-                </div>
-              </button>
-
+            
               {/* QPay Option */}
               <button
                 type="button"
@@ -217,25 +198,7 @@ const WalletPage = () => {
                 </div>
               </button>
             </div>
-          </form>
-
-          {/* Info Box */}
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h4 className="font-semibold text-blue-800 mb-2">💡 Мэдээлэл</h4>
-            <ul className="text-sm text-blue-700 space-y-1">
-              <li>• Одоогоор Demo mode - хэтэвч шууд цэнэглэгдэнэ</li>
-              <li>• Бодит байдалд QPay-ээр төлбөр төлнө</li>
-              <li>• Захиалга өгөхөд wallet-аас автоматаар хасагдана</li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Transaction History Placeholder */}
-        <div className="bg-white rounded-xl shadow-lg p-8 mt-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Гүйлгээний түүх</h3>
-          <div className="text-center py-8 text-gray-500">
-            Гүйлгээ байхгүй байна
-          </div>
+          </form>        
         </div>
       </div>
     </div>

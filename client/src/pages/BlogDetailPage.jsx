@@ -3,7 +3,6 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, User, Eye, Tag } from 'lucide-react';
 import { getBlogBySlug } from '../services/api';
 import { getImageUrl } from '../utils/helpers';
-import { SHARE_IMAGE } from '../utils/placeholders';
 import Loading from '../components/Loading';
 import Notification from '../components/Notification';
 import MetaTags from '../components/MetaTags';
@@ -80,21 +79,23 @@ const BlogDetailPage = () => {
     || 'Read our latest blog post';
 
   // Get blog image with multiple fallbacks
+  // Get blog image with fallback to actual blog image or null
   const getBlogImage = () => {
     if (blog.featuredImage) {
       const url = getImageUrl(blog.featuredImage);
-      if (url && !url.includes('placeholder')) return url;
+      if (url && url.startsWith('http')) return url;
     }
     if (blog.image) {
       const url = getImageUrl(blog.image);
-      if (url && !url.includes('placeholder')) return url;
+      if (url && url.startsWith('http')) return url;
     }
-    return SHARE_IMAGE; // Use online placeholder
+    // Return null if no image - MetaTags will handle default
+    return null;
   };
 
   const shareImage = getBlogImage();
 
-  // Debug logging (remove in production if needed)
+  // Debug logging
   console.log('📊 Blog Share Data:', {
     url: shareUrl,
     title: shareTitle,

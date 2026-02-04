@@ -3,7 +3,6 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle, Star, TrendingUp, Mail, Phone } from 'lucide-react';
 import { getMarketingServiceBySlug } from '../services/api';
 import { getImageUrl } from '../utils/helpers';
-import { SHARE_IMAGE } from '../utils/placeholders';
 import Loading from '../components/Loading';
 import Notification from '../components/Notification';
 import MetaTags from '../components/MetaTags';
@@ -83,13 +82,14 @@ const ServiceDetailPage = () => {
     || service.name
     || 'Check out our service';
 
-  // Get service image with fallback
+  // Get service image - return actual image or null
   const getServiceImage = () => {
     if (service.image) {
       const url = getImageUrl(service.image);
-      if (url && !url.includes('placeholder')) return url;
+      if (url && url.startsWith('http')) return url;
     }
-    return SHARE_IMAGE; // Use online placeholder
+    // Return null - MetaTags will handle default
+    return null;
   };
 
   const shareImage = getServiceImage();

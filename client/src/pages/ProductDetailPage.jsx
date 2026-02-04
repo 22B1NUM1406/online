@@ -6,7 +6,6 @@ import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
 import { getProduct } from '../services/api';
 import { formatPrice, getImageUrl } from '../utils/helpers';
-import { SHARE_IMAGE } from '../utils/placeholders';
 import Loading from '../components/Loading';
 import Notification from '../components/Notification';
 import MetaTags from '../components/MetaTags';
@@ -97,13 +96,14 @@ const ProductDetailPage = () => {
     || `${product.name} - ${formatPrice(product.price)}`
     || 'Check out this product';
 
-  // Get product image with fallback
+  // Get product image - return actual image or null
   const getProductImage = () => {
     if (product.image) {
       const url = getImageUrl(product.image);
-      if (url && !url.includes('placeholder')) return url;
+      if (url && url.startsWith('http')) return url;
     }
-    return SHARE_IMAGE; // Use online placeholder
+    // Return null - MetaTags will handle default
+    return null;
   };
 
   const shareImage = getProductImage();
@@ -318,6 +318,7 @@ const ProductDetailPage = () => {
             </div>
           </div>
         </div>
+
         {/* Related Products Section (Optional) */}
         <div className="mt-12">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">Холбоотой бүтээгдэхүүн</h2>

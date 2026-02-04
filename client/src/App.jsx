@@ -36,10 +36,11 @@ function App() {
               <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<HomePageBlogs />} />
-                <Route path="/blog/:slug" element={<BlogDetailPage />} />
+                <Route path="/blogs" element={<HomePageBlogs />} />
+                <Route path="/blogs/:slug" element={<BlogDetailPage />} />
                 <Route path="/biz-print" element={<BizPrintPage />} />
                 <Route path="/biz-marketing" element={<BizMarketingPage />} />
-                <Route path="/service/:slug" element={<ServiceDetailPage />} />
+                <Route path="/services/:slug" element={<ServiceDetailPage />} />
                 <Route path="/products" element={<HomePage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/products/:id" element={<ProductDetailPage />} />

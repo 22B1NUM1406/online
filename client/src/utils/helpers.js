@@ -77,12 +77,10 @@ export const isValidPhone = (phone) => {
 };
 
 // Get full image URL
-import { PLACEHOLDER_IMAGE } from './placeholders';
-
 export const getImageUrl = (imagePath) => {
-  // If no path, return placeholder
+  // If no path, return null
   if (!imagePath) {
-    return PLACEHOLDER_IMAGE;
+    return null;
   }
   
   // If full URL (Cloudinary, etc), return as-is
@@ -103,6 +101,6 @@ export const getImageUrl = (imagePath) => {
     return `${window.location.origin}${imagePath}`;
   }
   
-  // Fallback: return placeholder
-  return PLACEHOLDER_IMAGE;
+  // Fallback: return null
+  return null;
 };

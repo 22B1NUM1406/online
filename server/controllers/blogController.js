@@ -155,17 +155,29 @@ export const createBlog = async (req, res) => {
   try {
     const { title, excerpt, content, category, tags, status, featured } = req.body;
 
-    // Check slug duplication
-    const slug = title.toLowerCase()
-      .replace(/[^a-z0-9а-яөү]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+    // Generate slug with length limit (max 5 words, 50 chars)
+    const generateSlug = (title) => {
+      let slug = title
+        .toLowerCase()
+        .replace(/[^a-z0-9а-яөү\s-]/g, '') // Remove special chars
+        .trim()
+        .split(/[\s-]+/) // Split by space or dash
+        .filter(word => word.length > 0)
+        .slice(0, 5) // Max 5 words
+        .join('-')
+        .substring(0, 50); // Max 50 characters
+      
+      return slug || 'blog';
+    };
 
-    const existingBlog = await Blog.findOne({ slug });
-    if (existingBlog) {
-      return res.status(400).json({
-        success: false,
-        message: 'Ийм гарчигтай блог аль хэдийн байна',
-      });
+    let slug = generateSlug(title);
+
+    // Check slug duplication and add counter if needed
+    let finalSlug = slug;
+    let counter = 1;
+    while (await Blog.findOne({ slug: finalSlug })) {
+      finalSlug = `${slug}-${counter}`;
+      counter++;
     }
 
     const blogData = {
@@ -177,6 +189,7 @@ export const createBlog = async (req, res) => {
       status: status || 'draft',
       featured: featured || false,
       author: req.user._id,
+      slug: finalSlug,
     };
 
     // Featured image upload

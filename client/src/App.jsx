@@ -6,7 +6,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from './components/ProtectedRoute';
-import HomePage from './pages/HomePage_Updated';
+import HomePage from './pages/HomePageBlogs';
 import BlogDetailPage from './pages/BlogDetailPage';
 import BizPrintPage from './pages/BizPrintPage';
 import BizMarketingPage from './pages/BizMarketingPage';

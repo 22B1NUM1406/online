@@ -4,9 +4,9 @@ import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from './components/ProtectedRoute';
-import HomePage from './pages/HomePage';
-import HomePageBlogs from './pages/HomePageBlogs';
+import HomePage from './pages/HomePage_Updated';
 import BlogDetailPage from './pages/BlogDetailPage';
 import BizPrintPage from './pages/BizPrintPage';
 import BizMarketingPage from './pages/BizMarketingPage';
@@ -28,6 +28,7 @@ import ContactPage from './pages/ContactPage';
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <AuthProvider>
         <CartProvider>
           <WishlistProvider>
@@ -35,8 +36,8 @@ function App() {
               <Header />
               <Routes>
                 {/* Public Routes */}
-                <Route path="/" element={<HomePageBlogs />} />
-                <Route path="/blogs" element={<HomePageBlogs />} />
+                <Route path="/" element={<HomePage />} />
+                <Route path="/blogs" element={<HomePage />} />
                 <Route path="/blogs/:slug" element={<BlogDetailPage />} />
                 <Route path="/biz-print" element={<BizPrintPage />} />
                 <Route path="/biz-marketing" element={<BizMarketingPage />} />

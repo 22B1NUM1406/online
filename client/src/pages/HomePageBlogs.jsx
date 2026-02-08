@@ -21,7 +21,8 @@ const HomePage = () => {
   const [discountSlide, setDiscountSlide] = useState(0);
   const partnersContainerRef = useRef(null);
 
-  const categories = [
+  // Blog categories for filter
+  const blogCategories = [
     { value: 'all', label: 'Бүгд' },
     { value: 'news', label: 'Мэдээ' },
     { value: 'tutorial', label: 'Заавар' },
@@ -67,7 +68,7 @@ const HomePage = () => {
     }
   ];
 
- const partners = [
+  const partners = [
     { id: 1, name: "Mongol Shuudan", logo: "/images/partners/mongol-shuudan.png" },
     { id: 2, name: "Gobi Cashmere", logo: "/images/partners/gobi-cashmere.png" },
     { id: 3, name: "APU", logo: "/images/partners/apu.png" },
@@ -367,7 +368,7 @@ const HomePage = () => {
 
         {/* Category Filter */}
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-          {categories.map((cat) => (
+          {blogCategories.map((cat) => (
             <button
               key={cat.value}
               onClick={() => setSelectedCategory(cat.value)}
@@ -483,9 +484,17 @@ const HomePage = () => {
                   key={partner.id}
                   className="flex-shrink-0 w-40 h-24 bg-white border border-gray-200 rounded flex items-center justify-center hover:shadow transition"
                 >
-                  <span className="text-sm font-semibold text-gray-700 text-center px-2">
-                    {partner.name}
-                  </span>
+                  <img 
+                    src={partner.logo} 
+                    alt={partner.name}
+                    className="max-h-full max-w-full object-contain p-3"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.parentElement.innerHTML = `
+                        <span class="text-sm font-semibold text-gray-700 text-center px-2">${partner.name}</span>
+                      `;
+                    }}
+                  />
                 </div>
               ))}
             </div>

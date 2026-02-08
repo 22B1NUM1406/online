@@ -159,7 +159,7 @@ const HomePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {notification && (
         <Notification 
           type={notification.type}
@@ -200,15 +200,15 @@ const HomePage = () => {
                   </p>
                   
                   <div className="grid grid-cols-3 gap-6 mt-12">
-                    <div className="text-center bg-white/10 backdrop-blur-sm p-4 rounded-xl">
+                    <div className="text-center bg-white/10 backdrop-blur-sm p-4 rounded-lg">
                       <div className="text-3xl font-bold">10+</div>
                       <div className="text-blue-200 text-sm">Жилийн туршлага</div>
                     </div>
-                    <div className="text-center bg-white/10 backdrop-blur-sm p-4 rounded-xl">
+                    <div className="text-center bg-white/10 backdrop-blur-sm p-4 rounded-lg">
                       <div className="text-3xl font-bold">5000+</div>
                       <div className="text-blue-200 text-sm">Төсөл</div>
                     </div>
-                    <div className="text-center bg-white/10 backdrop-blur-sm p-4 rounded-xl">
+                    <div className="text-center bg-white/10 backdrop-blur-sm p-4 rounded-lg">
                       <div className="text-3xl font-bold">99%</div>
                       <div className="text-blue-200 text-sm">Сэтгэл ханамж</div>
                     </div>
@@ -261,7 +261,7 @@ const HomePage = () => {
               ⭐ Онцлох бүтээгдэхүүн
             </h2>
             <p className="text-gray-600 text-lg">
-              Манай байгууллагын зүгээс хэрэглэгч танд санал болгож буй онцлох бүтээгдэхүүнүүд
+              Манай хамгийн алдартай болон өндөр чанартай бүтээгдэхүүнүүд
             </p>
           </div>
           
@@ -278,7 +278,7 @@ const HomePage = () => {
         <div className="bg-gradient-to-br from-red-50 to-pink-50 py-16">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-2 bg-red-100 px-4 py-2 rounded-full mb-4 animate-pulse">
+              <div className="inline-flex items-center gap-2 bg-red-100 px-4 py-2 rounded-full mb-4 ">
                 <Zap className="text-red-600" size={20} />
                 <span className="text-red-800 font-semibold">Хямдрал</span>
               </div>
@@ -286,7 +286,7 @@ const HomePage = () => {
                 🏷️ Хямдралтай бүтээгдэхүүн
               </h2>
               <p className="text-gray-600 text-lg">
-                Онцгой үнээр санал болгож байна - Хэмнэлттэй худалдан авалт
+                Онцгой үнээр санал болгож байна - Хугацаатай!
               </p>
             </div>
             
@@ -294,13 +294,23 @@ const HomePage = () => {
               {discountProducts.map(product => (
                 <div key={product._id} className="relative">
                   {product.discount && (
-                    <div className="absolute -top-2 -right-2 z-10 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg animate-bounce">
+                    <div className="absolute -top-2 -right-2 z-10 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg ">
                       -{product.discount}%
                     </div>
                   )}
                   <ProductCard product={product} />
                 </div>
               ))}
+            </div>
+
+            <div className="text-center mt-12">
+              <Link
+                to="/biz-print"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 to-pink-600 text-white px-8 py-4 rounded-lg font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all duration-300"
+              >
+                Бүх хямдралыг үзэх
+                <ArrowRight size={20} />
+              </Link>
             </div>
           </div>
         </div>
@@ -352,7 +362,7 @@ const HomePage = () => {
               <Link
                 key={blog._id}
                 to={`/blogs/${blog.slug}`}
-                className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 group"
+                className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-all duration-300 group"
               >
                 {/* Image */}
                 <div className="relative overflow-hidden bg-gray-200 h-48">
@@ -429,14 +439,14 @@ const HomePage = () => {
             {/* Navigation buttons */}
             <button
               onClick={prevPartners}
-              className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 bg-white shadow-lg hover:shadow-xl rounded-full p-3 z-10 transition-all hover:scale-110"
+              className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 bg-white shadow-lg hover:shadow-md rounded-full p-3 z-10 transition-all hover:scale-110"
             >
               <ChevronLeft size={24} className="text-gray-700" />
             </button>
             
             <button
               onClick={nextPartners}
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 bg-white shadow-lg hover:shadow-xl rounded-full p-3 z-10 transition-all hover:scale-110"
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 bg-white shadow-lg hover:shadow-md rounded-full p-3 z-10 transition-all hover:scale-110"
             >
               <ChevronRight size={24} className="text-gray-700" />
             </button>
@@ -450,7 +460,7 @@ const HomePage = () => {
               {partners.map((partner) => (
                 <div
                   key={partner.id}
-                  className="flex-shrink-0 w-48 bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                  className="flex-shrink-0 w-48 bg-white rounded-lg shadow-md hover:shadow-md transition-all duration-300 hover:-translate-y-1"
                 >
                   <div className="h-28 flex items-center justify-center p-4">
                     <img 

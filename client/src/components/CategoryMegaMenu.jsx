@@ -25,12 +25,24 @@ const CategoryMegaMenu = ({ categories }) => {
   const loadCategoryProducts = async (category, subCategory = null) => {
     try {
       setLoading(true);
+      
+      console.log('Loading products for:', {
+        category: category.name,
+        subCategory: subCategory?.name,
+        categorySlug: category.slug,
+        subCategorySlug: subCategory?.slug
+      });
+      
       const params = { 
         category: subCategory ? subCategory.slug : category.slug,
         limit: 8 
       };
       
+      console.log('API params:', params);
+      
       const data = await getProducts(params);
+      
+      console.log('Products received:', data.data?.length || 0);
       
       const categoryKey = subCategory 
         ? `${category._id}-${subCategory._id}`
@@ -42,6 +54,7 @@ const CategoryMegaMenu = ({ categories }) => {
       }));
     } catch (error) {
       console.error('Error loading category products:', error);
+      console.error('Error details:', error.response?.data || error.message);
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,5 @@
 import Product from '../models/Product.js';
+import Category from '../models/Category.js';
 
 // @desc    Бүх бүтээгдэхүүн авах
 // @route   GET /api/products
@@ -10,9 +11,22 @@ export const getProducts = async (req, res) => {
     // Query үүсгэх
     let query = { isActive: true };
 
-    // Category filter
+    // Category filter (by slug)
     if (category && category !== 'all') {
-      query.category = category;
+      const categoryDoc = await Category.findOne({ slug: category });
+      if (categoryDoc) {
+        query.category = categoryDoc._id;
+      } else {
+        // If category not found, return empty
+        return res.json({
+          success: true,
+          count: 0,
+          total: 0,
+          page: Number(page),
+          pages: 0,
+          data: [],
+        });
+      }
     }
 
     // Featured filter

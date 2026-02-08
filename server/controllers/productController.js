@@ -11,11 +11,18 @@ export const getProducts = async (req, res) => {
     // Query үүсгэх
     let query = { isActive: true };
 
-    // Category filter (by slug)
+    // Category filter (by slug) - include subcategories
     if (category && category !== 'all') {
       const categoryDoc = await Category.findOne({ slug: category });
       if (categoryDoc) {
-        query.category = categoryDoc._id;
+        // Find all subcategories
+        const subcategories = await Category.find({ parent: categoryDoc._id });
+        const subcategoryIds = subcategories.map(sub => sub._id);
+        
+        // Query products from main category OR subcategories
+        query.category = { 
+          $in: [categoryDoc._id, ...subcategoryIds] 
+        };
       } else {
         // If category not found, return empty
         return res.json({

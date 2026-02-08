@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Calendar, User, Eye, ArrowRight, Star, Zap } from 'lucide-react';
-import { getBlogs, getProducts } from '../services/api';
+import { getBlogs, getProducts, getCategories } from '../services/api';
 import { getImageUrl, formatPrice } from '../utils/helpers';
 import ProductCard from '../components/ProductCard';
+import CategoryMegaMenu from '../components/CategoryMegaMenu';
 import Loading from '../components/Loading';
 import Notification from '../components/Notification';
 
@@ -11,6 +12,7 @@ const HomePage = () => {
   const [blogs, setBlogs] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [discountProducts, setDiscountProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -94,15 +96,17 @@ const HomePage = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [blogsData, featuredData, discountData] = await Promise.all([
+      const [blogsData, featuredData, discountData, categoriesData] = await Promise.all([
         getBlogs({ limit: 6 }),
         getProducts({ featured: true }),
-        getProducts({ hasDiscount: true })
+        getProducts({ hasDiscount: true }),
+        getCategories()
       ]);
       
       setBlogs(blogsData.data || []);
       setFeaturedProducts(featuredData.data?.slice(0, 4) || []);
       setDiscountProducts(discountData.data?.slice(0, 8) || []);
+      setCategories(categoriesData.data || []);
     } catch (error) {
       console.error('Error loading data:', error);
       showNotification('Өгөгдөл ачааллахад алдаа гарлаа', 'error');
@@ -232,6 +236,13 @@ const HomePage = () => {
           </div>
         </div>
       </section>
+
+      {/* Category Mega Menu - Above Featured Products */}
+      {categories.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 py-6">
+          <CategoryMegaMenu categories={categories} />
+        </section>
+      )}
 
       {/* Featured Products - BestComputers Border Style */}
       {featuredProducts.length > 0 && (

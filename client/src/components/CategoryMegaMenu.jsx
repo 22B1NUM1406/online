@@ -87,7 +87,7 @@ const CategoryMegaMenu = ({ categories }) => {
   return (
     <div className="relative">
       {/* Categories Horizontal Bar */}
-      <div className="flex gap-1 overflow-x-auto pb-2">
+      <div className="flex gap-2 overflow-x-auto pb-2">
         {categories.map((category) => (
           <div
             key={category._id}
@@ -97,15 +97,15 @@ const CategoryMegaMenu = ({ categories }) => {
           >
             <Link
               to={`/products?category=${category.slug}`}
-              className={`block px-4 py-2 text-sm font-medium rounded transition whitespace-nowrap ${
+              className={`block px-6 py-3 text-base font-semibold rounded-lg transition whitespace-nowrap shadow-sm ${
                 hoveredCategory?._id === category._id
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md scale-105'
+                  : 'bg-white border-2 border-gray-300 text-gray-700 hover:border-blue-400 hover:bg-blue-50'
               }`}
             >
               {category.name}
               {category.subcategories && category.subcategories.length > 0 && (
-                <span className="ml-1 text-xs">▼</span>
+                <span className="ml-1.5 text-sm">▼</span>
               )}
             </Link>
           </div>

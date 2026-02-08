@@ -108,6 +108,9 @@ const HomePage = () => {
       setFeaturedProducts(featuredData.data?.slice(0, 4) || []);
       setDiscountProducts(discountData.data?.slice(0, 8) || []);
       setCategories(categoriesData.data || []);
+      
+      console.log('Categories loaded:', categoriesData.data?.length || 0);
+      console.log('Categories:', categoriesData.data);
     } catch (error) {
       console.error('Error loading data:', error);
       showNotification('Өгөгдөл ачааллахад алдаа гарлаа', 'error');
@@ -240,7 +243,7 @@ const HomePage = () => {
 
       {/* Category Mega Menu - Above Featured Products */}
       {categories.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 py-6">
+        <section className="max-w-7xl mx-auto px-4 py-8">
           <CategoryMegaMenu categories={categories} />
         </section>
       )}
@@ -250,17 +253,17 @@ const HomePage = () => {
         <section className="max-w-7xl mx-auto px-4 py-10">
           <div className="border-l-4 border-yellow-600 pl-3 mb-6">
             <div className="flex items-center gap-2 mb-1">
-              <Star className="text-yellow-600 fill-yellow-600" size={18} />
-              <h2 className="text-2xl font-bold text-gray-900">
+              <Star className="text-yellow-600 fill-yellow-600" size={20} />
+              <h2 className="text-3xl font-bold text-gray-900">
                 Онцлох бүтээгдэхүүн
               </h2>
             </div>
-            <p className="text-gray-600 text-sm">
+            <p className="text-gray-600 text-base">
               Манай байгууллагын зүгээс хэрэглэгч танд санал болгож буй онцлох бүтээгдэхүүнүүд
             </p>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredProducts.map(product => (
               <ProductCard key={product._id} product={product} />
             ))}
@@ -273,12 +276,12 @@ const HomePage = () => {
         <section className="max-w-7xl mx-auto px-4 py-10">
           <div className="border-l-4 border-red-600 pl-3 mb-6">
             <div className="flex items-center gap-2 mb-1">
-              <Zap className="text-red-600" size={18} />
-              <h2 className="text-2xl font-bold text-gray-900">
+              <Zap className="text-red-600" size={20} />
+              <h2 className="text-3xl font-bold text-gray-900">
                 Хямдралтай бүтээгдэхүүн
               </h2>
             </div>
-            <p className="text-gray-600 text-sm">
+            <p className="text-gray-600 text-base">
               Онцгой үнээр санал болгож байна - Хэмнэлттэй худалдан авалт
             </p>
           </div>

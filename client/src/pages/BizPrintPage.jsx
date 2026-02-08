@@ -48,7 +48,12 @@ const BizPrintPage = () => {
     try {
       const params = {};
       if (selectedCategory) {
-        params.category = selectedCategory;
+        // Find category by ID and use its slug
+        const allCategories = categories.flatMap(c => [c, ...(c.subcategories || [])]);
+        const category = allCategories.find(c => c._id === selectedCategory);
+        if (category) {
+          params.category = category.slug; // Use slug, not ID
+        }
       }
       if (searchTerm) {
         params.search = searchTerm;

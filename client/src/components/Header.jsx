@@ -26,7 +26,7 @@ const Header = () => {
   return (
     <>
       {/* Top Bar */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2">
+      <div className="bg-gradient-to-r bg-gray-900 text-white py-2">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-6">
@@ -179,7 +179,7 @@ const Header = () => {
         </div>
 
         {/* Navigation Bar */}
-        <nav className="hidden md:block border-t border-gray-100">
+        <nav className="hidden md:block bg-gray-900 text-white border-t border-gray-100">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-8 py-3">

@@ -60,7 +60,7 @@ const Header = () => {
 
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-800 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-xl">B</span>
               </div>
               <div>
@@ -185,38 +185,38 @@ const Header = () => {
               <div className="flex items-center gap-8 py-3">
                 <Link 
                   to="/"
-                  className="flex items-center gap-2 text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                  className="flex items-center gap-2 hover:text-blue-600 font-medium transition-colors"
                 >
                   <Home size={18} />
                   Эхлэл
                 </Link>
                 <Link 
                   to="/biz-print"
-                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                  className=" hover:text-blue-600 font-medium transition-colors"
                 >
                   Biz Print
                 </Link>
                 <Link 
                   to="/biz-marketing"
-                  className="text-gray-700 hover:text-purple-600 font-medium transition-colors"
+                  className="0 hover:text-purple-600 font-medium transition-colors"
                 >
                   Biz Marketing
                 </Link>
                 <Link 
                   to="/quotation"
-                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                  className=" hover:text-blue-600 font-medium transition-colors"
                 >
                   Үнийн санал
                 </Link>
                 <Link 
                   to="/about" 
-                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                  className=" hover:text-blue-600 font-medium transition-colors"
                 >
                   Бидний тухай
                 </Link>
                 <Link 
                   to="/contact" 
-                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                  className=" hover:text-blue-600 font-medium transition-colors"
                 >
                   Холбоо барих
                 </Link>

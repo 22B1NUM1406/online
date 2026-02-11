@@ -179,7 +179,7 @@ const PaymentPage = () => {
                 <div className="inline-block bg-white p-4 rounded-xl shadow-lg mb-4">
             <img
               src={`data:image/png;base64,${qrImage}`}
-              alt="QPay QR Code"
+              alt="QPay QR Code1"
               className="w-72 h-72 mx-auto"
             />
                 </div>

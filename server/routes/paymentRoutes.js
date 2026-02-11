@@ -13,7 +13,7 @@ const router = express.Router();
 router.post('/create-invoice', protect, createInvoice);
 
 // Check payment status
-router.get('/check/:orderId', protect, checkPaymentStatus);
+router.get('/check/:orderId/:invoiceId', protect, checkPaymentStatus);
 
 // Cancel invoice
 router.post('/cancel/:orderId', protect, cancelInvoice);

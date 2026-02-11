@@ -360,8 +360,8 @@ export const createQPayInvoice = async (orderId) => {
 };
 
 // Check QPay payment status
-export const checkQPayPayment = async (orderId) => {
-  const { data } = await axios.get(`${API_URL}/payment/check/${orderId}`);
+export const checkQPayPayment = async (orderId,invoiceId) => {
+  const { data } = await axios.get(`${API_URL}/payment/check/${orderId}/${invoiceId }`);
   return data;
 };
 

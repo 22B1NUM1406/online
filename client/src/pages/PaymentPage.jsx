@@ -21,9 +21,10 @@ const PaymentPage = () => {
 
   // Auto-check payment status every 5 seconds
   useEffect(() => {
-    if (!orderId || !invoiceId) {
+
+    if (!orderId) {
       setError('Төлбөрийн мэдээлэл дутуу байна');
-      setTimeout(() => navigate('/'), 3000);
+      // setTimeout(() => navigate('/'), 3000);
       return;
     }
 
@@ -53,9 +54,9 @@ const PaymentPage = () => {
       setChecking(true);
       setCheckCount(prev => prev + 1);
       
-      const response = await checkQPayPayment(orderId);
-      
-      if (response.success && response.data.paymentStatus === 'paid') {
+      const response = await checkQPayPayment(orderId,invoiceId);
+      console.log('Payment check response:', response.data);
+      if (response.data.paid) {
         setPaymentStatus('paid');
         setNotification({ 
           message: 'Төлбөр амжилттай төлөгдлөө!', 
@@ -77,6 +78,7 @@ const PaymentPage = () => {
     try {
       setChecking(true);
       const response = await checkQPayPayment(orderId);
+      console.log('Manual payment check response:', response.data);
       
       if (response.success && response.data.paymentStatus === 'paid') {
         setPaymentStatus('paid');
@@ -175,11 +177,11 @@ const PaymentPage = () => {
               {/* QR Code */}
               <div className="text-center mb-6">
                 <div className="inline-block bg-white p-4 rounded-xl shadow-lg mb-4">
-                  <img 
-                    src={qrImage}
-                    alt="QPay QR Code"
-                    className="w-72 h-72 mx-auto"
-                  />
+            <img
+              src={`data:image/png;base64,${qrImage}`}
+              alt="QPay QR Code"
+              className="w-72 h-72 mx-auto"
+            />
                 </div>
                 
                 <p className="text-lg font-semibold text-gray-800 mb-2">

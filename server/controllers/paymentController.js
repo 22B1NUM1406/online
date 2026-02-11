@@ -72,8 +72,8 @@ export const createInvoice = async (req, res) => {
 // @access  Private
 export const checkPaymentStatus = async (req, res) => {
   try {
-    const { orderId } = req.params;
-
+    const { orderId, invoiceId } = req.params;
+    console.log(orderId, invoiceId);
     const order = await Order.findById(orderId);
 
     if (!order) {
@@ -97,9 +97,12 @@ export const checkPaymentStatus = async (req, res) => {
       });
     }
 
-    const paymentResult = await qpayService.checkPayment(order.qpayInvoiceId);
-
-    if (paymentResult.paid && order.paymentStatus !== 'paid') {
+    const paymentResult = await qpayService.checkPayment(invoiceId);
+ 
+    if (paymentResult.payments[0].payment_status == 'PAID') {
+     console.log(
+        `starting1111.......`,
+      )
       order.paymentStatus = 'paid';
       order.paymentMethod = 'qpay';
       order.paidAt = new Date();

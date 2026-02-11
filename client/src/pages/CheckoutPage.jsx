@@ -47,6 +47,7 @@ const CheckoutPage = () => {
       return;
     }
 
+
     try {
       setLoading(true);
       
@@ -81,12 +82,14 @@ const CheckoutPage = () => {
         
       } else if (formData.paymentMethod === 'qpay') {
         // QPay payment - redirect to payment page
+    
         try {
           const qpayResult = await createQPayInvoice(orderId);
           
-          clearCart();
+          // clearCart();
           
           // Navigate to payment page with QPay data
+  
           navigate(`/payment/${orderId}`, {
             state: {
               qrImage: qpayResult.data.qr_image,

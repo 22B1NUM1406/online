@@ -68,7 +68,7 @@ const HomePage = () => {
     }
   ];
 
-  const partners = [
+ const partners = [
     { id: 1, name: "Mongol Shuudan", logo: "/images/partners/mongol-shuudan.png" },
     { id: 2, name: "Gobi Cashmere", logo: "/images/partners/gobi-cashmere.png" },
     { id: 3, name: "APU", logo: "/images/partners/apu.png" },
@@ -77,6 +77,7 @@ const HomePage = () => {
     { id: 6, name: "MCS Group", logo: "/images/partners/mcs-group.png" },
     { id: 7, name: "Skytel", logo: "/images/partners/skytel.png" },
   ];
+
 
   useEffect(() => {
     loadData();
@@ -245,6 +246,75 @@ const HomePage = () => {
       {categories.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 py-8">
           <CategoryMegaMenu categories={categories} />
+          
+          {/* 2 Column Banners Below Categories */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            {/* Banner 1 - Left */}
+            <Link 
+              to="/biz-print" 
+              className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300"
+            >
+              <div className="relative h-48 md:h-56 bg-gradient-to-r from-blue-600 to-blue-700">
+                <img
+                  src="https://images.unsplash.com/photo-1542744094-24638eff58bb?w=800&h=400&fit=crop"
+                  alt="Biz Print"
+                  className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-40 transition-opacity"
+                />
+                <div className="absolute inset-0 flex items-center justify-between px-8">
+                  <div className="text-white">
+                    <h3 className="text-2xl md:text-3xl font-bold mb-2">
+                      Biz Print
+                    </h3>
+                    <p className="text-blue-100 text-sm md:text-base mb-4">
+                      Хэвлэлийн бүтээгдэхүүн - Өндөр чанар
+                    </p>
+                    <div className="inline-flex items-center gap-2 bg-white text-blue-700 px-4 py-2 rounded-lg font-semibold text-sm group-hover:bg-blue-50 transition">
+                      Дэлгэрэнгүй
+                      <ChevronRight size={16} />
+                    </div>
+                  </div>
+                  <div className="hidden md:block text-white opacity-20">
+                    <svg className="w-24 h-24" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V8a2 2 0 00-2-2h-5L9 4H4zm7 5a1 1 0 10-2 0v1H8a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V9z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Banner 2 - Right */}
+            <Link 
+              to="/biz-marketing" 
+              className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300"
+            >
+              <div className="relative h-48 md:h-56 bg-gradient-to-r from-purple-600 to-purple-700">
+                <img
+                  src="https://images.unsplash.com/photo-1557838923-2985c318be48?w=800&h=400&fit=crop"
+                  alt="Biz Marketing"
+                  className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-40 transition-opacity"
+                />
+                <div className="absolute inset-0 flex items-center justify-between px-8">
+                  <div className="text-white">
+                    <h3 className="text-2xl md:text-3xl font-bold mb-2">
+                      Biz Marketing
+                    </h3>
+                    <p className="text-purple-100 text-sm md:text-base mb-4">
+                      Маркетингийн үйлчилгээ - Мэргэжлийн
+                    </p>
+                    <div className="inline-flex items-center gap-2 bg-white text-purple-700 px-4 py-2 rounded-lg font-semibold text-sm group-hover:bg-purple-50 transition">
+                      Дэлгэрэнгүй
+                      <ChevronRight size={16} />
+                    </div>
+                  </div>
+                  <div className="hidden md:block text-white opacity-20">
+                    <svg className="w-24 h-24" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm12.553 1.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </div>
         </section>
       )}
 

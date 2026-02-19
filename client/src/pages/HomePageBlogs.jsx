@@ -178,10 +178,10 @@ const HomePage = () => {
         />
       )}
 
-      {/* Hero Carousel - BestComputers Style */}
-      <section className="bg-gray-100 py-6">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="relative h-[450px] bg-white rounded shadow overflow-hidden">
+      {/* Hero Carousel - Full Width, Responsive Height */}
+      <section className="bg-gray-100">
+        <div className="w-full">
+          <div className="relative h-[500px] md:h-[600px] lg:h-[700px] bg-white shadow overflow-hidden">
             {heroSlides.map((slide, index) => (
               <div
                 key={slide.id}
@@ -193,19 +193,19 @@ const HomePage = () => {
                   className="absolute inset-0 bg-cover bg-center"
                   style={{ backgroundImage: `url(${slide.image})` }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent"></div>
                 </div>
                 
-                <div className="absolute inset-0 flex items-center px-12">
-                  <div className="text-white max-w-xl">
-                    <div className="bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded inline-block mb-4">
-                      <span className="text-xs font-semibold">{slide.badge}</span>
+                <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center">
+                  <div className="text-white max-w-xl lg:max-w-2xl">
+                    <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded inline-block mb-4 md:mb-6">
+                      <span className="text-xs md:text-sm font-semibold">{slide.badge}</span>
                     </div>
-                    <h1 className="text-3xl md:text-5xl font-bold mb-3 leading-tight">
+                    <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-4 leading-tight">
                       {slide.subtitle}<br />
                       <span className="text-blue-300">{slide.highlight}</span>
                     </h1>
-                    <p className="text-lg mb-6 text-gray-200">
+                    <p className="text-base md:text-lg lg:text-xl mb-6 text-gray-200">
                       {slide.description}
                     </p>
                   </div>
@@ -215,24 +215,24 @@ const HomePage = () => {
             
             <button
               onClick={prevSlide}
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow z-20"
+              className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 md:p-3 shadow z-20 transition hover:scale-110"
             >
-              <ChevronLeft size={20} />
+              <ChevronLeft size={20} className="md:w-6 md:h-6" />
             </button>
             <button
               onClick={nextSlide}
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow z-20"
+              className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 md:p-3 shadow z-20 transition hover:scale-110"
             >
-              <ChevronRight size={20} />
+              <ChevronRight size={20} className="md:w-6 md:h-6" />
             </button>
 
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
+            <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 md:gap-2 z-20">
               {heroSlides.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentSlide(index)}
-                  className={`h-1.5 rounded-full transition-all ${
-                    index === currentSlide ? 'bg-white w-6' : 'bg-white/50 w-1.5'
+                  className={`h-1.5 md:h-2 rounded-full transition-all ${
+                    index === currentSlide ? 'bg-white w-6 md:w-8' : 'bg-white/50 w-1.5 md:w-2'
                   }`}
                 />
               ))}

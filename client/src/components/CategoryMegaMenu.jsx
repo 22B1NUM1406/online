@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { ChevronRight } from 'lucide-react';
 import { getProducts } from '../services/api';
 import { getImageUrl, formatPrice } from '../utils/helpers';
 
@@ -154,7 +155,7 @@ const CategoryMegaMenu = ({ categories }) => {
               </div>
             )}
 
-            {/* Right: Products Grid */}
+            {/* Center: Products Grid */}
             <div className="flex-1 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-gray-900">
@@ -181,8 +182,8 @@ const CategoryMegaMenu = ({ categories }) => {
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {getCurrentProducts().slice(0, 8).map((product) => (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {getCurrentProducts().slice(0, 6).map((product) => (
                     <Link
                       key={product._id}
                       to={`/products/${product._id}`}
@@ -190,7 +191,6 @@ const CategoryMegaMenu = ({ categories }) => {
                       onClick={handleMouseLeave}
                     >
                       <div className="bg-white border border-gray-200 rounded overflow-hidden hover:shadow-md transition">
-                        {/* Product Image */}
                         <div className="relative h-40 bg-gray-50 flex items-center justify-center p-3">
                           <img
                             src={getImageUrl(product.image)}
@@ -207,7 +207,6 @@ const CategoryMegaMenu = ({ categories }) => {
                           )}
                         </div>
 
-                        {/* Product Info */}
                         <div className="p-3">
                           <h4 className="text-sm font-medium text-gray-900 line-clamp-2 mb-2 group-hover:text-blue-600 transition">
                             {product.name}
@@ -241,6 +240,68 @@ const CategoryMegaMenu = ({ categories }) => {
                 </div>
               )}
             </div>
+
+            {/* Right: Large Product Preview Image */}
+            {getCurrentProducts().length > 0 && (
+              <div className="hidden lg:block w-80 border-l border-gray-200 bg-gradient-to-br from-gray-50 to-white p-6">
+                <div className="sticky top-6">
+                  <h4 className="text-sm font-semibold text-gray-500 uppercase mb-3">
+                    Онцлох бүтээгдэхүүн
+                  </h4>
+                  <Link
+                    to={`/products/${getCurrentProducts()[0]._id}`}
+                    className="block group"
+                    onClick={handleMouseLeave}
+                  >
+                    <div className="relative bg-white rounded-lg border-2 border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-all hover:border-blue-400">
+                      {/* Large Product Image */}
+                      <div className="relative h-64 bg-gray-50 flex items-center justify-center p-6">
+                        <img
+                          src={getImageUrl(getCurrentProducts()[0].image)}
+                          alt={getCurrentProducts()[0].name}
+                          className="max-h-full max-w-full object-contain group-hover:scale-110 transition-transform duration-500"
+                          onError={(e) => {
+                            e.target.src = 'https://via.placeholder.com/400x400?text=Product';
+                          }}
+                        />
+                        {getCurrentProducts()[0].discount && (
+                          <div className="absolute top-3 left-3 bg-orange-600 text-white px-3 py-2 rounded-lg font-bold shadow-lg">
+                            -{getCurrentProducts()[0].discount}%
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Product Info */}
+                      <div className="p-4 bg-white">
+                        <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition">
+                          {getCurrentProducts()[0].name}
+                        </h3>
+                        <div className="flex items-baseline gap-2 mb-3">
+                          {getCurrentProducts()[0].discount ? (
+                            <>
+                              <span className="text-2xl font-bold text-red-600">
+                                {formatPrice(getCurrentProducts()[0].price * (1 - getCurrentProducts()[0].discount / 100))}₮
+                              </span>
+                              <span className="text-sm text-gray-400 line-through">
+                                {formatPrice(getCurrentProducts()[0].price)}₮
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-2xl font-bold text-gray-900">
+                              {formatPrice(getCurrentProducts()[0].price)}₮
+                            </span>
+                          )}
+                        </div>
+                        <div className="inline-flex items-center gap-1 text-blue-600 font-medium text-sm group-hover:gap-2 transition-all">
+                          Дэлгэрэнгүй
+                          <ChevronRight size={16} />
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

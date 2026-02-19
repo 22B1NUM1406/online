@@ -340,6 +340,7 @@ const HomePage = () => {
           </div>
         </section>
       )}
+      
 
       {/* Discount Products - BestComputers Layout */}
       {discountProducts.length > 0 && (

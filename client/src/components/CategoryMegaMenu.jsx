@@ -8,7 +8,41 @@ const CategoryMegaMenu = ({ categories }) => {
   const [hoveredCategory, setHoveredCategory] = useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
   const [categoryProducts, setCategoryProducts] = useState({});
+  const [categoryPreviewImages, setCategoryPreviewImages] = useState({});
   const [loading, setLoading] = useState(false);
+
+  // Load preview images for all categories on mount
+  useEffect(() => {
+    if (categories && categories.length > 0) {
+      loadCategoryPreviews();
+    }
+  }, [categories]);
+
+  // Load first product image for each category
+  const loadCategoryPreviews = async () => {
+    try {
+      const previews = {};
+      
+      for (const category of categories) {
+        try {
+          const data = await getProducts({ 
+            category: category.slug,
+            limit: 1 
+          });
+          
+          if (data.data && data.data.length > 0) {
+            previews[category._id] = data.data[0].image;
+          }
+        } catch (error) {
+          console.error(`Error loading preview for ${category.name}:`, error);
+        }
+      }
+      
+      setCategoryPreviewImages(previews);
+    } catch (error) {
+      console.error('Error loading category previews:', error);
+    }
+  };
 
   // Load products when hovering over a category or selecting subcategory
   useEffect(() => {
@@ -87,7 +121,7 @@ const CategoryMegaMenu = ({ categories }) => {
 
   return (
     <div className="relative">
-      {/* Categories Horizontal Bar with Images */}
+      {/* Categories Horizontal Bar with Product Images */}
       <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
         {categories.map((category) => (
           <div
@@ -105,31 +139,34 @@ const CategoryMegaMenu = ({ categories }) => {
               }`}
             >
               {/* Category Card */}
-              <div className={`w-36 bg-white border-2 transition-all ${
+              <div className={`w-40 bg-white border-2 transition-all ${
                 hoveredCategory?._id === category._id
                   ? 'border-blue-500'
                   : 'border-gray-200'
               }`}>
-                {/* Image */}
-                <div className="h-24 overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
-                  {category.image ? (
+                {/* Product Image */}
+                <div className="h-32 overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-3">
+                  {categoryPreviewImages[category._id] ? (
                     <img
-                      src={getImageUrl(category.image)}
+                      src={getImageUrl(categoryPreviewImages[category._id])}
                       alt={category.name}
-                      className="w-full h-full object-cover"
+                      className="max-w-full max-h-full object-contain"
                       onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/144x96?text=Category';
+                        e.target.src = 'https://via.placeholder.com/160x128?text=Product';
                       }}
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-3xl">
-                      📦
+                    <div className="w-full h-full flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="text-4xl mb-2">📦</div>
+                        <div className="text-xs text-gray-400">Бүтээгдэхүүн</div>
+                      </div>
                     </div>
                   )}
                 </div>
                 
                 {/* Text */}
-                <div className="p-2 text-center">
+                <div className="p-3 text-center border-t border-gray-100">
                   <span className={`text-sm font-semibold line-clamp-2 ${
                     hoveredCategory?._id === category._id
                       ? 'text-blue-600'

@@ -87,31 +87,77 @@ const CategoryMegaMenu = ({ categories }) => {
 
   return (
     <div className="relative">
-      {/* Categories Horizontal Bar */}
-      <div className="flex gap-2 overflow-x-auto pb-2">
+      {/* Categories Horizontal Bar with Images */}
+      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
         {categories.map((category) => (
           <div
             key={category._id}
             onMouseEnter={() => handleMouseEnter(category)}
             onMouseLeave={handleMouseLeave}
-            className="relative"
+            className="relative flex-shrink-0"
           >
             <Link
               to={`/products?category=${category.slug}`}
-              className={`block px-6 py-3 text-base font-semibold rounded-lg transition whitespace-nowrap shadow-sm ${
+              className={`block rounded-lg transition-all overflow-hidden shadow-sm ${
                 hoveredCategory?._id === category._id
-                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md scale-105'
-                  : 'bg-white border-2 border-gray-300 text-gray-700 hover:border-blue-400 hover:bg-blue-50'
+                  ? 'ring-2 ring-blue-500 ring-offset-2 scale-105 shadow-lg'
+                  : 'hover:shadow-md'
               }`}
             >
-              {category.name}
-              {category.subcategories && category.subcategories.length > 0 && (
-                <span className="ml-1.5 text-sm">▼</span>
-              )}
+              {/* Category Card */}
+              <div className={`w-36 bg-white border-2 transition-all ${
+                hoveredCategory?._id === category._id
+                  ? 'border-blue-500'
+                  : 'border-gray-200'
+              }`}>
+                {/* Image */}
+                <div className="h-24 overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
+                  {category.image ? (
+                    <img
+                      src={getImageUrl(category.image)}
+                      alt={category.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/144x96?text=Category';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-3xl">
+                      📦
+                    </div>
+                  )}
+                </div>
+                
+                {/* Text */}
+                <div className="p-2 text-center">
+                  <span className={`text-sm font-semibold line-clamp-2 ${
+                    hoveredCategory?._id === category._id
+                      ? 'text-blue-600'
+                      : 'text-gray-700'
+                  }`}>
+                    {category.name}
+                  </span>
+                  {category.subcategories && category.subcategories.length > 0 && (
+                    <div className="text-xs text-gray-400 mt-1">
+                      {category.subcategories.length} дэд ангилал
+                    </div>
+                  )}
+                </div>
+              </div>
             </Link>
           </div>
         ))}
       </div>
+
+      <style jsx>{`
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
 
       {/* Mega Menu Dropdown */}
       {hoveredCategory && (

@@ -26,17 +26,17 @@ const Header = () => {
   return (
     <>
       {/* Top Bar */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2">
+      <div className="bg-gradient-to-r bg-gray-900 text-white py-2">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <Phone size={14} />
-                <span>+976 7000-5060</span>
+                <span>+976 7200-0444</span>
               </div>
               <div className="hidden md:flex items-center gap-2">
                 <Mail size={14} />
-                <span>info@printshop.mn</span>
+                <span>bizprintpro@gmail.com</span>
               </div>
             </div>
             <div className="text-xs text-blue-100">
@@ -61,27 +61,13 @@ const Header = () => {
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">P</span>
+                <span className="text-white font-bold text-xl">B</span>
               </div>
               <div>
-                <div className="text-xl font-bold text-gray-800">PRINT SHOP</div>
-                <div className="text-xs text-gray-500">Хэвлэлийн төв</div>
+                <div className="text-xl font-bold text-gray-800">BIZ PRINT PRO</div>
+                <div className="text-xs text-gray-500">Хэвлэлийн компани</div>
               </div>
             </Link>
-
-            {/* Search Bar - Desktop */}
-            <div className="hidden md:flex flex-1 max-w-2xl mx-8">
-              <div className="relative w-full">
-                <input
-                  type="text"
-                  placeholder="Үйлчилгээ, бүтээгдэхүүн хайх..."
-                  className="w-full px-4 py-2.5 pr-12 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
-                />
-                <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition-colors">
-                  <Search size={18} />
-                </button>
-              </div>
-            </div>
 
             {/* Right Side Actions */}
             <div className="flex items-center gap-4">
@@ -191,44 +177,44 @@ const Header = () => {
         </div>
 
         {/* Navigation Bar */}
-        <nav className="hidden md:block border-t border-gray-100">
+        <nav className="hidden md:block bg-gray-900 text-white border-t border-gray-100">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-8 py-3">
                 <Link
                   to="/"
-                  className="flex items-center gap-2 text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                  className="flex items-center gap-2 hover:text-blue-400 font-medium transition-colors"
                 >
                   <Home size={18} />
                   Эхлэл
                 </Link>
                 <Link
                   to="/biz-print"
-                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                  className="hover:text-blue-400 font-medium transition-colors"
                 >
                   Biz Print
                 </Link>
                 <Link
                   to="/biz-marketing"
-                  className="text-gray-700 hover:text-purple-600 font-medium transition-colors"
+                  className="hover:text-purple-400 font-medium transition-colors"
                 >
                   Biz Marketing
                 </Link>
                 <Link
                   to="/quotation"
-                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                  className="hover:text-blue-400 font-medium transition-colors"
                 >
                   Үнийн санал
                 </Link>
                 <Link
                   to="/about"
-                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                  className="hover:text-blue-400 font-medium transition-colors"
                 >
                   Бидний тухай
                 </Link>
                 <Link
                   to="/contact"
-                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                  className="hover:text-blue-400 font-medium transition-colors"
                 >
                   Холбоо барих
                 </Link>

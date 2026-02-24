@@ -68,16 +68,16 @@ const HomePage = () => {
     }
   ];
 
-  const partners = [
-    { id: 1, name: "Mongol Shuudan" },
-    { id: 2, name: "Gobi Cashmere" },
-    { id: 3, name: "APU" },
-    { id: 4, name: "Khan Bank" },
-    { id: 5, name: "Tavan Bogd" },
-    { id: 6, name: "MCS Group" },
-    { id: 7, name: "Skytel" },
-  ];
 
+  const partners = [
+    { id: 1, name: "Mongol Shuudan", logo: "/images/partners/mongol-shuudan.png" },
+    { id: 2, name: "Gobi Cashmere", logo: "/images/partners/gobi-cashmere.png" },
+    { id: 3, name: "APU", logo: "/images/partners/apu.png" },
+    { id: 4, name: "Khan Bank", logo: "/images/partners/khan-bank.png" },
+    { id: 5, name: "Tavan Bogd", logo: "/images/partners/tavan-bogd.png" },
+    { id: 6, name: "MCS Group", logo: "/images/partners/mcs-group.png" },
+    { id: 7, name: "Skytel", logo: "/images/partners/skytel.png" },
+  ];
   useEffect(() => {
     loadData();
 
@@ -445,8 +445,8 @@ const HomePage = () => {
                   key={cat.value}
                   onClick={() => setSelectedCategory(cat.value)}
                   className={`px-4 py-1.5 rounded whitespace-nowrap text-sm transition ${selectedCategory === cat.value
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
                     }`}
                 >
                   {cat.label}

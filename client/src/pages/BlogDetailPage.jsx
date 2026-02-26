@@ -5,7 +5,6 @@ import { getBlogBySlug } from '../services/api';
 import { getImageUrl } from '../utils/helpers';
 import Loading from '../components/Loading';
 import Notification from '../components/Notification';
-import MetaTags from '../components/MetaTags';
 import ShareButtons from '../components/ShareButtons';
 
 const BlogDetailPage = () => {
@@ -66,194 +65,163 @@ const BlogDetailPage = () => {
     );
   }
 
-  // Prepare share data with proper fallbacks
-  const shareUrl = blog.slug 
-    ? `${window.location.origin}/blogs/${blog.slug}`
-    : window.location.href;
-
+  // Prepare share data
+  const shareUrl = `https://www.bizco.mn/blogs/${blog.slug}`;
   const shareTitle = blog.title || 'Blog Post';
-
-  const shareDescription = blog.excerpt 
-    || (blog.content ? blog.content.substring(0, 200) : '')
-    || blog.title 
-    || 'Read our latest blog post';
-
-  // Get blog image with multiple fallbacks
-  // Get blog image with fallback to actual blog image or null
-  const getBlogImage = () => {
-    if (blog.featuredImage) {
-      const url = getImageUrl(blog.featuredImage);
-      if (url && url.startsWith('http')) return url;
-    }
-    if (blog.image) {
-      const url = getImageUrl(blog.image);
-      if (url && url.startsWith('http')) return url;
-    }
-    // Return null if no image - MetaTags will handle default
-    return null;
-  };
-
-  const shareImage = getBlogImage();
-
-  // Debug logging
-  console.log('📊 Blog Share Data:', {
-    url: shareUrl,
-    title: shareTitle,
-    description: shareDescription.substring(0, 50) + '...',
-    image: shareImage
-  });
+  const shareDescription = blog.excerpt || blog.content?.substring(0, 200) || blog.title;
+  const shareImage = getImageUrl(blog.featuredImage || blog.image) || 'https://www.bizco.mn/images/default-blog.jpg';
 
   return (
     <>
-    {/* React 19 Meta Tags */}
-      <title>{product.name} | BizCo Print Shop</title>
+      {/* React 19 Meta Tags */}
+      <title>{blog.title} | BizCo Print Shop Blog</title>
       <meta name="description" content={shareDescription.substring(0, 160)} />
-      <meta property="og:type" content="product" />
+      <meta property="og:type" content="article" />
       <meta property="og:url" content={shareUrl} />
-      <meta property="og:title" content={product.name} />
+      <meta property="og:title" content={blog.title} />
       <meta property="og:description" content={shareDescription.substring(0, 300)} />
       <meta property="og:image" content={shareImage} />
       <meta property="og:image:secure_url" content={shareImage} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
       <meta property="og:site_name" content="BizCo Print Shop" />
+      <meta property="article:published_time" content={blog.publishedAt || blog.createdAt} />
+      <meta property="article:author" content={blog.author?.name || 'BizCo'} />
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={product.name} />
+      <meta name="twitter:title" content={blog.title} />
       <meta name="twitter:description" content={shareDescription.substring(0, 200)} />
       <meta name="twitter:image" content={shareImage} />
+
       <div className="min-h-screen bg-gray-50">
-      
+        {notification && (
+          <Notification 
+            type={notification.type}
+            message={notification.message}
+            onClose={() => setNotification(null)}
+          />
+        )}
 
-      {notification && (
-        <Notification 
-          type={notification.type}
-          message={notification.message}
-          onClose={() => setNotification(null)}
-        />
-      )}
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          {/* Back Button */}
+          <Link 
+            to="/" 
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-blue-600 mb-6 transition-colors"
+          >
+            <ArrowLeft size={20} />
+            <span>Буцах</span>
+          </Link>
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Back Button */}
-        <Link 
-          to="/" 
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-blue-600 mb-6 transition-colors"
-        >
-          <ArrowLeft size={20} />
-          <span>Буцах</span>
-        </Link>
+          {/* Article */}
+          <article className="bg-white rounded-2xl shadow-xl overflow-hidden">
+            {/* Featured Image */}
+            {blog.featuredImage && (
+              <div className="relative h-96 bg-gray-200">
+                <img
+                  src={getImageUrl(blog.featuredImage)}
+                  alt={blog.title}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.src = 'https://via.placeholder.com/1200x600?text=Blog+Image';
+                  }}
+                />
+                {blog.featured && (
+                  <div className="absolute top-6 left-6 bg-yellow-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                    Онцлох блог
+                  </div>
+                )}
+              </div>
+            )}
 
-        {/* Article */}
-        <article className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          {/* Featured Image */}
-          {blog.featuredImage && (
-            <div className="relative h-96 bg-gray-200">
-              <img
-                src={getImageUrl(blog.featuredImage)}
-                alt={blog.title}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.target.src = 'https://via.placeholder.com/1200x600?text=Blog+Image';
-                }}
-              />
-              {blog.featured && (
-                <div className="absolute top-6 left-6 bg-yellow-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                  Онцлох блог
+            {/* Content */}
+            <div className="p-8 md:p-12">
+              {/* Title */}
+              <h1 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">
+                {blog.title}
+              </h1>
+
+              {/* Meta Info */}
+              <div className="flex flex-wrap items-center justify-between gap-6 text-gray-600 mb-8 pb-8 border-b">
+                <div className="flex flex-wrap items-center gap-6">
+                  <div className="flex items-center gap-2">
+                    <User size={18} />
+                    <span className="font-medium">{blog.author?.name || 'Admin'}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <Calendar size={18} />
+                    <span>{formatDate(blog.publishedAt || blog.createdAt)}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <Eye size={18} />
+                    <span>{blog.views} үзсэн</span>
+                  </div>
+
+                  <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+                    {blog.category === 'news' ? 'Мэдээ' :
+                     blog.category === 'tutorial' ? 'Заавар' :
+                     blog.category === 'tips' ? 'Зөвлөмж' :
+                     blog.category === 'case-study' ? 'Туршилт' :
+                     blog.category === 'announcement' ? 'Мэдэгдэл' : 'Бусад'}
+                  </div>
+                </div>
+
+                {/* Share Buttons */}
+                <ShareButtons
+                  url={shareUrl}
+                  title={shareTitle}
+                  description={shareDescription}
+                  image={shareImage}
+                />
+              </div>
+
+              {/* Excerpt */}
+              {blog.excerpt && (
+                <div className="text-xl text-gray-700 mb-8 p-6 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg italic">
+                  {blog.excerpt}
+                </div>
+              )}
+
+              {/* Main Content */}
+              <div className="prose prose-lg max-w-none">
+                <div className="text-gray-800 leading-relaxed whitespace-pre-wrap">
+                  {blog.content}
+                </div>
+              </div>
+
+              {/* Tags */}
+              {blog.tags && blog.tags.length > 0 && (
+                <div className="mt-12 pt-8 border-t">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Tag size={18} className="text-gray-500" />
+                    <span className="text-sm font-medium text-gray-700">Tags:</span>
+                    {blog.tags.map((tag, index) => (
+                      <span 
+                        key={index}
+                        className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
-          )}
+          </article>
 
-          {/* Content */}
-          <div className="p-8 md:p-12">
-            {/* Title */}
-            <h1 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">
-              {blog.title}
-            </h1>
-
-            {/* Meta Info */}
-            <div className="flex flex-wrap items-center justify-between gap-6 text-gray-600 mb-8 pb-8 border-b">
-              <div className="flex flex-wrap items-center gap-6">
-                <div className="flex items-center gap-2">
-                  <User size={18} />
-                  <span className="font-medium">{blog.author?.name || 'Admin'}</span>
-                </div>
-                
-                <div className="flex items-center gap-2">
-                  <Calendar size={18} />
-                  <span>{formatDate(blog.publishedAt || blog.createdAt)}</span>
-                </div>
-                
-                <div className="flex items-center gap-2">
-                  <Eye size={18} />
-                  <span>{blog.views} үзсэн</span>
-                </div>
-
-                <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                  {blog.category === 'news' ? 'Мэдээ' :
-                   blog.category === 'tutorial' ? 'Заавар' :
-                   blog.category === 'tips' ? 'Зөвлөмж' :
-                   blog.category === 'case-study' ? 'Туршилт' :
-                   blog.category === 'announcement' ? 'Мэдэгдэл' : 'Бусад'}
-                </div>
-              </div>
-
-              {/* Share Buttons */}
-              <ShareButtons
-                url={shareUrl}
-                title={shareTitle}
-                description={shareDescription}
-                image={shareImage}
-              />
-            </div>
-
-            {/* Excerpt */}
-            {blog.excerpt && (
-              <div className="text-xl text-gray-700 mb-8 p-6 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg italic">
-                {blog.excerpt}
-              </div>
-            )}
-
-            {/* Main Content */}
-            <div className="prose prose-lg max-w-none">
-              <div className="text-gray-800 leading-relaxed whitespace-pre-wrap">
-                {blog.content}
-              </div>
-            </div>
-
-            {/* Tags */}
-            {blog.tags && blog.tags.length > 0 && (
-              <div className="mt-12 pt-8 border-t">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <Tag size={18} className="text-gray-500" />
-                  <span className="text-sm font-medium text-gray-700">Tags:</span>
-                  {blog.tags.map((tag, index) => (
-                    <span 
-                      key={index}
-                      className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
+          {/* Back to Blog List */}
+          <div className="mt-8 text-center">
+            <Link 
+              to="/" 
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <ArrowLeft size={20} />
+              Блог жагсаалт руу буцах
+            </Link>
           </div>
-        </article>
-
-        {/* Back to Blog List */}
-        <div className="mt-8 text-center">
-          <Link 
-            to="/" 
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <ArrowLeft size={20} />
-            Блог жагсаалт руу буцах
-          </Link>
         </div>
       </div>
-    </div>
     </>
-    
   );
 };
 

@@ -8,6 +8,7 @@ import { getProduct } from '../services/api';
 import { formatPrice, getImageUrl } from '../utils/helpers';
 import Loading from '../components/Loading';
 import Notification from '../components/Notification';
+import MetaTags from '../components/MetaTags';
 import ShareButtons from '../components/ShareButtons';
 import TextDisplay from '../components/TextDisplay';
 
@@ -49,259 +50,294 @@ const ProductDetailPage = () => {
       setTimeout(() => navigate('/login'), 1500);
       return;
     }
-
-    addToCart({
-      _id: product._id,
-      name: product.name,
-      price: product.price,
-      discount: product.discount,
-      image: product.image,
-      quantity: quantity,
-    });
+    
+    addToCart(product, quantity);
     setNotification({ message: 'Сагсанд нэмэгдлээ!', type: 'success' });
   };
 
-  const handleToggleWishlist = () => {
+  const handleWishlistToggle = async () => {
     if (!isAuthenticated) {
-      setNotification({ message: 'Нэвтэрсний дараа хадгална уу', type: 'info' });
+      setNotification({ message: 'Нэвтэрсний дараа wishlist-д нэмнэ үү', type: 'info' });
       setTimeout(() => navigate('/login'), 1500);
       return;
     }
-
-    toggleWishlist(product);
-    setHeartAnimating(true);
-    setTimeout(() => setHeartAnimating(false), 600);
     
-    const message = inWishlist ? 'Хадгалсан жагсаалтаас хасагдлаа' : 'Хадгалсан жагсаалтад нэмэгдлээ';
-    setNotification({ message, type: 'success' });
+    setHeartAnimating(true);
+    const result = await toggleWishlist(product._id);
+    
+    setTimeout(() => setHeartAnimating(false), 300);
+    
+    if (result.success) {
+      setNotification({ 
+        message: inWishlist ? 'Wishlist-с хасагдлаа' : 'Wishlist-д нэмэгдлээ', 
+        type: 'success' 
+      });
+    } else {
+      setNotification({ message: result.message, type: 'error' });
+    }
   };
 
-  if (loading) return <Loading />;
-  if (!product) return null;
+  if (loading) {
+    return <Loading fullScreen />;
+  }
 
-  const discountedPrice = product.discount 
-    ? product.price * (1 - product.discount / 100) 
-    : product.price;
+  if (!product) {
+    return null;
+  }
+
+  // Prepare share data with proper fallbacks
+  const shareUrl = product._id
+    ? `${window.location.origin}/products/${product._id}`
+    : window.location.href;
+
+  const shareTitle = product.name || 'Product';
+
+  const shareDescription = product.description 
+    || `${product.name} - ${formatPrice(product.price)}`
+    || 'Check out this product';
+
+  // Get product image - return actual image or null
+  const getProductImage = () => {
+    if (product.image) {
+      const url = getImageUrl(product.image);
+      if (url && url.startsWith('http')) return url;
+    }
+    // Return null - MetaTags will handle default
+    return null;
+  };
+
+  const shareImage = getProductImage();
+
+  // Debug logging
+  console.log('📦 Product Share Data:', {
+    url: shareUrl,
+    title: shareTitle,
+    description: shareDescription.substring(0, 50) + '...',
+    image: shareImage
+  });
 
   return (
     <>
-      {/* React 19 Meta Tags - Automatically hoisted to <head> */}
+    {/* React 19 Meta Tags */}
       <title>{product.name} | BizCo Print Shop</title>
-      <meta name="description" content={product.description?.substring(0, 160) || product.name} />
-      
-      {/* Open Graph / Facebook */}
+      <meta name="description" content={shareDescription.substring(0, 160)} />
       <meta property="og:type" content="product" />
-      <meta property="og:url" content={`https://www.bizco.mn/products/${product._id}`} />
+      <meta property="og:url" content={shareUrl} />
       <meta property="og:title" content={product.name} />
-      <meta property="og:description" content={product.description?.substring(0, 300) || product.name} />
-      <meta property="og:image" content={getImageUrl(product.image)} />
-      <meta property="og:image:secure_url" content={getImageUrl(product.image)} />
+      <meta property="og:description" content={shareDescription.substring(0, 300)} />
+      <meta property="og:image" content={shareImage} />
+      <meta property="og:image:secure_url" content={shareImage} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
-      <meta property="og:image:alt" content={product.name} />
       <meta property="og:site_name" content="BizCo Print Shop" />
-      
-      {/* Product Specific */}
-      <meta property="product:price:amount" content={product.price} />
-      <meta property="product:price:currency" content="MNT" />
-      {product.discount && (
-        <meta property="product:sale_price:amount" content={discountedPrice} />
-      )}
-      
-      {/* Twitter Card */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={product.name} />
-      <meta name="twitter:description" content={product.description?.substring(0, 200) || product.name} />
-      <meta name="twitter:image" content={getImageUrl(product.image)} />
+      <meta name="twitter:description" content={shareDescription.substring(0, 200)} />
+      <meta name="twitter:image" content={shareImage} />
+     <div className="min-h-screen bg-gray-50 py-8">
+      
 
-      {/* Component Content */}
-      <div className="min-h-screen bg-gray-50">
-        {notification && (
-          <Notification 
-            type={notification.type}
-            message={notification.message}
-            onClose={() => setNotification(null)}
-          />
-        )}
+      {notification && (
+        <Notification 
+          type={notification.type}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+        />
+      )}
 
-        {/* Back Button */}
-        <div className="bg-white border-b">
-          <div className="max-w-7xl mx-auto px-4 py-4">
-            <button 
-              onClick={() => navigate(-1)}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              <ArrowLeft size={20} />
-              <span>Буцах</span>
-            </button>
-          </div>
-        </div>
+      <div className="max-w-7xl mx-auto px-4">
+        <Link to="/" className="inline-flex items-center gap-2 text-gray-600 hover:text-blue-600 mb-6">
+          <ArrowLeft size={20} />
+          <span>Буцах</span>
+        </Link>
 
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="grid md:grid-cols-2 gap-8 p-8">
             {/* Product Image */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="relative aspect-square">
-                <img
-                  src={getImageUrl(product.image)}
-                  alt={product.name}
-                  className="w-full h-full object-contain"
-                  onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/600x600?text=Product';
-                  }}
+            <div className="relative">
+              <img 
+                src={getImageUrl(product.image)} 
+                alt={product.name}
+                className="w-full h-96 object-cover rounded-xl"
+                onError={(e) => {
+                  e.target.src = '/placeholder.png';
+                }}
+              />
+              {product.badge && (
+                <div className={`absolute top-4 left-4 ${product.badgeColor || 'bg-red-500'} text-white px-4 py-2 rounded-full font-bold shadow-lg`}>
+                  {product.badge}
+                </div>
+              )}
+              <button 
+                onClick={handleWishlistToggle}
+                className={`absolute top-4 right-4 bg-white p-3 rounded-full shadow-lg transition-all duration-300 ${
+                  heartAnimating ? 'scale-125' : 'scale-100'
+                } ${inWishlist ? 'bg-red-50' : 'hover:bg-red-50'}`}
+              >
+                <Heart 
+                  size={24} 
+                  className={`transition-colors ${
+                    inWishlist ? 'text-red-500 fill-red-500' : 'text-gray-600 hover:text-red-500'
+                  }`}
                 />
-                {product.discount && (
-                  <div className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg font-bold">
-                    -{product.discount}%
-                  </div>
-                )}
-                {product.featured && (
-                  <div className="absolute top-4 left-4 bg-yellow-500 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2">
-                    <Star size={16} fill="white" />
-                    Онцлох
-                  </div>
-                )}
-              </div>
+              </button>
             </div>
 
             {/* Product Info */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="mb-6">
-                <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.name}</h1>
-                
-                {/* Category */}
-                {product.category && (
-                  <div className="mb-4">
-                    <Link 
-                      to={`/products?category=${product.category.slug}`}
-                      className="text-sm text-blue-600 hover:text-blue-700"
-                    >
-                      {product.category.name}
-                    </Link>
-                  </div>
-                )}
+            <div className="flex flex-col">
+              <h1 className="text-3xl font-bold text-gray-800 mb-4">
+                {product.name}
+              </h1>
 
-                {/* Price */}
-                <div className="mb-6">
-                  {product.discount ? (
-                    <div className="flex items-baseline gap-3">
-                      <span className="text-3xl font-bold text-red-600">
-                        {formatPrice(discountedPrice)}₮
-                      </span>
-                      <span className="text-xl text-gray-400 line-through">
-                        {formatPrice(product.price)}₮
-                      </span>
-                    </div>
-                  ) : (
-                    <span className="text-3xl font-bold text-gray-900">
-                      {formatPrice(product.price)}₮
-                    </span>
-                  )}
+              {/* Rating */}
+              {product.rating && (
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star 
+                        key={i}
+                        size={20}
+                        className={i < Math.floor(product.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-lg font-medium text-gray-700">{product.rating}</span>
+                  <span className="text-gray-400">({product.reviews} үнэлгээ)</span>
                 </div>
+              )}
 
-                {/* Description */}
-                {product.description && (
-                  <div className="mb-6">
-                    <h3 className="font-semibold text-gray-900 mb-2">Тайлбар</h3>
-                    <TextDisplay content={product.description} />
-                  </div>
+              {/* Price */}
+              <div className="flex items-center gap-4 mb-6">
+                <span className="text-4xl font-bold text-blue-600">
+                  {formatPrice(product.price)}
+                </span>
+                {product.oldPrice && (
+                  <span className="text-xl text-gray-400 line-through">
+                    {formatPrice(product.oldPrice)}
+                  </span>
                 )}
+                {product.discount && (
+                  <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-bold">
+                    -{product.discount}%
+                  </span>
+                )}
+              </div>
 
-                {/* Product Details */}
-                <div className="mb-6 space-y-2">
+              {/* Description */}
+              <div className="bg-gray-50 rounded-xl p-6 mb-6">
+                <h3 className="font-bold text-lg mb-3">Дэлгэрэнгүй</h3>
+                <TextDisplay 
+                  text={product.description}
+                  className="text-gray-600 mb-4"
+                />
+                
+                <div className="space-y-2">
+                  {product.material && (
+                    <div className="flex justify-between border-b pb-2">
+                      <span className="text-gray-600">Материал:</span>
+                      <span className="font-medium">{product.material}</span>
+                    </div>
+                  )}
                   {product.size && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex justify-between border-b pb-2">
                       <span className="text-gray-600">Хэмжээ:</span>
                       <span className="font-medium">{product.size}</span>
                     </div>
                   )}
                   {product.format && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex justify-between border-b pb-2">
                       <span className="text-gray-600">Формат:</span>
                       <span className="font-medium">{product.format}</span>
                     </div>
                   )}
-                  {product.material && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-600">Материал:</span>
-                      <span className="font-medium">{product.material}</span>
-                    </div>
-                  )}
                 </div>
+              </div>
 
-                {/* Quantity */}
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Тоо ширхэг
-                  </label>
-                  <div className="flex items-center gap-4">
-                    <button
+              {/* Quantity */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Тоо ширхэг
+                </label>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center border-2 rounded-lg">
+                    <button 
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                      className="px-4 py-2 hover:bg-gray-100 transition-colors"
                     >
                       -
                     </button>
-                    <span className="text-xl font-medium w-12 text-center">{quantity}</span>
-                    <button
+                    <input 
+                      type="number"
+                      min="1"
+                      value={quantity}
+                      onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                      className="w-20 text-center border-x-2 py-2 focus:outline-none"
+                    />
+                    <button 
                       onClick={() => setQuantity(quantity + 1)}
-                      className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                      className="px-4 py-2 hover:bg-gray-100 transition-colors"
                     >
                       +
                     </button>
                   </div>
+                  <span className="text-gray-600">
+                    Нийт: <span className="font-bold text-blue-600">{formatPrice(product.price * quantity)}</span>
+                  </span>
                 </div>
+              </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-3 mb-6">
-                  <button
-                    onClick={handleAddToCart}
-                    className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center gap-2"
-                  >
-                    <ShoppingCart size={20} />
-                    Сагсанд нэмэх
-                  </button>
-                  <button
-                    onClick={handleToggleWishlist}
-                    className={`px-4 py-3 border-2 rounded-lg transition-all ${
-                      inWishlist 
-                        ? 'border-red-500 bg-red-50' 
-                        : 'border-gray-300 hover:border-red-500'
-                    } ${heartAnimating ? 'scale-125' : ''}`}
-                  >
-                    <Heart 
-                      size={24} 
-                      className={inWishlist ? 'fill-red-500 text-red-500' : 'text-gray-600'}
-                    />
-                  </button>
+              {/* Add to Cart Button */}
+              <button 
+                onClick={handleAddToCart}
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-4 rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-3"
+              >
+                <ShoppingCart size={24} />
+                Сагсанд нэмэх
+              </button>
+
+              {/* Features */}
+              <div className="grid grid-cols-2 gap-4 mt-6">
+                <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg">
+                  <Truck className="text-green-600" size={24} />
+                  <div>
+                    <div className="font-semibold text-sm">Үнэгүй хүргэлт</div>
+                    <div className="text-xs text-gray-600">200,000₮-с дээш</div>
+                  </div>
                 </div>
+                <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
+                  <Shield className="text-blue-600" size={24} />
+                  <div>
+                    <div className="font-semibold text-sm">Баталгаат</div>
+                    <div className="text-xs text-gray-600">Чанарт итгэлтэй</div>
+                  </div>
+                </div>
+              </div>
 
-                {/* Share Buttons */}
-                <div className="mb-6">
-                  <ShareButtons 
-                    url={`https://www.bizco.mn/products/${product._id}`}
-                    title={product.name}
-                    description={product.description}
-                    image={getImageUrl(product.image)}
+              {/* Share Section */}
+              <div className="mt-6 pt-6 border-t">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-700 font-medium">Найзуудтайгаа хуваалцах</span>
+                  <ShareButtons
+                    url={shareUrl}
+                    title={shareTitle}
+                    description={shareDescription}
+                    image={shareImage}
                   />
-                </div>
-
-                {/* Features */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-                    <Truck className="text-green-600" size={24} />
-                    <span className="text-sm text-gray-700">Хүргэлттэй</span>
-                  </div>
-                  <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-                    <Shield className="text-blue-600" size={24} />
-                    <span className="text-sm text-gray-700">Баталгаатай</span>
-                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Related Products Section (Optional) */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Холбоотой бүтээгдэхүүн</h2>
+          <p className="text-gray-500">Удахгүй...</p>
+        </div>
       </div>
+    </div>
     </>
+   
   );
 };
 

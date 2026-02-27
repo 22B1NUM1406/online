@@ -120,63 +120,64 @@ const CategoryMegaMenu = ({ categories }) => {
   };
 
   return (
-    <div className="relative">
-      {/* Categories Horizontal Bar with Product Images */}
-      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+    <div className="relative w-full">
+      {/* Categories Grid - 6 columns, full width, larger cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 pb-6">
         {categories.map((category) => (
           <div
             key={category._id}
             onMouseEnter={() => handleMouseEnter(category)}
             onMouseLeave={handleMouseLeave}
-            className="relative flex-shrink-0"
+            className="relative"
           >
             <Link
               to={`/products?category=${category.slug}`}
-              className={`block rounded-lg transition-all overflow-hidden shadow-sm ${
+              className={`block rounded-2xl transition-all overflow-hidden ${
                 hoveredCategory?._id === category._id
-                  ? 'ring-2 ring-blue-500 ring-offset-2 scale-105 shadow-lg'
-                  : 'hover:shadow-md'
+                  ? 'ring-4 ring-blue-500 ring-offset-2 scale-105 shadow-2xl'
+                  : 'shadow-lg hover:shadow-xl'
               }`}
             >
-              {/* Category Card */}
-              <div className={`w-40 bg-white border-2 transition-all ${
+              {/* Category Card - Much Larger */}
+              <div className={`bg-white border-2 transition-all ${
                 hoveredCategory?._id === category._id
                   ? 'border-blue-500'
-                  : 'border-gray-200'
+                  : 'border-gray-200 hover:border-gray-300'
               }`}>
-                {/* Product Image */}
-                <div className="h-32 overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-3">
+                {/* Image - Much Larger */}
+                <div className="h-44 overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-5">
                   {categoryPreviewImages[category._id] ? (
                     <img
                       src={getImageUrl(categoryPreviewImages[category._id])}
                       alt={category.name}
-                      className="max-w-full max-h-full object-contain"
+                      className="max-w-full max-h-full object-contain transition-transform duration-300 hover:scale-110"
                       onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/160x128?text=Product';
+                        e.target.src = 'https://via.placeholder.com/200x176?text=Product';
                       }}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <div className="text-center">
-                        <div className="text-4xl mb-2">📦</div>
-                        <div className="text-xs text-gray-400">Бүтээгдэхүүн</div>
+                        <div className="text-6xl mb-3">📦</div>
+                        <div className="text-sm text-gray-400">Бүтээгдэхүүн</div>
                       </div>
                     </div>
                   )}
                 </div>
                 
-                {/* Text */}
-                <div className="p-3 text-center border-t border-gray-100">
-                  <span className={`text-sm font-semibold line-clamp-2 ${
+                {/* Text - Larger */}
+                <div className="p-4 text-center border-t border-gray-100 min-h-[80px] flex flex-col justify-center">
+                  <span className={`text-lg font-bold line-clamp-2 leading-tight mb-1 ${
                     hoveredCategory?._id === category._id
                       ? 'text-blue-600'
-                      : 'text-gray-700'
+                      : 'text-gray-800'
                   }`}>
                     {category.name}
                   </span>
                   {category.subcategories && category.subcategories.length > 0 && (
-                    <div className="text-xs text-gray-400 mt-1">
-                      {category.subcategories.length} дэд ангилал
+                    <div className="flex items-center justify-center gap-1 mt-2 text-sm text-gray-500">
+                      <span className="font-medium">{category.subcategories.length} дэд ангилал</span>
+                      <span className="text-blue-500 font-bold">▼</span>
                     </div>
                   )}
                 </div>
@@ -186,36 +187,26 @@ const CategoryMegaMenu = ({ categories }) => {
         ))}
       </div>
 
-      <style jsx>{`
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
-
-      {/* Mega Menu Dropdown */}
+      {/* Mega Menu Dropdown - Full Width */}
       {hoveredCategory && (
         <div
           onMouseEnter={() => setHoveredCategory(hoveredCategory)}
           onMouseLeave={handleMouseLeave}
-          className="absolute left-0 right-0 top-full mt-2 bg-white border border-gray-200 rounded shadow-lg z-50"
+          className="absolute left-0 right-0 top-full mt-3 bg-white border-2 border-gray-200 rounded-xl shadow-2xl z-50"
         >
           <div className="flex">
             {/* Left: Subcategories Sidebar (if exists) */}
             {hoveredCategory.subcategories && hoveredCategory.subcategories.length > 0 && (
-              <div className="w-48 border-r border-gray-200 bg-gray-50 p-3">
-                <div className="text-xs font-semibold text-gray-500 uppercase mb-2">
+              <div className="w-56 border-r border-gray-200 bg-gray-50 p-4">
+                <div className="text-sm font-bold text-gray-700 mb-3">
                   Дэд ангилал
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <button
                     onClick={() => setSelectedSubCategory(null)}
-                    className={`w-full text-left px-3 py-2 text-sm rounded transition ${
+                    className={`w-full text-left px-4 py-3 text-sm rounded-lg transition font-medium ${
                       !selectedSubCategory
-                        ? 'bg-blue-600 text-white font-medium'
+                        ? 'bg-blue-600 text-white shadow-md'
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
@@ -225,9 +216,9 @@ const CategoryMegaMenu = ({ categories }) => {
                     <button
                       key={subCat._id}
                       onClick={() => handleSubCategoryClick(subCat)}
-                      className={`w-full text-left px-3 py-2 text-sm rounded transition ${
+                      className={`w-full text-left px-4 py-3 text-sm rounded-lg transition font-medium ${
                         selectedSubCategory?._id === subCat._id
-                          ? 'bg-blue-600 text-white font-medium'
+                          ? 'bg-blue-600 text-white shadow-md'
                           : 'text-gray-700 hover:bg-gray-100'
                       }`}
                     >
@@ -238,10 +229,10 @@ const CategoryMegaMenu = ({ categories }) => {
               </div>
             )}
 
-            {/* Center: Products Grid */}
-            <div className="flex-1 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-900">
+            {/* Center: Products Grid - Larger */}
+            <div className="flex-1 p-8">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-bold text-gray-900">
                   {selectedSubCategory 
                     ? `${hoveredCategory.name} - ${selectedSubCategory.name}`
                     : hoveredCategory.name
@@ -253,51 +244,52 @@ const CategoryMegaMenu = ({ categories }) => {
                       ? selectedSubCategory.slug 
                       : hoveredCategory.slug
                   }`}
-                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-base text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-2"
                   onClick={handleMouseLeave}
                 >
-                  Бүгдийг үзэх →
+                  Бүгдийг үзэх
+                  <ChevronRight size={18} />
                 </Link>
               </div>
 
               {loading ? (
-                <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {getCurrentProducts().slice(0, 6).map((product) => (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+                  {getCurrentProducts().slice(0, 8).map((product) => (
                     <Link
                       key={product._id}
                       to={`/products/${product._id}`}
                       className="group"
                       onClick={handleMouseLeave}
                     >
-                      <div className="bg-white border border-gray-200 rounded overflow-hidden hover:shadow-md transition">
-                        <div className="relative h-40 bg-gray-50 flex items-center justify-center p-3">
+                      <div className="bg-white border-2 border-gray-200 rounded-xl overflow-hidden hover:shadow-xl hover:border-blue-400 transition-all">
+                        <div className="relative h-48 bg-gray-50 flex items-center justify-center p-4">
                           <img
                             src={getImageUrl(product.image)}
                             alt={product.name}
-                            className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform"
+                            className="max-h-full max-w-full object-contain group-hover:scale-110 transition-transform duration-300"
                             onError={(e) => {
                               e.target.src = 'https://via.placeholder.com/200x200?text=Product';
                             }}
                           />
                           {product.discount && (
-                            <div className="absolute top-2 left-2 bg-orange-600 text-white px-2 py-0.5 rounded text-xs font-bold">
+                            <div className="absolute top-3 left-3 bg-orange-600 text-white px-3 py-1 rounded-lg text-sm font-bold shadow-lg">
                               -{product.discount}%
                             </div>
                           )}
                         </div>
 
-                        <div className="p-3">
-                          <h4 className="text-sm font-medium text-gray-900 line-clamp-2 mb-2 group-hover:text-blue-600 transition">
+                        <div className="p-4">
+                          <h4 className="text-sm font-semibold text-gray-900 line-clamp-2 mb-3 group-hover:text-blue-600 transition-colors leading-tight">
                             {product.name}
                           </h4>
                           <div className="flex items-center gap-2">
                             {product.discount ? (
                               <>
-                                <span className="text-base font-bold text-red-600">
+                                <span className="text-lg font-bold text-red-600">
                                   {formatPrice(product.price * (1 - product.discount / 100))}₮
                                 </span>
                                 <span className="text-xs text-gray-400 line-through">
@@ -305,7 +297,7 @@ const CategoryMegaMenu = ({ categories }) => {
                                 </span>
                               </>
                             ) : (
-                              <span className="text-base font-bold text-gray-900">
+                              <span className="text-lg font-bold text-gray-900">
                                 {formatPrice(product.price)}₮
                               </span>
                             )}
@@ -318,8 +310,9 @@ const CategoryMegaMenu = ({ categories }) => {
               )}
 
               {!loading && getCurrentProducts().length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  Бүтээгдэхүүн олдсонгүй
+                <div className="text-center py-16">
+                  <div className="text-6xl mb-4">📦</div>
+                  <p className="text-gray-500 text-lg">Бүтээгдэхүүн олдсонгүй</p>
                 </div>
               )}
             </div>

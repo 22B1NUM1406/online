@@ -154,7 +154,7 @@ const HomePage = () => {
         />
       )}
 
-      {/* Hero Carousel - Modern Design */}
+      {/* Hero Carousel - Modern Design with Larger Text */}
       <section className="bg-gradient-to-b from-gray-100 to-gray-50">
         <div className="w-full">
           <div className="relative h-[500px] md:h-[600px] lg:h-[700px] bg-white shadow-xl overflow-hidden">
@@ -169,56 +169,104 @@ const HomePage = () => {
                   className="absolute inset-0 bg-cover bg-center transform scale-105"
                   style={{ backgroundImage: `url(${slide.image})` }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-transparent"></div>
                 </div>
 
                 <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center">
-                  <div className="text-white max-w-xl lg:max-w-2xl animate-fadeIn">
-                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full mb-4 md:mb-6 border border-white/30">
-                      <span className="text-xs md:text-sm font-semibold">{slide.badge}</span>
+                  <div className="text-white max-w-2xl lg:max-w-3xl animate-fadeIn">
+                    {/* Badge - Larger */}
+                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-6 py-3 rounded-full mb-6 md:mb-8 border border-white/30 shadow-lg">
+                      <span className="text-sm md:text-base lg:text-lg font-bold tracking-wide">
+                        {slide.badge}
+                      </span>
                     </div>
-                    <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-4 leading-tight">
-                      {slide.subtitle}<br />
-                      <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                    
+                    {/* Title - Much Larger */}
+                    <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-4 md:mb-6 leading-tight tracking-tight">
+                      <span className="block mb-2 drop-shadow-2xl">
+                        {slide.subtitle}
+                      </span>
+                      <span className="block bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent drop-shadow-2xl animate-gradient">
                         {slide.highlight}
                       </span>
                     </h1>
-                    <p className="text-base md:text-lg lg:text-xl mb-6 text-gray-200">
+                    
+                    {/* Description - Larger */}
+                    <p className="text-lg md:text-2xl lg:text-3xl mb-8 md:mb-10 text-gray-200 font-light leading-relaxed drop-shadow-lg max-w-xl">
                       {slide.description}
                     </p>
+
+                    {/* CTA Buttons - New */}
+                    <div className="flex flex-wrap gap-4">
+                      <button className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl font-bold text-base md:text-lg shadow-2xl hover:shadow-blue-500/50 transition-all hover:scale-105 flex items-center gap-2">
+                        <span>Дэлгэрэнгүй</span>
+                        <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                      </button>
+                      <button className="px-8 py-4 bg-white/20 backdrop-blur-md border-2 border-white/50 rounded-xl font-bold text-base md:text-lg hover:bg-white/30 transition-all hover:scale-105">
+                        Холбоо барих
+                      </button>
+                    </div>
                   </div>
                 </div>
+
+                {/* Decorative Elements */}
+                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
               </div>
             ))}
 
             <button
               onClick={prevSlide}
-              className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white backdrop-blur-sm rounded-full p-2 md:p-3 shadow-lg z-20 transition-all hover:scale-110 hover:shadow-xl"
+              className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white backdrop-blur-sm rounded-full p-3 md:p-4 shadow-2xl z-20 transition-all hover:scale-110 hover:shadow-xl"
             >
-              <ChevronLeft size={20} className="md:w-6 md:h-6" />
+              <ChevronLeft size={24} className="md:w-8 md:h-8" />
             </button>
             <button
               onClick={nextSlide}
-              className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white backdrop-blur-sm rounded-full p-2 md:p-3 shadow-lg z-20 transition-all hover:scale-110 hover:shadow-xl"
+              className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white backdrop-blur-sm rounded-full p-3 md:p-4 shadow-2xl z-20 transition-all hover:scale-110 hover:shadow-xl"
             >
-              <ChevronRight size={20} className="md:w-6 md:h-6" />
+              <ChevronRight size={24} className="md:w-8 md:h-8" />
             </button>
 
-            <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+            <div className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 flex gap-3 z-20">
               {heroSlides.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentSlide(index)}
-                  className={`h-2 rounded-full transition-all duration-300 ${
+                  className={`h-2.5 rounded-full transition-all duration-300 ${
                     index === currentSlide 
-                      ? 'bg-white w-8 shadow-lg' 
-                      : 'bg-white/50 w-2 hover:bg-white/75'
+                      ? 'bg-white w-12 shadow-lg' 
+                      : 'bg-white/50 w-2.5 hover:bg-white/75 hover:w-6'
                   }`}
                 />
               ))}
             </div>
           </div>
         </div>
+
+        {/* Gradient animation for text */}
+        <style jsx>{`
+          @keyframes gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+          }
+          .animate-gradient {
+            background-size: 200% auto;
+            animation: gradient 3s ease infinite;
+          }
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          .animate-fadeIn {
+            animation: fadeIn 0.8s ease-out;
+          }
+        `}</style>
       </section>
 
       {/* Main Content */}

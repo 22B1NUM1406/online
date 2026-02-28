@@ -111,7 +111,7 @@ const Footer = () => {
           {/* Bottom Bar */}
           <div className="border-t border-gray-800 pt-8">
             <p className="text-center text-gray-400 text-sm">
-              © 2024 BIZ PRINT PRO. Бүх эрх хуулиар хамгаалагдсан.
+              © 2026 BIZ PRINT PRO. Бүх эрх хуулиар хамгаалагдсан.
             </p>
           </div>
         </div>

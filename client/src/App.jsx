@@ -24,6 +24,7 @@ import AdminPage from './pages/AdminPage';
 import WishlistPage from './pages/WishlistPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
+import AdminLoginPage from './pages/AdminLoginPage';
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
                 <Route path="/products/:id" element={<ProductDetailPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/contact" element={<ContactPage />} />
+                <Route path="/admin" element={<AdminLoginPage />} />
                 
                 {/* Protected Routes */}
                 <Route path="/cart" element={<CartPage />} />
@@ -109,7 +111,7 @@ function App() {
                 
                 {/* Admin Routes */}
                 <Route 
-                  path="/admin" 
+                  path="/admin/dashboard" 
                   element={
                     <ProtectedRoute adminOnly>
                       <AdminPage />

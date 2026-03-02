@@ -32,7 +32,7 @@ const AdminLoginPage = () => {
       if (result.success) {
         // Check if user is admin
         if (result.user.role === 'admin') {
-          navigate('/admin');
+          navigate('/admin/dashboard');  // ✅ Redirect to dashboard, not login page
         } else {
           setError('Та админ эрхтэй хэрэглэгч биш байна');
           setLoading(false);
@@ -42,6 +42,7 @@ const AdminLoginPage = () => {
         setLoading(false);
       }
     } catch (err) {
+      console.error('Login error:', err);
       setError('Алдаа гарлаа. Дахин оролдоно уу.');
       setLoading(false);
     }

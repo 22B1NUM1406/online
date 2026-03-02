@@ -29,10 +29,14 @@ const AdminLoginPage = () => {
     try {
       const result = await login(formData.email, formData.password);
       
+      console.log('Login result:', result); // Debug
+      
       if (result.success) {
-        // Check if user is admin
-        if (result.user.role === 'admin') {
-          navigate('/admin/dashboard');  // ✅ Redirect to dashboard, not login page
+        // Check if user is admin - use multiple checks for safety
+        const userRole = result.user?.role || result.role;
+        
+        if (userRole === 'admin') {
+          navigate('/admin/dashboard');
         } else {
           setError('Та админ эрхтэй хэрэглэгч биш байна');
           setLoading(false);

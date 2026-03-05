@@ -275,8 +275,9 @@ const CategoryMegaMenu = ({ categories }) => {
                     <p className="text-xs lg:text-sm text-gray-500">Манай шилдэг бүтээгдэхүүнүүд</p>
                   </div>
 
+                  {/* "Бүгдийг үзэх" линк - ЗАСАГДСАН: to="/biz-print" */}
                   <Link
-                    to={`/products?category=${hoveredCategory.slug}`}
+                    to="/biz-print"
                     className="group flex items-center gap-2 px-4 lg:px-6 py-2 lg:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all text-sm lg:text-base font-semibold whitespace-nowrap"
                     onClick={handleMouseLeave}
                   >

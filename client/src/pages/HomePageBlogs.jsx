@@ -159,7 +159,7 @@ const HomePage = () => {
       {/* Hero Carousel - Modern Design with Larger Text */}
       <section className="bg-gradient-to-b from-gray-100 to-gray-50">
         <div className="w-full">
-          <div className="relative h-[400px] md:h-[500px] lg:h-[600px] bg-white shadow-xl overflow-hidden">
+          <div className="relative h-[500px] md:h-[600px] lg:h-[700px] bg-white shadow-xl overflow-hidden">
             {heroSlides.map((slide, index) => (
               <div
                 key={slide.id}
@@ -183,7 +183,7 @@ const HomePage = () => {
                     </div>
 
                     {/* Title - Much Larger */}
-                    <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-4 md:mb-6 leading-tight tracking-tight">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black mb-4 md:mb-6 leading-tight tracking-tight">
                       <span className="block mb-2 drop-shadow-2xl">
                         {slide.subtitle}
                       </span>

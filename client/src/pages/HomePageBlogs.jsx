@@ -42,7 +42,7 @@ const HomePage = () => {
     },
     {
       id: 2,
-      image: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=1200&h=600&fit=crop",
+      image: "https://images.unsplash.com/photo-1453928582365-b6ad33cbcf64?w=1600&h=800&fit=crop",
       title: "Хурдан бөгөөд чанартай",
       subtitle: "Хэвлэлийн ажил",
       highlight: "хурдан шуурхай",
@@ -51,7 +51,7 @@ const HomePage = () => {
     },
     {
       id: 3,
-      image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1200&h=600&fit=crop",
+      image: "https://images.pexels.com/photos/1193743/pexels-photo-1193743.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
       title: "Шинэлэг дизайн",
       subtitle: "Бүтээлч шийдэл",
       highlight: "онцгой хэвлэл",
@@ -60,7 +60,7 @@ const HomePage = () => {
     },
     {
       id: 4,
-      image: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=1200&h=600&fit=crop",
+      image: "https://images.unsplash.com/photo-1626785774625-ddcddc3445e9?w=1600&h=800&fit=crop",
       title: "Хамтын ажиллагаа",
       subtitle: "Таны бизнест",
       highlight: "өсөлт авчирна",

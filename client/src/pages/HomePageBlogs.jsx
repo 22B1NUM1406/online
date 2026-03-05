@@ -159,7 +159,7 @@ const HomePage = () => {
       {/* Hero Carousel - Modern Design with Larger Text */}
       <section className="bg-gradient-to-b from-gray-100 to-gray-50">
         <div className="w-full">
-          <div className="relative h-[500px] md:h-[600px] lg:h-[700px] bg-white shadow-xl overflow-hidden">
+          <div className="relative h-[400px] md:h-[500px] lg:h-[600px] bg-white shadow-xl overflow-hidden">
             {heroSlides.map((slide, index) => (
               <div
                 key={slide.id}

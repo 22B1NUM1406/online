@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Calendar, User, Eye, ArrowRight, Star, Zap, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, User, Eye, ArrowRight, Star, Zap } from 'lucide-react';
 import { getBlogs, getProducts, getCategories } from '../services/api';
 import { getImageUrl, formatPrice } from '../utils/helpers';
 import ProductCard from '../components/ProductCard';
+import SimpleProductCard from '../components/SimpleProductCard';
+import SectionHeader from '../components/SectionHeader';
 import CategoryMegaMenu from '../components/CategoryMegaMenu';
 import Loading from '../components/Loading';
 import Notification from '../components/Notification';
@@ -18,7 +20,6 @@ const HomePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [discountSlide, setDiscountSlide] = useState(0);
   const partnersContainerRef = useRef(null);
 
   const blogCategories = [
@@ -154,16 +155,15 @@ const HomePage = () => {
         />
       )}
 
-      {/* Hero Carousel - Modern Design with Larger Text */}
+      {/* Hero Carousel */}
       <section className="bg-gradient-to-b from-gray-100 to-gray-50">
         <div className="w-full">
           <div className="relative h-[500px] md:h-[600px] lg:h-[700px] bg-white shadow-xl overflow-hidden">
             {heroSlides.map((slide, index) => (
               <div
                 key={slide.id}
-                className={`absolute inset-0 transition-opacity duration-1000 ${
-                  index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
-                }`}
+                className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                  }`}
               >
                 <div
                   className="absolute inset-0 bg-cover bg-center transform scale-105"
@@ -174,14 +174,12 @@ const HomePage = () => {
 
                 <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center">
                   <div className="text-white max-w-2xl lg:max-w-3xl animate-fadeIn">
-                    {/* Badge - Larger */}
                     <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-6 py-3 rounded-full mb-6 md:mb-8 border border-white/30 shadow-lg">
                       <span className="text-sm md:text-base lg:text-lg font-bold tracking-wide">
                         {slide.badge}
                       </span>
                     </div>
-                    
-                    {/* Title - Much Larger */}
+
                     <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-4 md:mb-6 leading-tight tracking-tight">
                       <span className="block mb-2 drop-shadow-2xl">
                         {slide.subtitle}
@@ -190,13 +188,11 @@ const HomePage = () => {
                         {slide.highlight}
                       </span>
                     </h1>
-                    
-                    {/* Description - Larger */}
+
                     <p className="text-lg md:text-2xl lg:text-3xl mb-8 md:mb-10 text-gray-200 font-light leading-relaxed drop-shadow-lg max-w-xl">
                       {slide.description}
                     </p>
 
-                    {/* CTA Buttons - New */}
                     <div className="flex flex-wrap gap-4">
                       <button className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl font-bold text-base md:text-lg shadow-2xl hover:shadow-blue-500/50 transition-all hover:scale-105 flex items-center gap-2">
                         <span>Дэлгэрэнгүй</span>
@@ -209,7 +205,6 @@ const HomePage = () => {
                   </div>
                 </div>
 
-                {/* Decorative Elements */}
                 <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
               </div>
             ))}
@@ -232,18 +227,16 @@ const HomePage = () => {
                 <button
                   key={index}
                   onClick={() => setCurrentSlide(index)}
-                  className={`h-2.5 rounded-full transition-all duration-300 ${
-                    index === currentSlide 
-                      ? 'bg-white w-12 shadow-lg' 
+                  className={`h-2.5 rounded-full transition-all duration-300 ${index === currentSlide
+                      ? 'bg-white w-12 shadow-lg'
                       : 'bg-white/50 w-2.5 hover:bg-white/75 hover:w-6'
-                  }`}
+                    }`}
                 />
               ))}
             </div>
           </div>
         </div>
 
-        {/* Gradient animation for text */}
         <style jsx>{`
           @keyframes gradient {
             0%, 100% { background-position: 0% 50%; }
@@ -272,13 +265,12 @@ const HomePage = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto">
         <div className="border-x border-gray-200 bg-white shadow-sm">
-
           {/* Category Mega Menu */}
           {categories.length > 0 && (
             <section className="px-4 py-10">
               <CategoryMegaMenu categories={categories} />
 
-              {/* Service Banners - Modern Design */}
+              {/* Service Banners */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
                 <Link
                   to="/biz-print"
@@ -290,15 +282,14 @@ const HomePage = () => {
                       alt="Biz Print"
                       className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity"
                     />
-                    {/* Decorative Elements */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full blur-2xl"></div>
-                    
+
                     <div className="absolute inset-0 flex items-center justify-between px-8">
                       <div className="text-white z-10">
                         <h3 className="text-3xl font-bold mb-3">Biz Print</h3>
                         <p className="text-blue-100 text-base mb-6">
-                          Хэвлэлийн бүтээгдэхүүн<br/>Өндөр чанартай
+                          Хэвлэлийн бүтээгдэхүүн<br />Өндөр чанартай
                         </p>
                         <div className="inline-flex items-center gap-2 bg-white text-blue-700 px-6 py-3 rounded-xl font-bold text-sm group-hover:bg-blue-50 transition-all shadow-lg">
                           Дэлгэрэнгүй
@@ -319,15 +310,14 @@ const HomePage = () => {
                       alt="Biz Marketing"
                       className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity"
                     />
-                    {/* Decorative Elements */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full blur-2xl"></div>
-                    
+
                     <div className="absolute inset-0 flex items-center justify-between px-8">
                       <div className="text-white z-10">
                         <h3 className="text-3xl font-bold mb-3">Biz Marketing</h3>
                         <p className="text-purple-100 text-base mb-6">
-                          Маркетингийн үйлчилгээ<br/>Мэргэжлийн
+                          Маркетингийн үйлчилгээ<br />Мэргэжлийн
                         </p>
                         <div className="inline-flex items-center gap-2 bg-white text-purple-700 px-6 py-3 rounded-xl font-bold text-sm group-hover:bg-purple-50 transition-all shadow-lg">
                           Дэлгэрэнгүй
@@ -341,26 +331,20 @@ const HomePage = () => {
             </section>
           )}
 
-          {/* Featured Products - Modern Design */}
+          {/* Featured Products */}
           {featuredProducts.length > 0 && (
-            <section className="px-4 py-12">
-              <div className="relative mb-8">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-1.5 h-8 bg-gradient-to-b from-yellow-500 to-orange-500 rounded-full"></div>
-                  <Star className="text-yellow-500 fill-yellow-500" size={24} />
-                  <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                    Онцлох бүтээгдэхүүн
-                  </h2>
-                  <Sparkles className="text-yellow-500" size={20} />
-                </div>
-                <p className="text-gray-600 text-base ml-12">
-                  Манай байгууллагын зүгээс хэрэглэгч танд санал болгож буй шилдэг бүтээгдэхүүнүүд
-                </p>
-              </div>
+            <section className="px-4 py-10">
+              <SectionHeader
+                title="Онцлох бүтээгдэхүүн"
+                description="Манай байгууллагын зүгээс хэрэглэгч танд санал болгож буй шилдэг бүтээгдэхүүнүүд"
+                icon={Star}
+                accentColor="yellow"
+                viewAllLink="/products?featured=true"
+              />
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {featuredProducts.map(product => (
-                  <ProductCard key={product._id} product={product} />
+                  <SimpleProductCard key={product._id} product={product} />
                 ))}
               </div>
             </section>
@@ -368,82 +352,19 @@ const HomePage = () => {
 
           {/* Discount Products */}
           {discountProducts.length > 0 && (
-            <section className="px-4 py-12 bg-gradient-to-br from-orange-50 to-red-50">
-              <div className="relative mb-8">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-1.5 h-8 bg-gradient-to-b from-red-500 to-orange-500 rounded-full"></div>
-                  <Zap className="text-red-600 fill-red-600" size={24} />
-                  <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
-                    Хямдралтай бүтээгдэхүүн
-                  </h2>
-                  <span className="px-3 py-1 bg-red-600 text-white rounded-full text-sm font-bold animate-pulse">
-                    🔥 HOT
-                  </span>
-                </div>
-                <p className="text-gray-700 text-base ml-12">
-                  Онцгой үнээр санал болгож байна - Хэмнэлттэй худалдан авалт
-                </p>
-              </div>
+            <section className="px-4 py-10 bg-gray-50">
+              <SectionHeader
+                title="Хямдралтай бүтээгдэхүүн"
+                description="Онцгой үнээр санал болгож байна - Хэмнэлттэй худалдан авалт"
+                icon={Zap}
+                accentColor="red"
+                viewAllLink="/products?discount=true"
+              />
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-1">
-                  <div className="relative h-[400px] bg-white border-2 border-gray-200 rounded-2xl overflow-hidden shadow-lg">
-                    {discountProducts.slice(0, 3).map((product, index) => (
-                      <div
-                        key={product._id}
-                        className={`absolute inset-0 transition-opacity duration-700 ${
-                          index === discountSlide ? 'opacity-100' : 'opacity-0'
-                        }`}
-                      >
-                        <Link to={`/products/${product._id}`} className="flex items-center justify-center h-full p-6">
-                          <img
-                            src={getImageUrl(product.image)}
-                            alt={product.name}
-                            className="max-h-full max-w-full object-contain"
-                            onError={(e) => {
-                              e.target.src = 'https://via.placeholder.com/400x300?text=Product';
-                            }}
-                          />
-                        </Link>
-                        {product.discount && (
-                          <div className="absolute top-4 left-4 bg-gradient-to-r from-red-600 to-orange-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg">
-                            -{product.discount}%
-                          </div>
-                        )}
-                      </div>
-                    ))}
-
-                    <button
-                      onClick={() => setDiscountSlide(prev => (prev - 1 + 3) % 3)}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-sm rounded-full p-2 shadow-lg hover:shadow-xl transition-all hover:scale-110"
-                    >
-                      <ChevronLeft size={20} />
-                    </button>
-                    <button
-                      onClick={() => setDiscountSlide(prev => (prev + 1) % 3)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-sm rounded-full p-2 shadow-lg hover:shadow-xl transition-all hover:scale-110"
-                    >
-                      <ChevronRight size={20} />
-                    </button>
-
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                      {[0, 1, 2].map((index) => (
-                        <div
-                          key={index}
-                          className={`h-2 rounded-full transition-all ${
-                            index === discountSlide ? 'bg-red-600 w-8' : 'bg-gray-300 w-2'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {discountProducts.slice(3, 7).map((product) => (
-                    <ProductCard key={product._id} product={product} />
-                  ))}
-                </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {discountProducts.slice(0, 10).map((product) => (
+                  <SimpleProductCard key={product._id} product={product} />
+                ))}
               </div>
             </section>
           )}
@@ -467,11 +388,10 @@ const HomePage = () => {
                 <button
                   key={cat.value}
                   onClick={() => setSelectedCategory(cat.value)}
-                  className={`px-6 py-2.5 rounded-xl whitespace-nowrap font-semibold text-sm transition-all ${
-                    selectedCategory === cat.value
+                  className={`px-6 py-2.5 rounded-xl whitespace-nowrap font-semibold text-sm transition-all ${selectedCategory === cat.value
                       ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-500/30'
                       : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-blue-300 hover:shadow-md'
-                  }`}
+                    }`}
                 >
                   {cat.label}
                 </button>
@@ -544,11 +464,10 @@ const HomePage = () => {
               ))}
             </div>
           </section>
-
         </div>
       </div>
 
-      {/* Partners */}
+      {/* Partners Section */}
       <section className="bg-gradient-to-b from-gray-50 to-white py-12 border-t border-gray-200">
         <div className="max-w-7xl mx-auto px-4">
           <div className="relative mb-8">

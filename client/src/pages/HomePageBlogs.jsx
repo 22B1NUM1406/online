@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Calendar, User, Eye, ArrowRight, Star, Zap } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, User, Eye, ArrowRight, Star, Zap, Sparkles } from 'lucide-react';
 import { getBlogs, getProducts, getCategories } from '../services/api';
 import { getImageUrl, formatPrice } from '../utils/helpers';
 import ProductCard from '../components/ProductCard';
@@ -20,6 +20,7 @@ const HomePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [discountSlide, setDiscountSlide] = useState(0);
   const partnersContainerRef = useRef(null);
 
   const blogCategories = [
@@ -155,7 +156,7 @@ const HomePage = () => {
         />
       )}
 
-      {/* Hero Carousel */}
+      {/* Hero Carousel - Modern Design with Larger Text */}
       <section className="bg-gradient-to-b from-gray-100 to-gray-50">
         <div className="w-full">
           <div className="relative h-[500px] md:h-[600px] lg:h-[700px] bg-white shadow-xl overflow-hidden">
@@ -174,12 +175,14 @@ const HomePage = () => {
 
                 <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center">
                   <div className="text-white max-w-2xl lg:max-w-3xl animate-fadeIn">
+                    {/* Badge - Larger */}
                     <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-6 py-3 rounded-full mb-6 md:mb-8 border border-white/30 shadow-lg">
                       <span className="text-sm md:text-base lg:text-lg font-bold tracking-wide">
                         {slide.badge}
                       </span>
                     </div>
 
+                    {/* Title - Much Larger */}
                     <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-4 md:mb-6 leading-tight tracking-tight">
                       <span className="block mb-2 drop-shadow-2xl">
                         {slide.subtitle}
@@ -189,10 +192,12 @@ const HomePage = () => {
                       </span>
                     </h1>
 
+                    {/* Description - Larger */}
                     <p className="text-lg md:text-2xl lg:text-3xl mb-8 md:mb-10 text-gray-200 font-light leading-relaxed drop-shadow-lg max-w-xl">
                       {slide.description}
                     </p>
 
+                    {/* CTA Buttons - New */}
                     <div className="flex flex-wrap gap-4">
                       <button className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl font-bold text-base md:text-lg shadow-2xl hover:shadow-blue-500/50 transition-all hover:scale-105 flex items-center gap-2">
                         <span>Дэлгэрэнгүй</span>
@@ -205,6 +210,7 @@ const HomePage = () => {
                   </div>
                 </div>
 
+                {/* Decorative Elements */}
                 <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
               </div>
             ))}
@@ -237,6 +243,7 @@ const HomePage = () => {
           </div>
         </div>
 
+        {/* Gradient animation for text */}
         <style jsx>{`
           @keyframes gradient {
             0%, 100% { background-position: 0% 50%; }
@@ -265,12 +272,13 @@ const HomePage = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto">
         <div className="border-x border-gray-200 bg-white shadow-sm">
+
           {/* Category Mega Menu */}
           {categories.length > 0 && (
             <section className="px-4 py-10">
               <CategoryMegaMenu categories={categories} />
 
-              {/* Service Banners */}
+              {/* Service Banners - Modern Design */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
                 <Link
                   to="/biz-print"
@@ -282,6 +290,7 @@ const HomePage = () => {
                       alt="Biz Print"
                       className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity"
                     />
+                    {/* Decorative Elements */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full blur-2xl"></div>
 
@@ -310,6 +319,7 @@ const HomePage = () => {
                       alt="Biz Marketing"
                       className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity"
                     />
+                    {/* Decorative Elements */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full blur-2xl"></div>
 
@@ -331,7 +341,7 @@ const HomePage = () => {
             </section>
           )}
 
-          {/* Featured Products */}
+          {/* Featured Products - BestComputers Style */}
           {featuredProducts.length > 0 && (
             <section className="px-4 py-10">
               <SectionHeader
@@ -350,7 +360,7 @@ const HomePage = () => {
             </section>
           )}
 
-          {/* Discount Products */}
+          {/* Discount Products - BestComputers Style */}
           {discountProducts.length > 0 && (
             <section className="px-4 py-10 bg-gray-50">
               <SectionHeader
@@ -464,10 +474,11 @@ const HomePage = () => {
               ))}
             </div>
           </section>
+
         </div>
       </div>
 
-      {/* Partners Section */}
+      {/* Partners */}
       <section className="bg-gradient-to-b from-gray-50 to-white py-12 border-t border-gray-200">
         <div className="max-w-7xl mx-auto px-4">
           <div className="relative mb-8">

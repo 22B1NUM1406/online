@@ -355,7 +355,7 @@ const HomePage = () => {
                 description="Манай байгууллагын зүгээс хэрэглэгч танд санал болгож буй шилдэг бүтээгдэхүүнүүд"
                 icon={Star}
                 accentColor="yellow"
-                viewAllLink="/products"
+                viewAllLink="/biz-print"
               />
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -374,7 +374,7 @@ const HomePage = () => {
                 description="Онцгой үнээр санал болгож байна - Хэмнэлттэй худалдан авалт"
                 icon={Zap}
                 accentColor="red"
-                viewAllLink="/products"
+                viewAllLink="/biz-print"
               />
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">

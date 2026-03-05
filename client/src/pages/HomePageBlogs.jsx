@@ -33,7 +33,7 @@ const HomePage = () => {
   const heroSlides = [
     {
       id: 1,
-      image: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200&h=600&fit=crop",
+      image: "https://images.pexels.com/photos/1193743/pexels-photo-1193743.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
       title: "Мэргэжлийн хэвлэлийн үйлчилгээ",
       subtitle: "Таны санааг",
       highlight: "бодит болгоно",
@@ -51,7 +51,7 @@ const HomePage = () => {
     },
     {
       id: 3,
-      image: "https://images.pexels.com/photos/1193743/pexels-photo-1193743.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+      image: "https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg?auto=compress&cs=tinysrgb&w=1600&h=800&fit=crop",
       title: "Шинэлэг дизайн",
       subtitle: "Бүтээлч шийдэл",
       highlight: "онцгой хэвлэл",

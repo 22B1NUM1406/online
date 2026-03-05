@@ -343,13 +343,13 @@ const HomePage = () => {
 
           {/* Featured Products - BestComputers Style */}
           {featuredProducts.length > 0 && (
-            <section className="px-4 py-10">
+            <section className="px-4 py-10" id="featured-products">
               <SectionHeader
                 title="Онцлох бүтээгдэхүүн"
                 description="Манай байгууллагын зүгээс хэрэглэгч танд санал болгож буй шилдэг бүтээгдэхүүнүүд"
                 icon={Star}
                 accentColor="yellow"
-                viewAllLink="/products?featured=true"
+                viewAllLink="/products"
               />
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -362,13 +362,13 @@ const HomePage = () => {
 
           {/* Discount Products - BestComputers Style */}
           {discountProducts.length > 0 && (
-            <section className="px-4 py-10 bg-gray-50">
+            <section className="px-4 py-10 bg-gray-50" id="discount-products">
               <SectionHeader
                 title="Хямдралтай бүтээгдэхүүн"
                 description="Онцгой үнээр санал болгож байна - Хэмнэлттэй худалдан авалт"
                 icon={Zap}
                 accentColor="red"
-                viewAllLink="/products?discount=true"
+                viewAllLink="/products"
               />
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">

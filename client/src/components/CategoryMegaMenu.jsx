@@ -137,8 +137,8 @@ const CategoryMegaMenu = ({ categories }) => {
             >
               {/* Category Card */}
               <div className={`relative bg-white rounded-2xl overflow-hidden transition-all duration-300 ${hoveredCategory?._id === category._id
-                  ? 'ring-4 ring-blue-500 ring-offset-2 scale-105 shadow-2xl'
-                  : 'shadow-lg hover:shadow-xl'
+                ? 'ring-4 ring-blue-500 ring-offset-2 scale-105 shadow-2xl'
+                : 'shadow-lg hover:shadow-xl'
                 }`}>
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-transparent to-transparent group-hover:from-blue-50 group-hover:to-purple-50 transition-all duration-300 pointer-events-none z-10"></div>
@@ -181,8 +181,8 @@ const CategoryMegaMenu = ({ categories }) => {
 
                   <div className="text-center min-h-[80px] flex flex-col justify-center">
                     <span className={`text-lg font-bold line-clamp-2 leading-tight mb-2 transition-colors duration-300 ${hoveredCategory?._id === category._id
-                        ? 'text-blue-600'
-                        : 'text-gray-800 group-hover:text-gray-900'
+                      ? 'text-blue-600'
+                      : 'text-gray-800 group-hover:text-gray-900'
                       }`}>
                       {category.name}
                     </span>
@@ -233,8 +233,8 @@ const CategoryMegaMenu = ({ categories }) => {
                     <button
                       onClick={() => setSelectedSubCategory(null)}
                       className={`w-full text-left px-3 lg:px-4 py-2 lg:py-3 text-xs lg:text-sm rounded-xl transition-all font-medium ${!selectedSubCategory
-                          ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
-                          : 'text-gray-700 hover:bg-white hover:shadow-md'
+                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
+                        : 'text-gray-700 hover:bg-white hover:shadow-md'
                         }`}
                     >
                       <div className="flex items-center justify-between">
@@ -248,8 +248,8 @@ const CategoryMegaMenu = ({ categories }) => {
                         key={subCat._id}
                         onClick={() => handleSubCategoryClick(subCat)}
                         className={`w-full text-left px-3 lg:px-4 py-2 lg:py-3 text-xs lg:text-sm rounded-xl transition-all font-medium ${selectedSubCategory?._id === subCat._id
-                            ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
-                            : 'text-gray-700 hover:bg-white hover:shadow-md'
+                          ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
+                          : 'text-gray-700 hover:bg-white hover:shadow-md'
                           }`}
                       >
                         <div className="flex items-center justify-between">

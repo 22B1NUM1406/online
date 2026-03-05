@@ -40,7 +40,7 @@ const Header = () => {
               </div>
             </div>
             <div className="text-xs text-blue-100">
-              Ажлын цаг: Даваа-Баасан 09:00-18:00
+              Ажлын цаг: Даваа-Баасан 09:00-17:00
             </div>
           </div>
         </div>

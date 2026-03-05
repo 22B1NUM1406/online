@@ -22,22 +22,22 @@ const CategoryMegaMenu = ({ categories }) => {
   const loadCategoryPreviews = async () => {
     try {
       const previews = {};
-      
+
       for (const category of categories) {
         try {
-          const data = await getProducts({ 
+          const data = await getProducts({
             category: category.slug,
-            limit: 1 
+            limit: 1
           });
-          
-          if (data.data && data.data.length > 0 && data.data[0]) {
+
+          if (data.data && data.data.length > 0) {
             previews[category._id] = data.data[0].image;
           }
         } catch (error) {
           console.error(`Error loading preview for ${category.name}:`, error);
         }
       }
-      
+
       setCategoryPreviewImages(previews);
     } catch (error) {
       console.error('Error loading category previews:', error);
@@ -47,10 +47,10 @@ const CategoryMegaMenu = ({ categories }) => {
   // Load products when hovering over a category or selecting subcategory
   useEffect(() => {
     if (hoveredCategory) {
-      const categoryKey = selectedSubCategory 
+      const categoryKey = selectedSubCategory
         ? `${hoveredCategory._id}-${selectedSubCategory._id}`
         : hoveredCategory._id;
-      
+
       if (!categoryProducts[categoryKey]) {
         loadCategoryProducts(hoveredCategory, selectedSubCategory);
       }
@@ -60,36 +60,36 @@ const CategoryMegaMenu = ({ categories }) => {
   const loadCategoryProducts = async (category, subCategory = null) => {
     try {
       setLoading(true);
-      
+
       console.log('Loading products for:', {
         category: category.name,
-        subCategory: subCategory ? subCategory.name : null,
+        subCategory: subCategory?.name,
         categorySlug: category.slug,
-        subCategorySlug: subCategory ? subCategory.slug : null
+        subCategorySlug: subCategory?.slug
       });
-      
-      const params = { 
+
+      const params = {
         category: subCategory ? subCategory.slug : category.slug,
-        limit: 8 
+        limit: 8
       };
-      
+
       console.log('API params:', params);
-      
+
       const data = await getProducts(params);
-      
-      console.log('Products received:', data.data ? data.data.length : 0);
-      
-      const categoryKey = subCategory 
+
+      console.log('Products received:', data.data?.length || 0);
+
+      const categoryKey = subCategory
         ? `${category._id}-${subCategory._id}`
         : category._id;
-      
+
       setCategoryProducts(prev => ({
         ...prev,
         [categoryKey]: data.data || []
       }));
     } catch (error) {
       console.error('Error loading category products:', error);
-      console.error('Error details:', (error.response && error.response.data) || error.message);
+      console.error('Error details:', error.response?.data || error.message);
     } finally {
       setLoading(false);
     }
@@ -111,22 +111,17 @@ const CategoryMegaMenu = ({ categories }) => {
 
   const getCurrentProducts = () => {
     if (!hoveredCategory) return [];
-    
-    const categoryKey = selectedSubCategory 
+
+    const categoryKey = selectedSubCategory
       ? `${hoveredCategory._id}-${selectedSubCategory._id}`
       : hoveredCategory._id;
-    
+
     return categoryProducts[categoryKey] || [];
   };
 
-  // Guard: if categories is not provided or empty, render nothing
-  if (!categories || categories.length === 0) {
-    return null;
-  }
-
   return (
     <div className="relative w-full">
-      {/* Categories Grid - Beautiful Design */}
+      {/* Categories Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 pb-6">
         {categories.map((category) => (
           <div
@@ -140,23 +135,22 @@ const CategoryMegaMenu = ({ categories }) => {
               to={`/products?category=${category.slug}`}
               className="block"
             >
-              {/* Category Card - Beautiful Design */}
-              <div className={`relative bg-white rounded-2xl overflow-hidden transition-all duration-300 ${
-                hoveredCategory && hoveredCategory._id === category._id
+              {/* Category Card */}
+              <div className={`relative bg-white rounded-2xl overflow-hidden transition-all duration-300 ${hoveredCategory?._id === category._id
                   ? 'ring-4 ring-blue-500 ring-offset-2 scale-105 shadow-2xl'
                   : 'shadow-lg hover:shadow-xl'
-              }`}>
-                {/* Gradient Overlay on Hover */}
+                }`}>
+                {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-transparent to-transparent group-hover:from-blue-50 group-hover:to-purple-50 transition-all duration-300 pointer-events-none z-10"></div>
-                
-                {/* Image Container with Gradient Background */}
+
+                {/* Image Container */}
                 <div className="relative h-44 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center p-5 overflow-hidden">
-                  {/* Decorative Background Pattern */}
+                  {/* Decorative Background */}
                   <div className="absolute inset-0 opacity-10">
                     <div className="absolute top-0 left-0 w-32 h-32 bg-blue-500 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-0 right-0 w-32 h-32 bg-purple-500 rounded-full blur-3xl"></div>
                   </div>
-                  
+
                   {categoryPreviewImages[category._id] ? (
                     <img
                       src={getImageUrl(categoryPreviewImages[category._id])}
@@ -174,27 +168,25 @@ const CategoryMegaMenu = ({ categories }) => {
                       </div>
                     </div>
                   )}
-                  
-                  {/* Hover Shine Effect */}
+
+                  {/* Shine Effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 transform -translate-x-full group-hover:translate-x-full transition-all duration-1000 pointer-events-none"></div>
                 </div>
-                
-                {/* Text Section with Gradient Border */}
+
+                {/* Text Section */}
                 <div className="relative bg-white p-4 border-t-2 border-gray-100">
-                  {/* Gradient accent line */}
-                  <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transform origin-left transition-transform duration-300 ${
-                    hoveredCategory && hoveredCategory._id === category._id ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-                  }`}></div>
-                  
+                  {/* Accent line */}
+                  <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transform origin-left transition-transform duration-300 ${hoveredCategory?._id === category._id ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                    }`}></div>
+
                   <div className="text-center min-h-[80px] flex flex-col justify-center">
-                    <span className={`text-lg font-bold line-clamp-2 leading-tight mb-2 transition-colors duration-300 ${
-                      hoveredCategory && hoveredCategory._id === category._id
+                    <span className={`text-lg font-bold line-clamp-2 leading-tight mb-2 transition-colors duration-300 ${hoveredCategory?._id === category._id
                         ? 'text-blue-600'
                         : 'text-gray-800 group-hover:text-gray-900'
-                    }`}>
+                      }`}>
                       {category.name}
                     </span>
-                    
+
                     {category.subcategories && category.subcategories.length > 0 && (
                       <div className="flex items-center justify-center gap-2 mt-1">
                         <div className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-blue-50 to-purple-50 rounded-full">
@@ -208,7 +200,7 @@ const CategoryMegaMenu = ({ categories }) => {
                     )}
                   </div>
                 </div>
-                
+
                 {/* Corner Decoration */}
                 <div className="absolute top-3 right-3 w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
               </div>
@@ -217,7 +209,7 @@ const CategoryMegaMenu = ({ categories }) => {
         ))}
       </div>
 
-      {/* Mega Menu Dropdown - Mobile Friendly */}
+      {/* Mega Menu Dropdown */}
       {hoveredCategory && (
         <div
           onMouseEnter={() => setHoveredCategory(hoveredCategory)}
@@ -225,9 +217,9 @@ const CategoryMegaMenu = ({ categories }) => {
           className="absolute left-0 right-0 top-full mt-4 z-50 px-4 lg:px-0"
         >
           <div className="bg-white rounded-2xl border-2 border-gray-200 shadow-2xl overflow-hidden max-h-[70vh] lg:max-h-none overflow-y-auto">
-            {/* Gradient Header Bar */}
+            {/* Header Bar */}
             <div className="h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
-            
+
             <div className="flex flex-col lg:flex-row">
               {/* Left: Subcategories Sidebar */}
               {hoveredCategory.subcategories && hoveredCategory.subcategories.length > 0 && (
@@ -236,35 +228,33 @@ const CategoryMegaMenu = ({ categories }) => {
                     <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full"></div>
                     <h3 className="text-sm lg:text-base font-bold text-gray-800">Дэд ангилал</h3>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
                     <button
                       onClick={() => setSelectedSubCategory(null)}
-                      className={`w-full text-left px-3 lg:px-4 py-2 lg:py-3 text-xs lg:text-sm rounded-xl transition-all font-medium ${
-                        !selectedSubCategory
+                      className={`w-full text-left px-3 lg:px-4 py-2 lg:py-3 text-xs lg:text-sm rounded-xl transition-all font-medium ${!selectedSubCategory
                           ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
                           : 'text-gray-700 hover:bg-white hover:shadow-md'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center justify-between">
                         <span>Бүгд</span>
                         {!selectedSubCategory && <span className="text-xs">✓</span>}
                       </div>
                     </button>
-                    
+
                     {hoveredCategory.subcategories.map((subCat) => (
                       <button
                         key={subCat._id}
                         onClick={() => handleSubCategoryClick(subCat)}
-                        className={`w-full text-left px-3 lg:px-4 py-2 lg:py-3 text-xs lg:text-sm rounded-xl transition-all font-medium ${
-                          selectedSubCategory && selectedSubCategory._id === subCat._id
+                        className={`w-full text-left px-3 lg:px-4 py-2 lg:py-3 text-xs lg:text-sm rounded-xl transition-all font-medium ${selectedSubCategory?._id === subCat._id
                             ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
                             : 'text-gray-700 hover:bg-white hover:shadow-md'
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center justify-between">
                           <span className="line-clamp-1">{subCat.name}</span>
-                          {selectedSubCategory && selectedSubCategory._id === subCat._id && <span className="text-xs">✓</span>}
+                          {selectedSubCategory?._id === subCat._id && <span className="text-xs">✓</span>}
                         </div>
                       </button>
                     ))}
@@ -272,25 +262,21 @@ const CategoryMegaMenu = ({ categories }) => {
                 </div>
               )}
 
-              {/* Center: Products Grid - Mobile Optimized */}
+              {/* Center: Products Grid */}
               <div className="flex-1 p-4 lg:p-8 bg-gradient-to-br from-white to-gray-50">
                 <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-4 lg:mb-6 gap-3">
                   <div>
                     <h3 className="text-lg lg:text-2xl font-bold text-blue-600 mb-1">
-                      {selectedSubCategory 
+                      {selectedSubCategory
                         ? `${hoveredCategory.name} - ${selectedSubCategory.name}`
                         : hoveredCategory.name
                       }
                     </h3>
                     <p className="text-xs lg:text-sm text-gray-500">Манай шилдэг бүтээгдэхүүнүүд</p>
                   </div>
-                  
+
                   <Link
-                    to={`/products?category=${
-                      selectedSubCategory 
-                        ? selectedSubCategory.slug 
-                        : hoveredCategory.slug
-                    }`}
+                    to={`/products?category=${hoveredCategory.slug}`}
                     className="group flex items-center gap-2 px-4 lg:px-6 py-2 lg:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all text-sm lg:text-base font-semibold whitespace-nowrap"
                     onClick={handleMouseLeave}
                   >
@@ -320,7 +306,7 @@ const CategoryMegaMenu = ({ categories }) => {
                           <div className="relative h-32 lg:h-48 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center p-3 lg:p-4 overflow-hidden">
                             <div className="absolute -top-8 -left-8 w-24 h-24 bg-blue-400 opacity-10 rounded-full blur-2xl"></div>
                             <div className="absolute -bottom-8 -right-8 w-24 h-24 bg-purple-400 opacity-10 rounded-full blur-2xl"></div>
-                            
+
                             <img
                               src={getImageUrl(product.image)}
                               alt={product.name}
@@ -329,7 +315,7 @@ const CategoryMegaMenu = ({ categories }) => {
                                 e.target.src = 'https://via.placeholder.com/200x200?text=Product';
                               }}
                             />
-                            
+
                             {/* Discount Badge */}
                             {product.discount && (
                               <div className="absolute top-2 left-2 z-20">
@@ -339,7 +325,7 @@ const CategoryMegaMenu = ({ categories }) => {
                                 </div>
                               </div>
                             )}
-                            
+
                             {/* Hover Overlay */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                           </div>
@@ -349,7 +335,7 @@ const CategoryMegaMenu = ({ categories }) => {
                             <h4 className="text-sm lg:text-base font-bold text-gray-900 line-clamp-2 mb-2 lg:mb-3 group-hover:text-blue-600 transition-colors leading-tight min-h-[36px] lg:min-h-[48px]">
                               {product.name}
                             </h4>
-                            
+
                             <div className="flex items-baseline gap-1 lg:gap-2">
                               {product.discount ? (
                                 <>
@@ -366,8 +352,8 @@ const CategoryMegaMenu = ({ categories }) => {
                                 </span>
                               )}
                             </div>
-                            
-                            {/* Hover Action Button - Desktop Only */}
+
+                            {/* Hover Action Button */}
                             <button className="hidden lg:block w-full mt-3 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 text-sm font-semibold">
                               Дэлгэрэнгүй →
                             </button>

@@ -183,7 +183,7 @@ const HomePage = () => {
                     </div>
 
                     {/* Title - Much Larger */}
-                    <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-4 md:mb-6 leading-tight tracking-tight">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black mb-4 md:mb-6 leading-tight tracking-tight">
                       <span className="block mb-2 drop-shadow-2xl">
                         {slide.subtitle}
                       </span>
@@ -199,13 +199,6 @@ const HomePage = () => {
 
                     {/* CTA Buttons - Fixed Links */}
                     <div className="flex flex-wrap gap-4">
-                      <Link
-                        to="/biz-print"
-                        className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl font-bold text-base md:text-lg shadow-2xl hover:shadow-blue-500/50 transition-all hover:scale-105 flex items-center gap-2"
-                      >
-                        <span>Дэлгэрэнгүй</span>
-                        <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                      </Link>
                       <Link
                         to="/contact"
                         className="px-8 py-4 bg-white/20 backdrop-blur-md border-2 border-white/50 rounded-xl font-bold text-base md:text-lg hover:bg-white/30 transition-all hover:scale-105"
@@ -240,8 +233,8 @@ const HomePage = () => {
                   key={index}
                   onClick={() => setCurrentSlide(index)}
                   className={`h-2.5 rounded-full transition-all duration-300 ${index === currentSlide
-                      ? 'bg-white w-12 shadow-lg'
-                      : 'bg-white/50 w-2.5 hover:bg-white/75 hover:w-6'
+                    ? 'bg-white w-12 shadow-lg'
+                    : 'bg-white/50 w-2.5 hover:bg-white/75 hover:w-6'
                     }`}
                 />
               ))}
@@ -405,8 +398,8 @@ const HomePage = () => {
                   key={cat.value}
                   onClick={() => setSelectedCategory(cat.value)}
                   className={`px-6 py-2.5 rounded-xl whitespace-nowrap font-semibold text-sm transition-all ${selectedCategory === cat.value
-                      ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-500/30'
-                      : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-blue-300 hover:shadow-md'
+                    ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-500/30'
+                    : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-blue-300 hover:shadow-md'
                     }`}
                 >
                   {cat.label}

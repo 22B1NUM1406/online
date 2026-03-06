@@ -90,9 +90,9 @@ const CategoryMegaMenu = ({ categories }) => {
               key={category._id}
               onMouseEnter={() => handleMouseEnter(category)}
               onMouseLeave={handleMouseLeave}
-              className="relative group cursor-pointer"
+              className="relative group cursor-pointer h-full"
             >
-              <Link to={`/products?category=${category.slug}`} className="block">
+              <Link to={`/products?category=${category.slug}`} className="block h-full">
                 <div
                   style={{
                     background: isActive ? '#1a1a2e' : '#ffffff',
@@ -103,12 +103,15 @@ const CategoryMegaMenu = ({ categories }) => {
                       ? '0 8px 24px rgba(26,26,46,0.18)'
                       : '0 1px 4px rgba(0,0,0,0.06)',
                     transform: isActive ? 'translateY(-2px)' : 'none',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100%',
                   }}
                 >
                   {/* Image */}
                   <div
                     style={{
-                      height: '130px',
+                      height: '155px',
                       background: isActive ? '#16213e' : '#f8f8f8',
                       display: 'flex',
                       alignItems: 'center',
@@ -148,6 +151,11 @@ const CategoryMegaMenu = ({ categories }) => {
                       background: isActive ? '#1a1a2e' : '#ffffff',
                       borderRadius: '0 0 5px 5px',
                       transition: 'all 0.2s ease',
+                      flex: 1,
+                      minHeight: '72px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
                     }}
                   >
                     <p

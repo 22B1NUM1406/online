@@ -185,7 +185,20 @@ const HomePage = () => {
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .blog-fadein { animation: fadeIn 0.7s ease-out both; }
         @media (max-width: 1024px) { .blog-grid { grid-template-columns: repeat(2, 1fr) !important; } }
-        @media (max-width: 640px) { .blog-grid { grid-template-columns: 1fr !important; } .section-inner { padding: 24px 16px !important; } }
+        @media (max-width: 640px) {
+          .blog-grid { grid-template-columns: 1fr !important; }
+          .section-inner { padding: 24px 16px !important; }
+          .banner-grid { grid-template-columns: 1fr !important; }
+          .mega-dropdown-inner { flex-direction: column !important; }
+          .mega-subcategory-sidebar { width: 100% !important; border-right: none !important; border-bottom: 1px solid #ebebeb !important; }
+          .mega-featured-panel { display: none !important; }
+          .mega-product-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        @media (max-width: 768px) {
+          .banner-grid { grid-template-columns: 1fr !important; }
+          .mega-product-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .mega-featured-panel { display: none !important; }
+        }
         .hero-active { animation: heroUp 0.65s ease forwards; }
         .hero-cta:hover { background: #f0f0f0 !important; }
         .nav-btn:hover { background: rgba(255,255,255,0.92) !important; }
@@ -240,17 +253,17 @@ const HomePage = () => {
                       display: 'inline-block',
                       background: 'rgba(255,255,255,0.1)',
                       border: '1px solid rgba(255,255,255,0.22)',
-                      color: 'rgba(255,255,255,0.8)',
-                      fontSize: '10px', fontWeight: '700',
-                      letterSpacing: '0.12em', textTransform: 'uppercase',
-                      padding: '5px 14px', borderRadius: '3px', marginBottom: '20px',
+                      color: 'rgba(255,255,255,0.9)',
+                      fontSize: '20px', fontWeight: '700',
+                      letterSpacing: '0.01em',
+                      padding: '5px 14px', borderRadius: '3px', marginBottom: '16px',
                     }}>
                       {slide.label}
                     </div>
 
                     <h1 style={{
-                      fontSize: '40px', fontWeight: '700', color: '#ffffff',
-                      lineHeight: '1.15', letterSpacing: '-0.02em', marginBottom: '14px',
+                      fontSize: '20px', fontWeight: '700', color: '#ffffff',
+                      lineHeight: '1.4', letterSpacing: '-0.01em', marginBottom: '14px',
                     }}>
                       {slide.title}
                     </h1>
@@ -374,7 +387,7 @@ const HomePage = () => {
 
           {/* Service Banners */}
           <section style={{ padding: '32px 28px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div className="banner-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
               {[
                 {
                   to: '/biz-print',

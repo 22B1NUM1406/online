@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { getProducts } from '../services/api';
@@ -10,6 +10,9 @@ const CategoryMegaMenu = ({ categories }) => {
   const [categoryProducts, setCategoryProducts] = useState({});
   const [categoryPreviewImages, setCategoryPreviewImages] = useState({});
   const [loading, setLoading] = useState(false);
+  
+  // Timeout ref для hover хоцролт
+  const timeoutRef = useRef(null);
 
   // Load preview images for all categories on mount
   useEffect(() => {
@@ -96,13 +99,24 @@ const CategoryMegaMenu = ({ categories }) => {
   };
 
   const handleMouseEnter = (category) => {
+    // Clear any pending timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
     setHoveredCategory(category);
     setSelectedSubCategory(null);
   };
 
   const handleMouseLeave = () => {
-    setHoveredCategory(null);
-    setSelectedSubCategory(null);
+    // Set timeout to close dropdown after 200ms
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      setHoveredCategory(null);
+      setSelectedSubCategory(null);
+    }, 200);
   };
 
   const handleSubCategoryClick = (subCategory) => {
@@ -162,7 +176,7 @@ const CategoryMegaMenu = ({ categories }) => {
                     />
                   ) : (
                     <img
-                      src="/placeholder.jpg" // 📦 icon-ийн оронд
+                      src="/placeholder.jpg"
                       alt="Бүтээгдэхүүн"
                       className="relative z-10 max-w-full max-h-full object-contain"
                     />
@@ -211,7 +225,13 @@ const CategoryMegaMenu = ({ categories }) => {
       {/* Mega Menu Dropdown */}
       {hoveredCategory && (
         <div
-          onMouseEnter={() => setHoveredCategory(hoveredCategory)}
+          onMouseEnter={() => {
+            // Clear timeout when mouse enters dropdown
+            if (timeoutRef.current) {
+              clearTimeout(timeoutRef.current);
+              timeoutRef.current = null;
+            }
+          }}
           onMouseLeave={handleMouseLeave}
           className="absolute left-0 right-0 top-full mt-4 z-50 px-4 lg:px-0"
         >
@@ -274,7 +294,7 @@ const CategoryMegaMenu = ({ categories }) => {
                     <p className="text-xs lg:text-sm text-gray-500">Манай шилдэг бүтээгдэхүүнүүд</p>
                   </div>
 
-                  {/* "Бүгдийг үзэх" линк - ЗАСАГДСАН: to="/biz-print" */}
+                  {/* "Бүгдийг үзэх" линк */}
                   <Link
                     to="/biz-print"
                     className="group flex items-center gap-2 px-4 lg:px-6 py-2 lg:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all text-sm lg:text-base font-semibold whitespace-nowrap"

@@ -161,12 +161,11 @@ const CategoryMegaMenu = ({ categories }) => {
                       }}
                     />
                   ) : (
-                    <div className="relative z-10 w-full h-full flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="text-6xl mb-3">📦</div>
-                        <div className="text-sm text-gray-500 font-medium">Бүтээгдэхүүн</div>
-                      </div>
-                    </div>
+                    <img
+                      src="/placeholder.jpg" // 📦 icon-ийн оронд
+                      alt="Бүтээгдэхүүн"
+                      className="relative z-10 max-w-full max-h-full object-contain"
+                    />
                   )}
 
                   {/* Shine Effect */}

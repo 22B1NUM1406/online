@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ShoppingCart, Wallet, User as UserIcon, Package } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, User as UserIcon, Package } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getMyOrders } from '../services/api';
 import { formatPrice, formatDate, getOrderStatusLabel, getOrderStatusColor } from '../utils/helpers';
@@ -63,14 +63,6 @@ const ProfilePage = () => {
                   Захиалгууд
                 </button>
 
-                <Link
-                  to="/wallet"
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-50 text-gray-700 transition-all flex items-center gap-3"
-                >
-                  <Wallet size={20} />
-                  Хэтэвч
-                </Link>
-
                 <button
                   onClick={() => setActiveTab('profile')}
                   className={`w-full text-left px-4 py-3 rounded-lg transition-all flex items-center gap-3 ${
@@ -82,20 +74,6 @@ const ProfilePage = () => {
                   <UserIcon size={20} />
                   Профайл
                 </button>
-              </div>
-
-              {/* Wallet Info */}
-              <div className="mt-6 pt-6 border-t">
-                <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl p-4 text-white">
-                  <div className="text-sm opacity-90 mb-1">Хэтэвч</div>
-                  <div className="text-2xl font-bold">{formatPrice(user?.wallet || 0)}</div>
-                  <Link 
-                    to="/wallet"
-                    className="mt-3 block text-center bg-white/20 hover:bg-white/30 py-2 rounded-lg text-sm font-medium transition-colors"
-                  >
-                    Цэнэглэх
-                  </Link>
-                </div>
               </div>
             </div>
           </div>

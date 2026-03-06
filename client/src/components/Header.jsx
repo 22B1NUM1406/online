@@ -128,16 +128,7 @@ const Header = () => {
                 )}
               </div>
 
-              {/* Wallet - Only for authenticated users */}
-              {isAuthenticated && (
-                <Link
-                  to="/wallet"
-                  className="hidden md:flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors border border-gray-300"
-                >
-                  <Wallet size={20} />
-                  <span className="text-sm font-medium">{formatPrice(user?.wallet || 0)}</span>
-                </Link>
-              )}
+              
 
               {/* Wishlist */}
               <Link
@@ -244,7 +235,7 @@ const Header = () => {
               {isAuthenticated ? (
                 <>
                   <Link to="/profile" className="block py-3 hover:bg-gray-100 rounded-lg px-4">Профайл</Link>
-                  <Link to="/wallet" className="block py-3 hover:bg-gray-100 rounded-lg px-4">Хэтэвч</Link>
+                 
                   {isAdmin && <Link to="/admin" className="block py-3 hover:bg-gray-100 rounded-lg px-4">Админ</Link>}
                   <button onClick={handleLogout} className="block w-full text-left py-3 hover:bg-gray-100 rounded-lg px-4 text-red-600">Гарах</button>
                 </>

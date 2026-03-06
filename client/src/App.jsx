@@ -17,8 +17,7 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import CheckoutPage from './pages/CheckoutPage';
 import PaymentPage from './pages/PaymentPage';
 import ProfilePage from './pages/ProfilePage';
-import WalletPage from './pages/WalletPage';
-import WalletPaymentPage from './pages/WalletPaymentPage';
+
 import QuotationPage from './pages/QuotationPage';
 import AdminPage from './pages/AdminPage';
 import WishlistPage from './pages/WishlistPage';
@@ -81,22 +80,6 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <ProfilePage />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/wallet" 
-                  element={
-                    <ProtectedRoute>
-                      <WalletPage />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/wallet/payment" 
-                  element={
-                    <ProtectedRoute>
-                      <WalletPaymentPage />
                     </ProtectedRoute>
                   } 
                 />

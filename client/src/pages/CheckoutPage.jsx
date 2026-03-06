@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, ChevronRight, Wallet, CreditCard, Check } from 'lucide-react';
+import { ArrowLeft, ChevronRight, CreditCard, Check } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { createOrder, createQPayInvoice } from '../services/api';
@@ -10,7 +10,7 @@ import Notification from '../components/Notification';
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { cart, getCartTotal, clearCart } = useCart();
-  const { user, updateWallet } = useAuth();
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
@@ -19,15 +19,12 @@ const CheckoutPage = () => {
     phone: user?.phone || '',
     email: user?.email || '',
     address: user?.address || '',
-    paymentMethod: 'wallet',
+    paymentMethod: 'qpay',
     notes: ''
   });
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmitShipping = (e) => {
@@ -37,20 +34,9 @@ const CheckoutPage = () => {
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
-    
-    // Check wallet balance if paying with wallet
-    if (formData.paymentMethod === 'wallet' && user.wallet < getCartTotal()) {
-      setNotification({ 
-        message: 'Хэтэвчний үлдэгдэл хүрэлцэхгүй байна', 
-        type: 'error' 
-      });
-      return;
-    }
-
-
     try {
       setLoading(true);
-      
+
       const orderData = {
         items: cart.map(item => ({
           product: item._id,
@@ -68,28 +54,10 @@ const CheckoutPage = () => {
 
       const result = await createOrder(orderData);
       const orderId = result.data._id;
-      
-      // Handle payment method
-      if (formData.paymentMethod === 'wallet') {
-        // Wallet payment - instant
-        updateWallet(user.wallet - getCartTotal());
-        clearCart();
-        setNotification({ 
-          message: 'Захиалга амжилттай илгээгдлээ!', 
-          type: 'success' 
-        });
-        setTimeout(() => navigate('/profile'), 1500);
-        
-      } else if (formData.paymentMethod === 'qpay') {
-        // QPay payment - redirect to payment page
-    
+
+      if (formData.paymentMethod === 'qpay') {
         try {
           const qpayResult = await createQPayInvoice(orderId);
-          
-          // clearCart();
-          
-          // Navigate to payment page with QPay data
-  
           navigate(`/payment/${orderId}`, {
             state: {
               qrImage: qpayResult.data.qr_image,
@@ -102,26 +70,18 @@ const CheckoutPage = () => {
           });
         } catch (qpayError) {
           console.error('QPay error:', qpayError);
-          setNotification({ 
-            message: 'QPay invoice үүсгэхэд алдаа гарлаа', 
-            type: 'error' 
-          });
+          setNotification({ message: 'QPay invoice үүсгэхэд алдаа гарлаа', type: 'error' });
         }
       } else {
-        // Other payment methods (cash, etc)
         clearCart();
-        setNotification({ 
-          message: 'Захиалга амжилттай илгээгдлээ!', 
-          type: 'success' 
-        });
+        setNotification({ message: 'Захиалга амжилттай илгээгдлээ!', type: 'success' });
         setTimeout(() => navigate('/profile'), 1500);
       }
-      
     } catch (error) {
       console.error('Order error:', error);
-      setNotification({ 
-        message: error.response?.data?.message || 'Захиалгад алдаа гарлаа', 
-        type: 'error' 
+      setNotification({
+        message: error.response?.data?.message || 'Захиалгад алдаа гарлаа',
+        type: 'error'
       });
     } finally {
       setLoading(false);
@@ -144,7 +104,7 @@ const CheckoutPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       {notification && (
-        <Notification 
+        <Notification
           type={notification.type}
           message={notification.message}
           onClose={() => setNotification(null)}
@@ -152,9 +112,9 @@ const CheckoutPage = () => {
       )}
 
       <div className="max-w-4xl mx-auto px-4">
-        <Link 
+        <Link
           to={step === 1 ? '/cart' : '#'}
-          onClick={(e) => { if (step === 2) { e.preventDefault(); setStep(1); }}}
+          onClick={(e) => { if (step === 2) { e.preventDefault(); setStep(1); } }}
           className="inline-flex items-center gap-2 text-gray-600 hover:text-blue-600 mb-6"
         >
           <ArrowLeft size={20} />
@@ -167,7 +127,7 @@ const CheckoutPage = () => {
             <div className={`flex items-center justify-center w-10 h-10 rounded-full ${step >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-300'}`}>
               1
             </div>
-            <div className={`w-24 h-1 ${step >= 2 ? 'bg-blue-600' : 'bg-gray-300'}`}></div>
+            <div className={`w-24 h-1 ${step >= 2 ? 'bg-blue-600' : 'bg-gray-300'}`} />
             <div className={`flex items-center justify-center w-10 h-10 rounded-full ${step >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-300'}`}>
               2
             </div>
@@ -178,7 +138,7 @@ const CheckoutPage = () => {
         {step === 1 && (
           <form onSubmit={handleSubmitShipping} className="bg-white rounded-xl shadow-lg p-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Хүргэлтийн мэдээлэл</h2>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -272,38 +232,12 @@ const CheckoutPage = () => {
           <div className="space-y-6">
             <form onSubmit={handlePlaceOrder} className="bg-white rounded-xl shadow-lg p-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-6">Төлбөрийн хэлбэр</h2>
-              
-              <div className="space-y-4">
-                {/* Wallet Option */}
-                <label className={`flex items-center gap-4 p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                  formData.paymentMethod === 'wallet' 
-                    ? 'border-blue-500 bg-blue-50' 
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}>
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="wallet"
-                    checked={formData.paymentMethod === 'wallet'}
-                    onChange={handleChange}
-                    className="w-5 h-5"
-                  />
-                  <Wallet size={32} className="text-blue-600" />
-                  <div className="flex-1">
-                    <div className="font-semibold text-lg">Хэтэвч</div>
-                    <div className="text-sm text-gray-600">
-                      Үлдэгдэл: {formatPrice(user?.wallet || 0)}
-                    </div>
-                  </div>
-                  {user?.wallet < getCartTotal() && (
-                    <span className="text-xs text-red-500">Үлдэгдэл хүрэлцэхгүй</span>
-                  )}
-                </label>
 
+              <div className="space-y-4">
                 {/* QPay Option */}
                 <label className={`flex items-center gap-4 p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                  formData.paymentMethod === 'qpay' 
-                    ? 'border-blue-500 bg-blue-50' 
+                  formData.paymentMethod === 'qpay'
+                    ? 'border-blue-500 bg-blue-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}>
                   <input
@@ -323,8 +257,8 @@ const CheckoutPage = () => {
 
                 {/* Cash Option */}
                 <label className={`flex items-center gap-4 p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                  formData.paymentMethod === 'cash' 
-                    ? 'border-blue-500 bg-blue-50' 
+                  formData.paymentMethod === 'cash'
+                    ? 'border-blue-500 bg-blue-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}>
                   <input
@@ -345,12 +279,10 @@ const CheckoutPage = () => {
 
               <button
                 type="submit"
-                disabled={loading || (formData.paymentMethod === 'wallet' && user?.wallet < getCartTotal())}
+                disabled={loading}
                 className="w-full mt-6 bg-green-600 text-white py-4 rounded-lg font-bold text-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                {loading ? (
-                  'Түр хүлээнэ үү...'
-                ) : (
+                {loading ? 'Түр хүлээнэ үү...' : (
                   <>
                     <Check size={24} />
                     Захиалга баталгаажуулах

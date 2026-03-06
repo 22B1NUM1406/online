@@ -182,11 +182,16 @@ const HomePage = () => {
   return (
     <div style={S.page}>
       <style>{`
-        @keyframes heroUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .blog-fadein { animation: fadeIn 0.7s ease-out both; }
+        @media (max-width: 1024px) { .blog-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+        @media (max-width: 640px) { .blog-grid { grid-template-columns: 1fr !important; } .section-inner { padding: 24px 16px !important; } }
         .hero-active { animation: heroUp 0.65s ease forwards; }
         .hero-cta:hover { background: #f0f0f0 !important; }
         .nav-btn:hover { background: rgba(255,255,255,0.92) !important; }
-        .blog-card:hover { border-color: #1a1a2e !important; box-shadow: 0 6px 24px rgba(26,26,46,0.1) !important; }
+        .blog-card:hover { border-color: #1a1a2e !important; box-shadow: 0 6px 24px rgba(26,26,46,0.1) !important; transform: scale(1.02) !important; }
+        .blog-card { transition: all 0.3s ease !important; }
+        .blog-card:hover .blog-img { transform: scale(1.08) !important; }
         .blog-card:hover .blog-title { color: #1a1a2e !important; }
         .banner-card:hover { box-shadow: 0 10px 32px rgba(26,26,46,0.18) !important; }
         .partner-item:hover { border-color: #1a1a2e !important; }
@@ -347,19 +352,19 @@ const HomePage = () => {
 
           {/* Featured Products */}
           {featuredProducts.length > 0 && (
-            <section style={{ padding: '32px 28px' }} id="featured-products">
-              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '20px' }}>
+            <section style={{ padding: '44px 28px' }} id="featured-products" className="section-inner">
+              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '24px' }}>
                 <div>
                   <p style={S.sectionLabel}>
                     <span style={{ width: '20px', height: '1px', background: '#ccc', display: 'inline-block' }} />
                     Онцлох бүтээгдэхүүн
                   </p>
-                  <h2 style={S.sectionTitle}>Шилдэг бүтээгдэхүүнүүд</h2>
-                  <p style={S.sectionDesc}>Манай байгууллагаас санал болгож буй шилдэг сонголтууд</p>
+                  <h2 style={{ ...S.sectionTitle, fontSize: '26px' }}>Шилдэг бүтээгдэхүүнүүд</h2>
+                  <p style={{ ...S.sectionDesc, fontSize: '14px' }}>Манай байгууллагаас санал болгож буй шилдэг сонголтууд</p>
                 </div>
                 <Link to="/biz-print" style={S.viewAll}>Бүгдийг үзэх <ArrowRight size={12} /></Link>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '14px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
                 {featuredProducts.map(product => <SimpleProductCard key={product._id} product={product} />)}
               </div>
             </section>
@@ -435,19 +440,19 @@ const HomePage = () => {
 
           {/* Discount Products */}
           {discountProducts.length > 0 && (
-            <section style={{ padding: '32px 28px', background: '#fafafa' }} id="discount-products">
-              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '20px' }}>
+            <section style={{ padding: '44px 28px', background: '#fafafa' }} id="discount-products" className="section-inner">
+              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '24px' }}>
                 <div>
                   <p style={S.sectionLabel}>
                     <span style={{ width: '20px', height: '1px', background: '#ccc', display: 'inline-block' }} />
                     Хямдрал
                   </p>
-                  <h2 style={S.sectionTitle}>Хямдралтай бүтээгдэхүүн</h2>
-                  <p style={S.sectionDesc}>Онцгой үнээр санал болгож байна</p>
+                  <h2 style={{ ...S.sectionTitle, fontSize: '26px' }}>Хямдралтай бүтээгдэхүүн</h2>
+                  <p style={{ ...S.sectionDesc, fontSize: '14px' }}>Онцгой үнээр санал болгож байна</p>
                 </div>
                 <Link to="/biz-print" style={S.viewAll}>Бүгдийг үзэх <ArrowRight size={12} /></Link>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '14px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
                 {discountProducts.slice(0, 10).map(product => <SimpleProductCard key={product._id} product={product} />)}
               </div>
             </section>
@@ -456,18 +461,18 @@ const HomePage = () => {
           <div style={S.divider} />
 
           {/* Blog */}
-          <section style={{ padding: '32px 28px' }}>
-            <div style={{ marginBottom: '20px' }}>
+          <section style={{ padding: '44px 28px' }} className="section-inner">
+            <div style={{ marginBottom: '24px' }}>
               <p style={S.sectionLabel}>
                 <span style={{ width: '20px', height: '1px', background: '#ccc', display: 'inline-block' }} />
                 Блог
               </p>
-              <h2 style={S.sectionTitle}>Сүүлийн нийтлэлүүд</h2>
-              <p style={S.sectionDesc}>Хэвлэлийн талаарх мэдээ, зөвлөгөө, заавар</p>
+              <h2 style={{ ...S.sectionTitle, fontSize: '26px' }}>Сүүлийн нийтлэлүүд</h2>
+              <p style={{ ...S.sectionDesc, fontSize: '14px' }}>Хэвлэлийн талаарх мэдээ, зөвлөгөө, заавар</p>
             </div>
 
             {/* Filter */}
-            <div style={{ display: 'flex', gap: '6px', marginBottom: '22px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '6px', marginBottom: '24px', flexWrap: 'wrap' }}>
               {blogCategories.map((cat) => {
                 const isAct = selectedCategory === cat.value;
                 return (
@@ -476,11 +481,11 @@ const HomePage = () => {
                     onClick={() => setSelectedCategory(cat.value)}
                     className={isAct ? '' : 'cat-filter-btn'}
                     style={{
-                      padding: '7px 18px', borderRadius: '3px',
+                      padding: '8px 20px', borderRadius: '3px',
                       border: `1.5px solid ${isAct ? '#1a1a2e' : '#dedede'}`,
                       background: isAct ? '#1a1a2e' : '#fff',
                       color: isAct ? '#fff' : '#555',
-                      fontSize: '12px', fontWeight: '600',
+                      fontSize: '13px', fontWeight: '600',
                       cursor: 'pointer', letterSpacing: '0.02em',
                       transition: 'all 0.15s ease',
                     }}
@@ -492,24 +497,25 @@ const HomePage = () => {
             </div>
 
             {/* Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-              {blogs.map((blog) => (
+            <div className="blog-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+              {blogs.map((blog, idx) => (
                 <Link
                   key={blog._id}
                   to={`/blogs/${blog.slug}`}
-                  className="blog-card"
+                  className="blog-card blog-fadein"
                   style={{
                     textDecoration: 'none', display: 'block',
                     background: '#fff', border: '1.5px solid #e8e8e8',
                     borderRadius: '5px', overflow: 'hidden',
-                    transition: 'all 0.2s ease',
+                    animationDelay: `${idx * 0.08}s`,
                   }}
                 >
-                  <div style={{ height: '176px', background: '#f2f2f2', overflow: 'hidden', position: 'relative' }}>
+                  <div style={{ height: '210px', background: '#f2f2f2', overflow: 'hidden', position: 'relative' }}>
                     {blog.featuredImage ? (
                       <img
                         src={getImageUrl(blog.featuredImage)} alt={blog.title}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        className="blog-img"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }}
                         onError={(e) => { e.target.src = 'https://via.placeholder.com/400x300?text=Blog'; }}
                       />
                     ) : (
@@ -529,11 +535,11 @@ const HomePage = () => {
                     )}
                   </div>
 
-                  <div style={{ padding: '14px 16px 16px' }}>
-                    <div style={{ display: 'flex', gap: '12px', marginBottom: '9px' }}>
+                  <div style={{ padding: '18px 20px 20px' }}>
+                    <div style={{ display: 'flex', gap: '14px', marginBottom: '10px' }}>
                       {[{ Icon: Calendar, text: formatDate(blog.publishedAt || blog.createdAt) }, { Icon: Eye, text: blog.views || 0 }].map(({ Icon, text }, i) => (
-                        <span key={i} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#b0b0b0' }}>
-                          <Icon size={11} />{text}
+                        <span key={i} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#b0b0b0' }}>
+                          <Icon size={12} />{text}
                         </span>
                       ))}
                     </div>
@@ -541,7 +547,7 @@ const HomePage = () => {
                     <h3
                       className="blog-title"
                       style={{
-                        fontSize: '14px', fontWeight: '600', color: '#2a2a2a',
+                        fontSize: '16px', fontWeight: '600', color: '#2a2a2a',
                         lineHeight: '1.45', marginBottom: '8px',
                         overflow: 'hidden', display: '-webkit-box',
                         WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
@@ -553,7 +559,7 @@ const HomePage = () => {
 
                     {blog.excerpt && (
                       <p style={{
-                        fontSize: '12px', color: '#999', lineHeight: '1.5', marginBottom: '12px',
+                        fontSize: '13px', color: '#999', lineHeight: '1.6', marginBottom: '14px',
                         overflow: 'hidden', display: '-webkit-box',
                         WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
                       }}>
@@ -561,12 +567,12 @@ const HomePage = () => {
                       </p>
                     )}
 
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f0f0f0', paddingTop: '10px' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#b0b0b0' }}>
-                        <User size={11} />{blog.author?.name || 'Admin'}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f0f0f0', paddingTop: '12px' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#b0b0b0' }}>
+                        <User size={12} />{blog.author?.name || 'Admin'}
                       </span>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: '700', color: '#1a1a2e', letterSpacing: '0.02em' }}>
-                        Унших <ArrowRight size={11} />
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: '700', color: '#1a1a2e', letterSpacing: '0.02em' }}>
+                        Унших <ArrowRight size={12} />
                       </span>
                     </div>
                   </div>
@@ -619,11 +625,11 @@ const HomePage = () => {
                   key={partner.id}
                   className="partner-item"
                   style={{
-                    flexShrink: 0, width: '150px', height: '72px',
+                    flexShrink: 0, width: '200px', height: '110px',
                     background: '#fafafa', border: '1.5px solid #e8e8e8',
                     borderRadius: '4px', display: 'flex',
                     alignItems: 'center', justifyContent: 'center',
-                    padding: '12px', transition: 'border-color 0.15s ease',
+                    padding: '20px', transition: 'border-color 0.15s ease',
                   }}
                 >
                   <img

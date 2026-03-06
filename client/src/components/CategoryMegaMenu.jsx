@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Star } from 'lucide-react';
+import { ChevronRight, Grid, ArrowRight } from 'lucide-react';
 import { getProducts } from '../services/api';
 import { getImageUrl, formatPrice } from '../utils/helpers';
 
@@ -10,13 +10,10 @@ const CategoryMegaMenu = ({ categories }) => {
   const [categoryProducts, setCategoryProducts] = useState({});
   const [categoryPreviewImages, setCategoryPreviewImages] = useState({});
   const [loading, setLoading] = useState(false);
-  
   const timeoutRef = useRef(null);
 
   useEffect(() => {
-    if (categories?.length) {
-      loadCategoryPreviews();
-    }
+    if (categories && categories.length > 0) loadCategoryPreviews();
   }, [categories]);
 
   const loadCategoryPreviews = async () => {
@@ -25,260 +22,612 @@ const CategoryMegaMenu = ({ categories }) => {
       for (const category of categories) {
         try {
           const data = await getProducts({ category: category.slug, limit: 1 });
-          if (data.data?.length) {
-            previews[category._id] = data.data[0].image;
-          }
-        } catch (error) {
-          console.error(`Error loading preview for ${category.name}:`, error);
+          if (data.data && data.data.length > 0) previews[category._id] = data.data[0].image;
+        } catch (err) {
+          console.error(`Error loading preview for ${category.name}:`, err);
         }
       }
       setCategoryPreviewImages(previews);
-    } catch (error) {
-      console.error('Error loading category previews:', error);
+    } catch (err) {
+      console.error('Error loading category previews:', err);
     }
   };
 
   useEffect(() => {
     if (hoveredCategory) {
-      const categoryKey = selectedSubCategory
+      const key = selectedSubCategory
         ? `${hoveredCategory._id}-${selectedSubCategory._id}`
         : hoveredCategory._id;
-
-      if (!categoryProducts[categoryKey]) {
-        loadCategoryProducts(hoveredCategory, selectedSubCategory);
-      }
+      if (!categoryProducts[key]) loadCategoryProducts(hoveredCategory, selectedSubCategory);
     }
   }, [hoveredCategory, selectedSubCategory]);
 
   const loadCategoryProducts = async (category, subCategory = null) => {
     try {
       setLoading(true);
-      const params = {
-        category: subCategory ? subCategory.slug : category.slug,
-        limit: 8
-      };
+      const params = { category: subCategory ? subCategory.slug : category.slug, limit: 8 };
       const data = await getProducts(params);
-      const categoryKey = subCategory
-        ? `${category._id}-${subCategory._id}`
-        : category._id;
-      setCategoryProducts(prev => ({
-        ...prev,
-        [categoryKey]: data.data || []
-      }));
-    } catch (error) {
-      console.error('Error loading category products:', error);
+      const key = subCategory ? `${category._id}-${subCategory._id}` : category._id;
+      setCategoryProducts(prev => ({ ...prev, [key]: data.data || [] }));
+    } catch (err) {
+      console.error('Error loading category products:', err);
     } finally {
       setLoading(false);
     }
   };
 
   const handleMouseEnter = (category) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
+    if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null; }
     setHoveredCategory(category);
     setSelectedSubCategory(null);
   };
 
   const handleMouseLeave = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       setHoveredCategory(null);
       setSelectedSubCategory(null);
-    }, 150);
-  };
-
-  const handleSubCategoryClick = (subCategory) => {
-    setSelectedSubCategory(subCategory);
+    }, 200);
   };
 
   const getCurrentProducts = () => {
     if (!hoveredCategory) return [];
-    const categoryKey = selectedSubCategory
+    const key = selectedSubCategory
       ? `${hoveredCategory._id}-${selectedSubCategory._id}`
       : hoveredCategory._id;
-    return categoryProducts[categoryKey] || [];
+    return categoryProducts[key] || [];
   };
 
   return (
-    <div className="relative w-full">
-      {/* Categories Grid - Minimal & Clean */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 pb-6">
-        {categories.map((category) => (
-          <div
-            key={category._id}
-            onMouseEnter={() => handleMouseEnter(category)}
-            onMouseLeave={handleMouseLeave}
-            className="relative group cursor-pointer"
-          >
-            <Link to={`/products?category=${category.slug}`} className="block">
-              {/* Simple Card */}
-              <div className="relative overflow-hidden rounded-xl bg-white border border-gray-100 transition-all duration-300 hover:border-gray-200 hover:shadow-sm">
-                {/* Image Container */}
-                <div className="relative aspect-square bg-gray-50 p-4">
-                  {categoryPreviewImages[category._id] ? (
-                    <img
-                      src={getImageUrl(categoryPreviewImages[category._id])}
-                      alt={category.name}
-                      className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
-                      onError={(e) => { e.target.src = '/placeholder.jpg'; }}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <span className="text-3xl text-gray-300">📦</span>
-                    </div>
-                  )}
-                </div>
+    <div className="relative w-full" style={{ fontFamily: "'DM Sans', 'Helvetica Neue', Arial, sans-serif" }}>
 
-                {/* Category Name */}
-                <div className="p-3 text-center border-t border-gray-50">
-                  <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900 line-clamp-1">
-                    {category.name}
-                  </span>
-                  {category.subcategories?.length > 0 && (
-                    <span className="text-xs text-gray-400 mt-0.5 block">
-                      {category.subcategories.length} дэд
-                    </span>
-                  )}
+      {/* ── Category Grid ── */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 pb-4">
+        {categories.map((category, idx) => {
+          const isActive = hoveredCategory?._id === category._id;
+          return (
+            <div
+              key={category._id}
+              onMouseEnter={() => handleMouseEnter(category)}
+              onMouseLeave={handleMouseLeave}
+              className="relative group cursor-pointer"
+            >
+              <Link to={`/products?category=${category.slug}`} className="block">
+                <div
+                  style={{
+                    background: isActive ? '#1a1a2e' : '#ffffff',
+                    border: `1.5px solid ${isActive ? '#1a1a2e' : '#e2e2e2'}`,
+                    borderRadius: '6px',
+                    transition: 'all 0.2s ease',
+                    boxShadow: isActive
+                      ? '0 8px 24px rgba(26,26,46,0.18)'
+                      : '0 1px 4px rgba(0,0,0,0.06)',
+                    transform: isActive ? 'translateY(-2px)' : 'none',
+                  }}
+                >
+                  {/* Image */}
+                  <div
+                    style={{
+                      height: '130px',
+                      background: isActive ? '#16213e' : '#f8f8f8',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '16px',
+                      borderRadius: '5px 5px 0 0',
+                      overflow: 'hidden',
+                      transition: 'background 0.2s ease',
+                    }}
+                  >
+                    {categoryPreviewImages[category._id] ? (
+                      <img
+                        src={getImageUrl(categoryPreviewImages[category._id])}
+                        alt={category.name}
+                        style={{
+                          maxWidth: '100%',
+                          maxHeight: '100%',
+                          objectFit: 'contain',
+                          transition: 'transform 0.3s ease',
+                          transform: isActive ? 'scale(1.06)' : 'scale(1)',
+                          filter: isActive ? 'brightness(1.15)' : 'none',
+                        }}
+                        onError={(e) => { e.target.src = '/placeholder.jpg'; }}
+                      />
+                    ) : (
+                      <img src="/placeholder.jpg" alt="Бүтээгдэхүүн"
+                        style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', opacity: 0.4 }}
+                      />
+                    )}
+                  </div>
+
+                  {/* Label */}
+                  <div
+                    style={{
+                      padding: '10px 12px 12px',
+                      borderTop: `1px solid ${isActive ? '#2a2a4a' : '#ebebeb'}`,
+                      background: isActive ? '#1a1a2e' : '#ffffff',
+                      borderRadius: '0 0 5px 5px',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        color: isActive ? '#ffffff' : '#1a1a2e',
+                        lineHeight: '1.3',
+                        margin: 0,
+                        letterSpacing: '0.01em',
+                        transition: 'color 0.2s ease',
+                        overflow: 'hidden',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                      }}
+                    >
+                      {category.name}
+                    </p>
+                    {category.subcategories?.length > 0 && (
+                      <p
+                        style={{
+                          fontSize: '10px',
+                          color: isActive ? '#8899bb' : '#999999',
+                          marginTop: '4px',
+                          fontWeight: '400',
+                          letterSpacing: '0.03em',
+                          textTransform: 'uppercase',
+                          transition: 'color 0.2s ease',
+                        }}
+                      >
+                        {category.subcategories.length} дэд ангилал
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </Link>
-          </div>
-        ))}
+              </Link>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Mega Menu Dropdown - Clean Design */}
+      {/* ── Mega Menu Dropdown ── */}
       {hoveredCategory && (
         <div
-          onMouseEnter={() => {
-            if (timeoutRef.current) {
-              clearTimeout(timeoutRef.current);
-              timeoutRef.current = null;
-            }
-          }}
+          onMouseEnter={() => { if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null; } }}
           onMouseLeave={handleMouseLeave}
-          className="absolute left-0 right-0 top-full mt-2 z-50"
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: '100%',
+            marginTop: '8px',
+            zIndex: 50,
+            animation: 'fadeSlideDown 0.18s ease forwards',
+          }}
         >
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-            {/* Simple Header */}
-            <div className="px-6 py-4 border-b border-gray-100">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {selectedSubCategory ? selectedSubCategory.name : hoveredCategory.name}
-                </h3>
-                <Link
-                  to={`/products?category=${selectedSubCategory?.slug || hoveredCategory.slug}`}
-                  className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
-                  onClick={handleMouseLeave}
-                >
-                  Бүгдийг үзэх
-                  <ChevronRight size={14} />
-                </Link>
-              </div>
-            </div>
+          <style>{`
+            @keyframes fadeSlideDown {
+              from { opacity: 0; transform: translateY(-6px); }
+              to   { opacity: 1; transform: translateY(0); }
+            }
+            .corp-sub-btn:hover { background: #f0f2f5 !important; }
+            .corp-prod-card:hover { border-color: #1a1a2e !important; box-shadow: 0 6px 20px rgba(26,26,46,0.12) !important; }
+            .corp-prod-card:hover .corp-prod-name { color: #1a1a2e !important; }
+            .corp-prod-card:hover img { transform: scale(1.05) !important; }
+          `}</style>
 
-            <div className="flex">
-              {/* Subcategories - Minimal */}
+          <div
+            style={{
+              background: '#ffffff',
+              border: '1.5px solid #dedede',
+              borderRadius: '8px',
+              boxShadow: '0 16px 48px rgba(0,0,0,0.12)',
+              overflow: 'hidden',
+            }}
+          >
+            {/* Top accent bar */}
+            <div style={{ height: '3px', background: '#1a1a2e' }} />
+
+            <div style={{ display: 'flex' }}>
+
+              {/* ── Left: Subcategory Sidebar ── */}
               {hoveredCategory.subcategories?.length > 0 && (
-                <div className="w-48 border-r border-gray-100 bg-gray-50/30 p-3">
-                  <div className="space-y-0.5">
+                <div
+                  style={{
+                    width: '220px',
+                    flexShrink: 0,
+                    borderRight: '1px solid #ebebeb',
+                    background: '#fafafa',
+                    padding: '20px 16px',
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: '10px',
+                      fontWeight: '700',
+                      color: '#999',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.1em',
+                      marginBottom: '12px',
+                    }}
+                  >
+                    Дэд ангилал
+                  </p>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    {/* All */}
                     <button
                       onClick={() => setSelectedSubCategory(null)}
-                      className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors ${
-                        !selectedSubCategory
-                          ? 'bg-gray-900 text-white'
-                          : 'text-gray-600 hover:bg-gray-100'
-                      }`}
+                      className="corp-sub-btn"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        width: '100%',
+                        textAlign: 'left',
+                        padding: '8px 12px',
+                        borderRadius: '4px',
+                        border: 'none',
+                        fontSize: '13px',
+                        fontWeight: !selectedSubCategory ? '600' : '400',
+                        color: !selectedSubCategory ? '#ffffff' : '#333',
+                        background: !selectedSubCategory ? '#1a1a2e' : 'transparent',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                        letterSpacing: '0.01em',
+                      }}
                     >
-                      Бүгд
+                      <span>Бүгд</span>
+                      {!selectedSubCategory && <ChevronRight size={14} />}
                     </button>
-                    
-                    {hoveredCategory.subcategories.map((subCat) => (
-                      <button
-                        key={subCat._id}
-                        onClick={() => handleSubCategoryClick(subCat)}
-                        className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors ${
-                          selectedSubCategory?._id === subCat._id
-                            ? 'bg-gray-900 text-white'
-                            : 'text-gray-600 hover:bg-gray-100'
-                        }`}
-                      >
-                        {subCat.name}
-                      </button>
-                    ))}
+
+                    {hoveredCategory.subcategories.map((sub) => {
+                      const isSel = selectedSubCategory?._id === sub._id;
+                      return (
+                        <button
+                          key={sub._id}
+                          onClick={() => setSelectedSubCategory(sub)}
+                          className="corp-sub-btn"
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            width: '100%',
+                            textAlign: 'left',
+                            padding: '8px 12px',
+                            borderRadius: '4px',
+                            border: 'none',
+                            fontSize: '13px',
+                            fontWeight: isSel ? '600' : '400',
+                            color: isSel ? '#ffffff' : '#444',
+                            background: isSel ? '#1a1a2e' : 'transparent',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease',
+                          }}
+                        >
+                          <span style={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            maxWidth: '150px',
+                          }}>
+                            {sub.name}
+                          </span>
+                          {isSel && <ChevronRight size={14} />}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
 
-              {/* Products Grid - Clean Cards */}
-              <div className="flex-1 p-6">
-                {loading ? (
-                  <div className="flex justify-center py-12">
-                    <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-900 rounded-full animate-spin"></div>
+              {/* ── Center: Products ── */}
+              <div style={{ flex: 1, padding: '24px 28px', background: '#ffffff' }}>
+
+                {/* Header row */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '20px' }}>
+                  <div>
+                    <h3
+                      style={{
+                        fontSize: '16px',
+                        fontWeight: '700',
+                        color: '#1a1a2e',
+                        margin: '0 0 2px',
+                        letterSpacing: '-0.01em',
+                      }}
+                    >
+                      {selectedSubCategory
+                        ? `${hoveredCategory.name} — ${selectedSubCategory.name}`
+                        : hoveredCategory.name}
+                    </h3>
+                    <p style={{ fontSize: '12px', color: '#999', margin: 0 }}>
+                      Манай шилдэг бүтээгдэхүүнүүд
+                    </p>
                   </div>
-                ) : (
-                  <div className="grid grid-cols-4 gap-4">
+
+                  <Link
+                    to="/biz-print"
+                    onClick={handleMouseLeave}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '8px 16px',
+                      background: '#1a1a2e',
+                      color: '#ffffff',
+                      borderRadius: '4px',
+                      fontSize: '12px',
+                      fontWeight: '600',
+                      textDecoration: 'none',
+                      letterSpacing: '0.02em',
+                      transition: 'background 0.15s ease',
+                      whiteSpace: 'nowrap',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = '#2d2d50'}
+                    onMouseLeave={e => e.currentTarget.style.background = '#1a1a2e'}
+                  >
+                    Бүгдийг үзэх
+                    <ArrowRight size={13} />
+                  </Link>
+                </div>
+
+                {/* Divider */}
+                <div style={{ height: '1px', background: '#ebebeb', marginBottom: '20px' }} />
+
+                {/* Product grid */}
+                {loading ? (
+                  <div style={{ display: 'flex', justifyContent: 'center', padding: '48px 0' }}>
+                    <div style={{ position: 'relative', width: '36px', height: '36px' }}>
+                      <div style={{
+                        position: 'absolute', inset: 0,
+                        border: '3px solid #e0e0e0',
+                        borderTopColor: '#1a1a2e',
+                        borderRadius: '50%',
+                        animation: 'spin 0.7s linear infinite',
+                      }} />
+                      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                    </div>
+                  </div>
+                ) : getCurrentProducts().length > 0 ? (
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(4, 1fr)',
+                      gap: '12px',
+                    }}
+                  >
                     {getCurrentProducts().slice(0, 8).map((product) => (
                       <Link
                         key={product._id}
                         to={`/products/${product._id}`}
-                        className="group"
                         onClick={handleMouseLeave}
+                        style={{ textDecoration: 'none' }}
                       >
-                        <div className="relative">
+                        <div
+                          className="corp-prod-card"
+                          style={{
+                            border: '1.5px solid #e8e8e8',
+                            borderRadius: '6px',
+                            overflow: 'hidden',
+                            background: '#ffffff',
+                            transition: 'all 0.2s ease',
+                            cursor: 'pointer',
+                          }}
+                        >
                           {/* Image */}
-                          <div className="aspect-square bg-gray-50 rounded-lg overflow-hidden mb-2 border border-gray-100">
+                          <div
+                            style={{
+                              height: '120px',
+                              background: '#f8f8f8',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              padding: '12px',
+                              overflow: 'hidden',
+                              position: 'relative',
+                            }}
+                          >
                             <img
                               src={getImageUrl(product.image)}
                               alt={product.name}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              style={{
+                                maxWidth: '100%',
+                                maxHeight: '100%',
+                                objectFit: 'contain',
+                                transition: 'transform 0.3s ease',
+                              }}
                               onError={(e) => { e.target.src = '/placeholder.jpg'; }}
                             />
-                            
-                            {/* Discount Badge - Simple */}
                             {product.discount && (
-                              <div className="absolute top-2 left-2 bg-red-50 text-red-600 text-xs font-medium px-2 py-1 rounded">
+                              <div
+                                style={{
+                                  position: 'absolute',
+                                  top: '8px',
+                                  left: '8px',
+                                  background: '#c0392b',
+                                  color: '#fff',
+                                  fontSize: '10px',
+                                  fontWeight: '700',
+                                  padding: '2px 7px',
+                                  borderRadius: '3px',
+                                  letterSpacing: '0.02em',
+                                }}
+                              >
                                 -{product.discount}%
                               </div>
                             )}
                           </div>
-                          
-                          {/* Content */}
-                          <h4 className="text-xs font-medium text-gray-900 line-clamp-2 mb-1 group-hover:text-gray-600">
-                            {product.name}
-                          </h4>
-                          
-                          <div className="flex items-baseline gap-1">
-                            {product.discount ? (
-                              <>
-                                <span className="text-sm font-semibold text-gray-900">
-                                  {formatPrice(product.price * (1 - product.discount / 100))}₮
-                                </span>
-                                <span className="text-xs text-gray-400 line-through">
+
+                          {/* Info */}
+                          <div style={{ padding: '10px 12px 12px', borderTop: '1px solid #f0f0f0' }}>
+                            <p
+                              className="corp-prod-name"
+                              style={{
+                                fontSize: '11px',
+                                fontWeight: '500',
+                                color: '#333',
+                                lineHeight: '1.4',
+                                marginBottom: '6px',
+                                overflow: 'hidden',
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                minHeight: '31px',
+                                transition: 'color 0.15s ease',
+                              }}
+                            >
+                              {product.name}
+                            </p>
+
+                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                              {product.discount ? (
+                                <>
+                                  <span style={{ fontSize: '13px', fontWeight: '700', color: '#c0392b' }}>
+                                    {formatPrice(product.price * (1 - product.discount / 100))}₮
+                                  </span>
+                                  <span style={{ fontSize: '10px', color: '#aaa', textDecoration: 'line-through' }}>
+                                    {formatPrice(product.price)}₮
+                                  </span>
+                                </>
+                              ) : (
+                                <span style={{ fontSize: '13px', fontWeight: '700', color: '#1a1a2e' }}>
                                   {formatPrice(product.price)}₮
                                 </span>
-                              </>
-                            ) : (
-                              <span className="text-sm font-semibold text-gray-900">
-                                {formatPrice(product.price)}₮
-                              </span>
-                            )}
+                              )}
+                            </div>
                           </div>
                         </div>
                       </Link>
                     ))}
                   </div>
-                )}
-
-                {!loading && getCurrentProducts().length === 0 && (
-                  <div className="text-center py-12">
-                    <p className="text-sm text-gray-400">Бүтээгдэхүүн олдсонгүй</p>
+                ) : (
+                  <div style={{ textAlign: 'center', padding: '48px 0' }}>
+                    <Grid size={32} style={{ color: '#ccc', margin: '0 auto 12px' }} />
+                    <p style={{ fontSize: '14px', fontWeight: '600', color: '#555', marginBottom: '4px' }}>
+                      Бүтээгдэхүүн олдсонгүй
+                    </p>
+                    <p style={{ fontSize: '12px', color: '#aaa' }}>Удахгүй нэмэгдэнэ...</p>
                   </div>
                 )}
               </div>
+
+              {/* ── Right: Featured Product ── */}
+              {getCurrentProducts().length > 0 && (
+                <div
+                  style={{
+                    width: '240px',
+                    flexShrink: 0,
+                    borderLeft: '1px solid #ebebeb',
+                    background: '#fafafa',
+                    padding: '24px 20px',
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: '10px',
+                      fontWeight: '700',
+                      color: '#999',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.1em',
+                      marginBottom: '14px',
+                    }}
+                  >
+                    Онцлох бүтээгдэхүүн
+                  </p>
+
+                  <Link
+                    to={`/products/${getCurrentProducts()[0]._id}`}
+                    onClick={handleMouseLeave}
+                    style={{ textDecoration: 'none', display: 'block' }}
+                  >
+                    <div
+                      style={{
+                        background: '#ffffff',
+                        border: '1.5px solid #e0e0e0',
+                        borderRadius: '6px',
+                        overflow: 'hidden',
+                        transition: 'all 0.2s ease',
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.borderColor = '#1a1a2e';
+                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(26,26,46,0.12)';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.borderColor = '#e0e0e0';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
+                    >
+                      {/* Featured image */}
+                      <div
+                        style={{
+                          height: '180px',
+                          background: '#f4f4f4',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          padding: '20px',
+                          overflow: 'hidden',
+                          position: 'relative',
+                        }}
+                      >
+                        <img
+                          src={getImageUrl(getCurrentProducts()[0].image)}
+                          alt={getCurrentProducts()[0].name}
+                          style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                          onError={(e) => { e.target.src = '/placeholder.jpg'; }}
+                        />
+                        {getCurrentProducts()[0].discount && (
+                          <div style={{
+                            position: 'absolute', top: '10px', left: '10px',
+                            background: '#c0392b', color: '#fff',
+                            fontSize: '11px', fontWeight: '700',
+                            padding: '3px 8px', borderRadius: '3px',
+                          }}>
+                            -{getCurrentProducts()[0].discount}%
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Featured info */}
+                      <div style={{ padding: '14px 16px 16px', borderTop: '1px solid #f0f0f0' }}>
+                        <p style={{
+                          fontSize: '12px', fontWeight: '600', color: '#1a1a2e',
+                          lineHeight: '1.4', marginBottom: '8px',
+                          overflow: 'hidden', display: '-webkit-box',
+                          WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                        }}>
+                          {getCurrentProducts()[0].name}
+                        </p>
+
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '12px' }}>
+                          {getCurrentProducts()[0].discount ? (
+                            <>
+                              <span style={{ fontSize: '16px', fontWeight: '700', color: '#c0392b' }}>
+                                {formatPrice(getCurrentProducts()[0].price * (1 - getCurrentProducts()[0].discount / 100))}₮
+                              </span>
+                              <span style={{ fontSize: '11px', color: '#aaa', textDecoration: 'line-through' }}>
+                                {formatPrice(getCurrentProducts()[0].price)}₮
+                              </span>
+                            </>
+                          ) : (
+                            <span style={{ fontSize: '16px', fontWeight: '700', color: '#1a1a2e' }}>
+                              {formatPrice(getCurrentProducts()[0].price)}₮
+                            </span>
+                          )}
+                        </div>
+
+                        <div style={{
+                          display: 'flex', alignItems: 'center', gap: '4px',
+                          fontSize: '11px', fontWeight: '600', color: '#1a1a2e',
+                          letterSpacing: '0.02em',
+                        }}>
+                          Дэлгэрэнгүй <ArrowRight size={12} />
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>

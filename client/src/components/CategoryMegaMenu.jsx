@@ -112,7 +112,7 @@ const CategoryMegaMenu = ({ categories }) => {
                   <div
                     style={{
                       height: '155px',
-                      background: isActive ? '#16213e' : '#f8f8f8',
+                      background: isActive ? '#16213e' : 'linear-gradient(135deg, #fdf4ff 0%, #f8f0fe 50%, #fce8f8 100%)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',

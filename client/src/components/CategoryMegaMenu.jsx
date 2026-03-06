@@ -67,7 +67,7 @@ const CategoryMegaMenu = ({ categories }) => {
     timeoutRef.current = setTimeout(() => {
       setHoveredCategory(null);
       setSelectedSubCategory(null);
-    }, 200);
+    }, 300);
   };
 
   const getCurrentProducts = () => {
@@ -203,15 +203,8 @@ const CategoryMegaMenu = ({ categories }) => {
         <div
           onMouseEnter={() => { if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null; } }}
           onMouseLeave={handleMouseLeave}
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: '100%',
-            marginTop: '8px',
-            zIndex: 50,
-            animation: 'fadeSlideDown 0.18s ease forwards',
-          }}
+          className="absolute left-0 right-0 top-full mt-2 z-50 px-4 lg:px-0"
+          style={{ animation: 'fadeSlideDown 0.18s ease forwards' }}
         >
           <style>{`
             @keyframes fadeSlideDown {
@@ -225,68 +218,33 @@ const CategoryMegaMenu = ({ categories }) => {
           `}</style>
 
           <div
-            style={{
-              background: '#ffffff',
-              border: '1.5px solid #dedede',
-              borderRadius: '8px',
-              boxShadow: '0 16px 48px rgba(0,0,0,0.12)',
-              overflow: 'hidden',
-            }}
+            className="bg-white rounded-lg shadow-2xl overflow-hidden max-h-[70vh] lg:max-h-none overflow-y-auto"
+            style={{ border: '1.5px solid #dedede', borderTop: '3px solid #1a1a2e' }}
           >
-            {/* Top accent bar */}
-            <div style={{ height: '3px', background: '#1a1a2e' }} />
-
-            <div style={{ display: 'flex' }}>
+            <div className="flex flex-col lg:flex-row">
 
               {/* ── Left: Subcategory Sidebar ── */}
               {hoveredCategory.subcategories?.length > 0 && (
-                <div
-                  style={{
-                    width: '220px',
-                    flexShrink: 0,
-                    borderRight: '1px solid #ebebeb',
-                    background: '#fafafa',
-                    padding: '20px 16px',
-                  }}
-                >
-                  <p
-                    style={{
-                      fontSize: '10px',
-                      fontWeight: '700',
-                      color: '#999',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.1em',
-                      marginBottom: '12px',
-                    }}
-                  >
+                <div className="w-full lg:w-56 border-b lg:border-b-0 lg:border-r border-gray-200 bg-gray-50 p-4 lg:p-5">
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
                     Дэд ангилал
                   </p>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                    {/* All */}
+                  <div className="grid grid-cols-2 lg:grid-cols-1 gap-1.5">
                     <button
                       onClick={() => setSelectedSubCategory(null)}
-                      className="corp-sub-btn"
+                      className="corp-sub-btn w-full text-left"
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        width: '100%',
-                        textAlign: 'left',
-                        padding: '8px 12px',
-                        borderRadius: '4px',
-                        border: 'none',
-                        fontSize: '13px',
-                        fontWeight: !selectedSubCategory ? '600' : '400',
+                        padding: '8px 12px', borderRadius: '4px', border: 'none',
+                        fontSize: '13px', fontWeight: !selectedSubCategory ? '600' : '400',
                         color: !selectedSubCategory ? '#ffffff' : '#333',
                         background: !selectedSubCategory ? '#1a1a2e' : 'transparent',
-                        cursor: 'pointer',
-                        transition: 'all 0.15s ease',
-                        letterSpacing: '0.01em',
+                        cursor: 'pointer', transition: 'all 0.15s ease',
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                       }}
                     >
                       <span>Бүгд</span>
-                      {!selectedSubCategory && <ChevronRight size={14} />}
+                      {!selectedSubCategory && <ChevronRight size={13} />}
                     </button>
 
                     {hoveredCategory.subcategories.map((sub) => {
@@ -295,33 +253,18 @@ const CategoryMegaMenu = ({ categories }) => {
                         <button
                           key={sub._id}
                           onClick={() => setSelectedSubCategory(sub)}
-                          className="corp-sub-btn"
+                          className="corp-sub-btn w-full text-left"
                           style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            width: '100%',
-                            textAlign: 'left',
-                            padding: '8px 12px',
-                            borderRadius: '4px',
-                            border: 'none',
-                            fontSize: '13px',
-                            fontWeight: isSel ? '600' : '400',
+                            padding: '8px 12px', borderRadius: '4px', border: 'none',
+                            fontSize: '13px', fontWeight: isSel ? '600' : '400',
                             color: isSel ? '#ffffff' : '#444',
                             background: isSel ? '#1a1a2e' : 'transparent',
-                            cursor: 'pointer',
-                            transition: 'all 0.15s ease',
+                            cursor: 'pointer', transition: 'all 0.15s ease',
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                           }}
                         >
-                          <span style={{
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            maxWidth: '150px',
-                          }}>
-                            {sub.name}
-                          </span>
-                          {isSel && <ChevronRight size={14} />}
+                          <span className="truncate">{sub.name}</span>
+                          {isSel && <ChevronRight size={13} />}
                         </button>
                       );
                     })}
@@ -330,135 +273,74 @@ const CategoryMegaMenu = ({ categories }) => {
               )}
 
               {/* ── Center: Products ── */}
-              <div style={{ flex: 1, padding: '24px 28px', background: '#ffffff' }}>
-
-                {/* Header row */}
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '20px' }}>
+              <div className="flex-1 p-4 lg:p-7 bg-white">
+                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-4 lg:mb-5 gap-3">
                   <div>
-                    <h3
-                      style={{
-                        fontSize: '16px',
-                        fontWeight: '700',
-                        color: '#1a1a2e',
-                        margin: '0 0 2px',
-                        letterSpacing: '-0.01em',
-                      }}
-                    >
+                    <h3 className="text-base lg:text-lg font-bold text-gray-900 mb-0.5"
+                      style={{ letterSpacing: '-0.01em' }}>
                       {selectedSubCategory
                         ? `${hoveredCategory.name} — ${selectedSubCategory.name}`
                         : hoveredCategory.name}
                     </h3>
-                    <p style={{ fontSize: '12px', color: '#999', margin: 0 }}>
-                      Манай шилдэг бүтээгдэхүүнүүд
-                    </p>
+                    <p className="text-xs text-gray-400">Манай шилдэг бүтээгдэхүүнүүд</p>
                   </div>
 
                   <Link
                     to="/biz-print"
                     onClick={handleMouseLeave}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      padding: '8px 16px',
-                      background: '#1a1a2e',
-                      color: '#ffffff',
-                      borderRadius: '4px',
-                      fontSize: '12px',
-                      fontWeight: '600',
-                      textDecoration: 'none',
-                      letterSpacing: '0.02em',
-                      transition: 'background 0.15s ease',
-                      whiteSpace: 'nowrap',
-                    }}
+                    className="flex items-center gap-1.5 whitespace-nowrap text-xs lg:text-sm font-semibold text-white rounded px-4 py-2 transition-colors"
+                    style={{ background: '#1a1a2e' }}
                     onMouseEnter={e => e.currentTarget.style.background = '#2d2d50'}
                     onMouseLeave={e => e.currentTarget.style.background = '#1a1a2e'}
                   >
                     Бүгдийг үзэх
-                    <ArrowRight size={13} />
+                    <ChevronRight size={14} />
                   </Link>
                 </div>
 
-                {/* Divider */}
-                <div style={{ height: '1px', background: '#ebebeb', marginBottom: '20px' }} />
-
-                {/* Product grid */}
                 {loading ? (
-                  <div style={{ display: 'flex', justifyContent: 'center', padding: '48px 0' }}>
-                    <div style={{ position: 'relative', width: '36px', height: '36px' }}>
-                      <div style={{
-                        position: 'absolute', inset: 0,
-                        border: '3px solid #e0e0e0',
-                        borderTopColor: '#1a1a2e',
-                        borderRadius: '50%',
-                        animation: 'spin 0.7s linear infinite',
-                      }} />
-                      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                  <div className="flex items-center justify-center py-12 lg:py-16">
+                    <div className="relative w-10 h-10">
+                      <div className="absolute inset-0 rounded-full" style={{ border: '3px solid #e0e0e0' }} />
+                      <div className="absolute inset-0 rounded-full animate-spin" style={{ border: '3px solid transparent', borderTopColor: '#1a1a2e' }} />
                     </div>
                   </div>
                 ) : getCurrentProducts().length > 0 ? (
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(4, 1fr)',
-                      gap: '12px',
-                    }}
-                  >
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
                     {getCurrentProducts().slice(0, 8).map((product) => (
                       <Link
                         key={product._id}
                         to={`/products/${product._id}`}
                         onClick={handleMouseLeave}
+                        className="group"
                         style={{ textDecoration: 'none' }}
                       >
-                        <div
-                          className="corp-prod-card"
+                        <div className="corp-prod-card"
                           style={{
-                            border: '1.5px solid #e8e8e8',
-                            borderRadius: '6px',
-                            overflow: 'hidden',
-                            background: '#ffffff',
-                            transition: 'all 0.2s ease',
-                            cursor: 'pointer',
+                            border: '1.5px solid #e8e8e8', borderRadius: '6px',
+                            overflow: 'hidden', background: '#fff', transition: 'all 0.2s ease',
                           }}
                         >
-                          {/* Image */}
-                          <div
+                          <div className="relative flex items-center justify-center overflow-hidden"
                             style={{
-                              height: '120px',
-                              background: '#f8f8f8',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
+                              height: '110px',
+                              background: 'linear-gradient(135deg, #fdf4ff 0%, #f8f0fe 50%, #fce8f8 100%)',
                               padding: '12px',
-                              overflow: 'hidden',
-                              position: 'relative',
                             }}
                           >
                             <img
                               src={getImageUrl(product.image)}
                               alt={product.name}
-                              style={{
-                                maxWidth: '100%',
-                                maxHeight: '100%',
-                                objectFit: 'contain',
-                                transition: 'transform 0.3s ease',
-                              }}
+                              className="max-h-full max-w-full object-contain"
+                              style={{ transition: 'transform 0.3s ease' }}
                               onError={(e) => { e.target.src = '/placeholder.jpg'; }}
                             />
                             {product.discount && (
-                              <div
+                              <div className="absolute top-2 left-2"
                                 style={{
-                                  position: 'absolute',
-                                  top: '8px',
-                                  left: '8px',
-                                  background: '#c0392b',
-                                  color: '#fff',
-                                  fontSize: '10px',
-                                  fontWeight: '700',
-                                  padding: '2px 7px',
-                                  borderRadius: '3px',
-                                  letterSpacing: '0.02em',
+                                  background: '#c0392b', color: '#fff',
+                                  fontSize: '10px', fontWeight: '700',
+                                  padding: '2px 7px', borderRadius: '3px',
                                 }}
                               >
                                 -{product.discount}%
@@ -466,27 +348,18 @@ const CategoryMegaMenu = ({ categories }) => {
                             )}
                           </div>
 
-                          {/* Info */}
                           <div style={{ padding: '10px 12px 12px', borderTop: '1px solid #f0f0f0' }}>
-                            <p
-                              className="corp-prod-name"
+                            <p className="corp-prod-name"
                               style={{
-                                fontSize: '11px',
-                                fontWeight: '500',
-                                color: '#333',
-                                lineHeight: '1.4',
-                                marginBottom: '6px',
-                                overflow: 'hidden',
-                                display: '-webkit-box',
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: 'vertical',
-                                minHeight: '31px',
-                                transition: 'color 0.15s ease',
+                                fontSize: '11px', fontWeight: '500', color: '#333',
+                                lineHeight: '1.4', marginBottom: '6px',
+                                overflow: 'hidden', display: '-webkit-box',
+                                WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                                minHeight: '31px', transition: 'color 0.15s ease',
                               }}
                             >
                               {product.name}
                             </p>
-
                             <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
                               {product.discount ? (
                                 <>
@@ -509,8 +382,8 @@ const CategoryMegaMenu = ({ categories }) => {
                     ))}
                   </div>
                 ) : (
-                  <div style={{ textAlign: 'center', padding: '48px 0' }}>
-                    <Grid size={32} style={{ color: '#ccc', margin: '0 auto 12px' }} />
+                  <div className="text-center py-12 lg:py-16">
+                    <Grid size={28} className="mx-auto mb-3" style={{ color: '#ccc' }} />
                     <p style={{ fontSize: '14px', fontWeight: '600', color: '#555', marginBottom: '4px' }}>
                       Бүтээгдэхүүн олдсонгүй
                     </p>
@@ -519,27 +392,12 @@ const CategoryMegaMenu = ({ categories }) => {
                 )}
               </div>
 
-              {/* ── Right: Featured Product ── */}
+              {/* ── Right: Featured Product — desktop only ── */}
               {getCurrentProducts().length > 0 && (
-                <div
-                  style={{
-                    width: '240px',
-                    flexShrink: 0,
-                    borderLeft: '1px solid #ebebeb',
-                    background: '#fafafa',
-                    padding: '24px 20px',
-                  }}
+                <div className="hidden lg:block border-l border-gray-200 bg-gray-50 p-5"
+                  style={{ width: '230px', flexShrink: 0 }}
                 >
-                  <p
-                    style={{
-                      fontSize: '10px',
-                      fontWeight: '700',
-                      color: '#999',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.1em',
-                      marginBottom: '14px',
-                    }}
-                  >
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
                     Онцлох бүтээгдэхүүн
                   </p>
 
@@ -550,34 +408,17 @@ const CategoryMegaMenu = ({ categories }) => {
                   >
                     <div
                       style={{
-                        background: '#ffffff',
-                        border: '1.5px solid #e0e0e0',
-                        borderRadius: '6px',
-                        overflow: 'hidden',
-                        transition: 'all 0.2s ease',
+                        background: '#fff', border: '1.5px solid #e0e0e0',
+                        borderRadius: '6px', overflow: 'hidden', transition: 'all 0.2s ease',
                       }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.borderColor = '#1a1a2e';
-                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(26,26,46,0.12)';
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.borderColor = '#e0e0e0';
-                        e.currentTarget.style.boxShadow = 'none';
-                      }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#1a1a2e'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(26,26,46,0.12)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = '#e0e0e0'; e.currentTarget.style.boxShadow = 'none'; }}
                     >
-                      {/* Featured image */}
-                      <div
-                        style={{
-                          height: '180px',
-                          background: '#f4f4f4',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          padding: '20px',
-                          overflow: 'hidden',
-                          position: 'relative',
-                        }}
-                      >
+                      <div style={{
+                        height: '160px', background: '#f4f4f4',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        padding: '16px', position: 'relative',
+                      }}>
                         <img
                           src={getImageUrl(getCurrentProducts()[0].image)}
                           alt={getCurrentProducts()[0].name}
@@ -586,18 +427,16 @@ const CategoryMegaMenu = ({ categories }) => {
                         />
                         {getCurrentProducts()[0].discount && (
                           <div style={{
-                            position: 'absolute', top: '10px', left: '10px',
+                            position: 'absolute', top: '8px', left: '8px',
                             background: '#c0392b', color: '#fff',
-                            fontSize: '11px', fontWeight: '700',
-                            padding: '3px 8px', borderRadius: '3px',
+                            fontSize: '11px', fontWeight: '700', padding: '3px 8px', borderRadius: '3px',
                           }}>
                             -{getCurrentProducts()[0].discount}%
                           </div>
                         )}
                       </div>
 
-                      {/* Featured info */}
-                      <div style={{ padding: '14px 16px 16px', borderTop: '1px solid #f0f0f0' }}>
+                      <div style={{ padding: '12px 14px 14px', borderTop: '1px solid #f0f0f0' }}>
                         <p style={{
                           fontSize: '12px', fontWeight: '600', color: '#1a1a2e',
                           lineHeight: '1.4', marginBottom: '8px',
@@ -606,11 +445,10 @@ const CategoryMegaMenu = ({ categories }) => {
                         }}>
                           {getCurrentProducts()[0].name}
                         </p>
-
-                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '10px' }}>
                           {getCurrentProducts()[0].discount ? (
                             <>
-                              <span style={{ fontSize: '16px', fontWeight: '700', color: '#c0392b' }}>
+                              <span style={{ fontSize: '15px', fontWeight: '700', color: '#c0392b' }}>
                                 {formatPrice(getCurrentProducts()[0].price * (1 - getCurrentProducts()[0].discount / 100))}₮
                               </span>
                               <span style={{ fontSize: '11px', color: '#aaa', textDecoration: 'line-through' }}>
@@ -618,18 +456,16 @@ const CategoryMegaMenu = ({ categories }) => {
                               </span>
                             </>
                           ) : (
-                            <span style={{ fontSize: '16px', fontWeight: '700', color: '#1a1a2e' }}>
+                            <span style={{ fontSize: '15px', fontWeight: '700', color: '#1a1a2e' }}>
                               {formatPrice(getCurrentProducts()[0].price)}₮
                             </span>
                           )}
                         </div>
-
                         <div style={{
                           display: 'flex', alignItems: 'center', gap: '4px',
                           fontSize: '11px', fontWeight: '600', color: '#1a1a2e',
-                          letterSpacing: '0.02em',
                         }}>
-                          Дэлгэрэнгүй <ArrowRight size={12} />
+                          Дэлгэрэнгүй <ArrowRight size={11} />
                         </div>
                       </div>
                     </div>

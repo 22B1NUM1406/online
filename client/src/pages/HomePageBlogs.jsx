@@ -205,17 +205,17 @@ const HomePage = () => {
               </div>
             ))}
 
-            <button
+           <button
               onClick={prevSlide}
-              className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white backdrop-blur-sm rounded-full p-3 md:p-4 shadow-2xl z-20 transition-all hover:scale-110 hover:shadow-xl"
+              className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white/70 backdrop-blur-sm rounded-full p-2 md:p-3 shadow-2xl z-20 transition-all hover:scale-110 hover:shadow-xl"
             >
-              <ChevronLeft size={24} className="md:w-8 md:h-8" />
+              <ChevronLeft size={20} />
             </button>
             <button
               onClick={nextSlide}
-              className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white backdrop-blur-sm rounded-full p-3 md:p-4 shadow-2xl z-20 transition-all hover:scale-110 hover:shadow-xl"
+              className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white/70 backdrop-blur-sm rounded-full p-2 md:p-3 shadow-2xl z-20 transition-all hover:scale-110 hover:shadow-xl"
             >
-              <ChevronRight size={24} className="md:w-8 md:h-8" />
+              <ChevronRight size={20} />
             </button>
 
             <div className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 flex gap-3 z-20">

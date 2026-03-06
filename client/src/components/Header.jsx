@@ -39,7 +39,7 @@ const Header = () => {
                 <span>bizprintpro@gmail.com</span>
               </div>
             </div>
-            <div className="text-xs text-blue-100">
+            <div className="text-xs text-black">
               Ажлын цаг: Даваа-Баасан 09:00-17:00
             </div>
           </div>

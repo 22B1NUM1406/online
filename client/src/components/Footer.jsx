@@ -111,7 +111,7 @@ const Footer = () => {
           {/* Bottom Bar */}
          <div className="border-t border-gray-800 pt-8">
             <p className="text-center text-gray-400 text-sm md:text-base font-light tracking-wide">
-              © 2026 <span className="font-medium text-gray-200">Fast Line LLC</span> · Вебсайтыг хийв · Бүх эрх хуулиар хамгаалагдсан
+              © 2026 Fast Line LLC · Вебсайтыг хийв · Бүх эрх хуулиар хамгаалагдсан
             </p>
           </div>
         </div>

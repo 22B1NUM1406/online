@@ -157,7 +157,7 @@ const CategoryMegaMenu = ({ categories }) => {
                       alt={category.name}
                       className="relative z-10 max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-110"
                       onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/200x176?text=Product';
+                        e.target.src = 'https://udesign.com.au/wp-content/uploads/2018/07/printed_products.png';
                       }}
                     />
                   ) : (
@@ -313,7 +313,7 @@ const CategoryMegaMenu = ({ categories }) => {
                               alt={product.name}
                               className="relative z-10 max-h-full max-w-full object-contain group-hover:scale-110 transition-transform duration-500"
                               onError={(e) => {
-                                e.target.src = 'https://via.placeholder.com/200x200?text=Product';
+                                e.target.src = 'https://udesign.com.au/wp-content/uploads/2018/07/printed_products.png';
                               }}
                             />
 
@@ -396,7 +396,7 @@ const CategoryMegaMenu = ({ categories }) => {
                             alt={getCurrentProducts()[0].name}
                             className="max-h-full max-w-full object-contain group-hover:scale-110 transition-transform duration-500"
                             onError={(e) => {
-                              e.target.src = 'https://via.placeholder.com/400x400?text=Product';
+                              e.target.src = 'https://udesign.com.au/wp-content/uploads/2018/07/printed_products.png';
                             }}
                           />
                           {getCurrentProducts()[0].discount && (

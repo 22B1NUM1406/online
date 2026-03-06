@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Work Sans', 'sans-serif'],
+        sans: ['Work Sans', 'Roboto', 'sans-serif'],
       },
       animation: {
         'slide-in': 'slide-in 0.3s ease-out',

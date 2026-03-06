@@ -37,8 +37,7 @@ const HomePage = () => {
       title: "Мэргэжлийн хэвлэлийн үйлчилгээ",
       subtitle: "Таны санааг",
       highlight: "бодит болгоно",
-      description: "Дизайнаас эхлээд хэвлэл хүртэл бүх үйлчилгээ",
-      badge: "🎨 Мэргэжлийн хэвлэлийн үйлчилгээ"
+      description: "Дизайнаас эхлээд хэвлэл хүртэл бүх үйлчилгээ"
     },
     {
       id: 2,
@@ -46,8 +45,7 @@ const HomePage = () => {
       title: "Хурдан бөгөөд чанартай",
       subtitle: "Хэвлэлийн ажил",
       highlight: "хурдан шуурхай",
-      description: "Орчин үеийн тоног төхөөрөмж, мэргэжлийн баг",
-      badge: "⚡ Хурдан шуурхай үйлчилгээ"
+      description: "Орчин үеийн тоног төхөөрөмж, мэргэжлийн баг"
     },
     {
       id: 3,
@@ -55,8 +53,7 @@ const HomePage = () => {
       title: "Шинэлэг дизайн",
       subtitle: "Бүтээлч шийдэл",
       highlight: "онцгой хэвлэл",
-      description: "Таны бизнест тохирсон өвөрмөц дизайн",
-      badge: "✨ Өвөрмөц дизайн"
+      description: "Таны бизнест тохирсон өвөрмөц дизайн"
     },
     {
       id: 4,
@@ -64,8 +61,7 @@ const HomePage = () => {
       title: "Хамтын ажиллагаа",
       subtitle: "Таны бизнест",
       highlight: "өсөлт авчирна",
-      description: "Олон жилийн туршлагатай мэргэжилтнүүд",
-      badge: "🤝 Хамтдаа амжилтын төлөө"
+      description: "Олон жилийн туршлагатай мэргэжилтнүүд"
     }
   ];
 
@@ -175,15 +171,10 @@ const HomePage = () => {
 
                 <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center">
                   <div className="text-white max-w-2xl lg:max-w-3xl animate-fadeIn">
-                    {/* Badge - Larger */}
-                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-6 py-3 rounded-full mb-6 md:mb-8 border border-white/30 shadow-lg">
-                      <span className="text-sm md:text-base lg:text-lg font-bold tracking-wide">
-                        {slide.badge}
-                      </span>
-                    </div>
+                   
 
                     {/* Title - Much Larger */}
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black mb-4 md:mb-6 leading-tight tracking-tight">
+                    <h1 className="text-lg md:text-2xl lg:text-3xl mb-8 md:mb-10 text-gray-200 font-light leading-relaxed drop-shadow-lg max-w-xl font-roboto">
                       <span className="block mb-2 drop-shadow-2xl">
                         {slide.subtitle}
                       </span>
@@ -193,7 +184,7 @@ const HomePage = () => {
                     </h1>
 
                     {/* Description - Larger */}
-                    <p className="text-lg md:text-2xl lg:text-3xl mb-8 md:mb-10 text-gray-200 font-light leading-relaxed drop-shadow-lg max-w-xl">
+                    <p className="text-lg md:text-2xl lg:text-3xl mb-8 md:mb-10 text-gray-200 font-light leading-relaxed drop-shadow-lg max-w-xl font-roboto">
                       {slide.description}
                     </p>
 

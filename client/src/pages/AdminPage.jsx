@@ -260,103 +260,174 @@ const AdminPage = () => {
     catch (e) { setNotification({ message: e.response?.data?.message || 'Алдаа гарлаа', type: 'error' }); }
   };
 
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
   const navItems = [
-    { id: 'dashboard', label: 'Самбар', icon: '📊' },
-    { id: 'products', label: 'Бүтээгдэхүүн', icon: '📦', stat: products.length },
-    { id: 'orders', label: 'Захиалга', icon: '🛒', stat: orders.length },
-    { id: 'quotations', label: 'Үнийн санал', icon: '💬', badge: quotations.filter(q=>q.status==='pending').length },
-    { id: 'messages', label: 'Мессеж', icon: '✉️', badge: contactMessages.filter(m=>m.status==='new').length },
-    { id: 'categories', label: 'Ангилал', icon: '🗂️' },
-    { id: 'blogs', label: 'Блог', icon: '📝', stat: blogs.length },
-    { id: 'services', label: 'Үйлчилгээ', icon: '⚡', stat: marketingServices.length },
+    { id: 'dashboard', label: 'Самбар', icon: ShoppingCart },
+    { id: 'products', label: 'Бүтээгдэхүүн', icon: Package, stat: products.length },
+    { id: 'orders', label: 'Захиалга', icon: ShoppingCart, stat: orders.length },
+    { id: 'quotations', label: 'Үнийн санал', icon: MessageSquare, badge: quotations.filter(q=>q.status==='pending').length },
+    { id: 'messages', label: 'Мессеж', icon: Mail, badge: contactMessages.filter(m=>m.status==='new').length },
+    { id: 'categories', label: 'Ангилал', icon: Package },
+    { id: 'blogs', label: 'Блог', icon: MessageSquare, stat: blogs.length },
+    { id: 'services', label: 'Үйлчилгээ', icon: Package, stat: marketingServices.length },
   ];
 
+  const activeNav = navItems.find(n => n.id === activeTab);
+
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      {notification && <Notification type={notification.type} message={notification.message} onClose={() => setNotification(null)} />}
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap');
+        .admin-wrap * { font-family: 'DM Sans', sans-serif; }
+        .sidebar-item-active { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); }
+        .stat-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+      `}</style>
 
-      {/* ── Sidebar ── */}
-      <aside className="w-64 min-h-screen bg-gray-900 flex flex-col flex-shrink-0">
-        {/* Logo */}
-        <div className="px-6 py-6 border-b border-gray-700">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black text-sm">A</div>
-            <div>
-              <div className="text-white font-bold text-sm leading-tight">Админ Самбар</div>
-              <div className="text-gray-400 text-xs truncate max-w-[130px]">{user?.name}</div>
-            </div>
-          </div>
-        </div>
+      <div className="admin-wrap min-h-screen flex" style={{ background: '#f1f5f9' }}>
+        {notification && <Notification type={notification.type} message={notification.message} onClose={() => setNotification(null)} />}
 
-        {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-1">
-          {navItems.map(item => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                activeTab === item.id
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-              }`}
-            >
-              <span className="flex items-center gap-3">
-                <span>{item.icon}</span>
-                <span>{item.label}</span>
-              </span>
-              {item.badge > 0 && (
-                <span className="bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center animate-pulse">
-                  {item.badge}
-                </span>
-              )}
-              {!item.badge && item.stat > 0 && (
-                <span className={`text-xs px-1.5 py-0.5 rounded ${activeTab===item.id?'bg-blue-500 text-blue-100':'bg-gray-700 text-gray-400'}`}>
-                  {item.stat}
-                </span>
-              )}
-            </button>
-          ))}
-        </nav>
-
-        {/* Logout */}
-        <div className="px-3 py-4 border-t border-gray-700">
-          <button
-            onClick={() => { logout(); navigate('/'); }}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:bg-red-600 hover:text-white transition-all"
-          >
-            <LogOut size={16} /> Гарах
-          </button>
-        </div>
-      </aside>
-
-      {/* ── Main content ── */}
-      <div className="flex-1 flex flex-col min-w-0">
-
-        {/* Top bar */}
-        <header className="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between flex-shrink-0">
-          <div>
-            <h1 className="text-xl font-bold text-gray-800">
-              {navItems.find(n=>n.id===activeTab)?.icon} {navItems.find(n=>n.id===activeTab)?.label}
-            </h1>
-          </div>
-          {/* Stats bar */}
-          <div className="flex items-center gap-4">
-            {stats.map((s, i) => (
-              <div key={i} className="flex items-center gap-2 text-sm">
-                <div className={`${s.color} w-7 h-7 rounded-md flex items-center justify-center`}>
-                  <s.icon className="text-white" size={14} />
+        {/* ── Sidebar ── */}
+        <aside
+          className="flex flex-col flex-shrink-0 transition-all duration-300"
+          style={{
+            width: sidebarOpen ? 256 : 72,
+            minHeight: '100vh',
+            background: '#0f172a',
+            borderRight: '1px solid rgba(255,255,255,0.06)'
+          }}
+        >
+          {/* Logo */}
+          <div className="flex items-center justify-between px-4 py-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+            {sidebarOpen && (
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-sm flex-shrink-0"
+                  style={{ background: 'linear-gradient(135deg, #2563eb, #7c3aed)' }}>A</div>
+                <div>
+                  <div className="text-white font-bold text-sm leading-tight">Админ</div>
+                  <div className="text-xs truncate" style={{ color: '#64748b', maxWidth: 110 }}>{user?.name}</div>
                 </div>
-                <span className="font-bold text-gray-800">{s.value}</span>
-                {s.badge && <span className="bg-red-100 text-red-600 text-xs font-bold px-1.5 py-0.5 rounded-full animate-pulse">{s.badgeText}</span>}
               </div>
-            ))}
+            )}
+            {!sidebarOpen && (
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-sm mx-auto"
+                style={{ background: 'linear-gradient(135deg, #2563eb, #7c3aed)' }}>A</div>
+            )}
+            {sidebarOpen && (
+              <button onClick={() => setSidebarOpen(false)}
+                className="text-gray-500 hover:text-white transition-colors p-1 rounded"
+                style={{ marginLeft: 'auto' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
+              </button>
+            )}
           </div>
-        </header>
 
-        {/* Content */}
-        <main className="flex-1 p-8 overflow-auto">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          <div className="p-6">
+          {/* Collapse toggle when closed */}
+          {!sidebarOpen && (
+            <button onClick={() => setSidebarOpen(true)}
+              className="mx-auto mt-3 text-gray-500 hover:text-white transition-colors p-1 rounded">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          )}
+
+          {/* Nav items */}
+          <nav className="flex-1 px-3 py-4 space-y-1">
+            {navItems.map(item => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  title={!sidebarOpen ? item.label : ''}
+                  className={`w-full flex items-center rounded-xl transition-all duration-150 ${
+                    sidebarOpen ? 'px-3 py-3 gap-3' : 'justify-center py-3'
+                  } ${isActive ? 'sidebar-item-active text-white' : 'text-gray-400 hover:text-white'}`}
+                  style={!isActive ? { ':hover': { background: 'rgba(255,255,255,0.06)' } } : {}}
+                  onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; }}
+                  onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = ''; }}
+                >
+                  <Icon size={18} className="flex-shrink-0" />
+                  {sidebarOpen && (
+                    <>
+                      <span className="text-sm font-medium flex-1 text-left">{item.label}</span>
+                      {item.badge > 0 && (
+                        <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">
+                          {item.badge}
+                        </span>
+                      )}
+                      {!item.badge && item.stat > 0 && (
+                        <span className="text-xs px-2 py-0.5 rounded-md font-medium"
+                          style={{ background: isActive ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.07)', color: isActive ? 'white' : '#64748b' }}>
+                          {item.stat}
+                        </span>
+                      )}
+                    </>
+                  )}
+                  {!sidebarOpen && item.badge > 0 && (
+                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* User + Logout */}
+          <div className="px-3 pb-5 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+            <button
+              onClick={() => { logout(); navigate('/'); }}
+              className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all"
+              style={{ color: '#64748b' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.15)'; e.currentTarget.style.color = '#f87171'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = ''; e.currentTarget.style.color = '#64748b'; }}
+            >
+              <LogOut size={18} className="flex-shrink-0" />
+              {sidebarOpen && <span>Гарах</span>}
+            </button>
+          </div>
+        </aside>
+
+        {/* ── Main ── */}
+        <div className="flex-1 flex flex-col min-w-0">
+
+          {/* Top header */}
+          <header className="flex-shrink-0 bg-white px-6 md:px-8 py-4 flex items-center justify-between"
+            style={{ borderBottom: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest mb-0.5" style={{ color: '#94a3b8' }}>
+                Удирдлагын самбар
+              </p>
+              <h1 className="text-xl font-bold" style={{ color: '#0f172a' }}>
+                {activeNav?.label}
+              </h1>
+            </div>
+
+            {/* Stat chips */}
+            <div className="hidden md:flex items-center gap-3">
+              {stats.map((s, i) => (
+                <div key={i} className="stat-card flex items-center gap-2 px-3 py-2 rounded-xl bg-white"
+                  style={{ border: '1px solid #e2e8f0', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+                  <div className={`${s.color} w-7 h-7 rounded-lg flex items-center justify-center`}>
+                    <s.icon className="text-white" size={13} />
+                  </div>
+                  <div>
+                    <div className="text-xs font-medium" style={{ color: '#64748b' }}>{s.label}</div>
+                    <div className="text-sm font-bold leading-tight" style={{ color: '#0f172a' }}>{s.value}</div>
+                  </div>
+                  {s.badge && (
+                    <span className="text-xs font-bold px-1.5 py-0.5 rounded-full animate-pulse"
+                      style={{ background: '#fee2e2', color: '#dc2626' }}>{s.badgeText}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </header>
+
+          {/* Page content */}
+          <main className="flex-1 overflow-auto p-4 md:p-8">
+            <div className="bg-white rounded-2xl" style={{ border: '1px solid #e2e8f0', boxShadow: '0 1px 8px rgba(0,0,0,0.04)', minHeight: 400 }}>
+            <div className="p-6 md:p-8">
 
             {activeTab === 'dashboard' && <DashboardTab onTabChange={setActiveTab} />}
 
@@ -799,10 +870,11 @@ const AdminPage = () => {
             )}
 
           </div>
-          </div>
-        </main>
+            </div>
+          </main>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -267,8 +267,28 @@ const HomePage = () => {
           {categories.length > 0 && (
             <section className="px-4 py-10">
               <CategoryMegaMenu categories={categories} />
+            </section>
+          )}
 
-              {/* Service Banners - Modern Design */}
+          {/* Featured Products - BestComputers Style */}
+          {featuredProducts.length > 0 && (
+            <section className="px-4 py-10" id="featured-products">
+              <SectionHeader
+                title="Онцлох бүтээгдэхүүн"
+                description="Манай байгууллагын зүгээс хэрэглэгч танд санал болгож буй шилдэг бүтээгдэхүүнүүд"
+                icon={Star}
+                accentColor="yellow"
+                viewAllLink="/biz-print"
+              />
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {featuredProducts.map(product => (
+                  <SimpleProductCard key={product._id} product={product} />
+                ))}
+              </div>
+            </section>
+          )}
+           {/* Service Banners - Modern Design */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
                 <Link
                   to="/biz-print"
@@ -328,28 +348,6 @@ const HomePage = () => {
                   </div>
                 </Link>
               </div>
-            </section>
-          )}
-
-          {/* Featured Products - BestComputers Style */}
-          {featuredProducts.length > 0 && (
-            <section className="px-4 py-10" id="featured-products">
-              <SectionHeader
-                title="Онцлох бүтээгдэхүүн"
-                description="Манай байгууллагын зүгээс хэрэглэгч танд санал болгож буй шилдэг бүтээгдэхүүнүүд"
-                icon={Star}
-                accentColor="yellow"
-                viewAllLink="/biz-print"
-              />
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {featuredProducts.map(product => (
-                  <SimpleProductCard key={product._id} product={product} />
-                ))}
-              </div>
-            </section>
-          )}
-
           {/* Discount Products - BestComputers Style */}
           {discountProducts.length > 0 && (
             <section className="px-4 py-10 bg-gray-50" id="discount-products">

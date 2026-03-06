@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Calendar, User, Eye, ArrowRight, Star, Zap, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, User, Eye, ArrowRight, Star, Zap } from 'lucide-react';
 import { getBlogs, getProducts, getCategories } from '../services/api';
 import { getImageUrl, formatPrice } from '../utils/helpers';
 import ProductCard from '../components/ProductCard';
@@ -20,7 +20,6 @@ const HomePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [discountSlide, setDiscountSlide] = useState(0);
   const partnersContainerRef = useRef(null);
 
   const blogCategories = [
@@ -34,33 +33,29 @@ const HomePage = () => {
     {
       id: 1,
       image: "https://images.pexels.com/photos/1193743/pexels-photo-1193743.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-      title: "Мэргэжлийн хэвлэлийн үйлчилгээ",
-      subtitle: "Таны санааг",
-      highlight: "бодит болгоно",
+      label: "Хэвлэлийн үйлчилгээ",
+      title: "Таны санааг бодит болгоно",
       description: "Дизайнаас эхлээд хэвлэл хүртэл бүх үйлчилгээ"
     },
     {
       id: 2,
       image: "https://images.unsplash.com/photo-1453928582365-b6ad33cbcf64?w=1600&h=800&fit=crop",
-      title: "Хурдан бөгөөд чанартай",
-      subtitle: "Хэвлэлийн ажил",
-      highlight: "хурдан шуурхай",
+      label: "Хурдан & Чанартай",
+      title: "Хэвлэлийн ажил хурдан шуурхай",
       description: "Орчин үеийн тоног төхөөрөмж, мэргэжлийн баг"
     },
     {
       id: 3,
       image: "https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg?auto=compress&cs=tinysrgb&w=1600&h=800&fit=crop",
-      title: "Шинэлэг дизайн",
-      subtitle: "Бүтээлч шийдэл",
-      highlight: "онцгой хэвлэл",
-      description: "Таны бизнест тохирсон өвөрмөц дизайн"
+      label: "Шинэлэг Дизайн",
+      title: "Өвөрмөц шийдэл, онцгой хэвлэл",
+      description: "Таны бизнест тохирсон бүтээлч дизайн"
     },
     {
       id: 4,
       image: "https://images.unsplash.com/photo-1626785774625-ddcddc3445e9?w=1600&h=800&fit=crop",
-      title: "Хамтын ажиллагаа",
-      subtitle: "Таны бизнест",
-      highlight: "өсөлт авчирна",
+      label: "Хамтын Ажиллагаа",
+      title: "Таны бизнест өсөлт авчирна",
       description: "Олон жилийн туршлагатай мэргэжилтнүүд"
     }
   ];
@@ -77,15 +72,11 @@ const HomePage = () => {
 
   useEffect(() => {
     loadData();
-    const slideInterval = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % heroSlides.length);
-    }, 5000);
-    return () => clearInterval(slideInterval);
+    const interval = setInterval(() => setCurrentSlide(p => (p + 1) % heroSlides.length), 5000);
+    return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    loadBlogs();
-  }, [selectedCategory, searchTerm]);
+  useEffect(() => { loadBlogs(); }, [selectedCategory, searchTerm]);
 
   const loadData = async () => {
     try {
@@ -96,13 +87,12 @@ const HomePage = () => {
         getProducts({ hasDiscount: true }),
         getCategories()
       ]);
-
       setBlogs(blogsData.data || []);
       setFeaturedProducts(featuredData.data?.slice(0, 4) || []);
       setDiscountProducts(discountData.data?.slice(0, 8) || []);
       setCategories(categoriesData.data || []);
-    } catch (error) {
-      console.error('Error loading data:', error);
+    } catch (err) {
+      console.error('Error loading data:', err);
       showNotification('Өгөгдөл ачааллахад алдаа гарлаа', 'error');
     } finally {
       setLoading(false);
@@ -116,9 +106,8 @@ const HomePage = () => {
       if (searchTerm) params.search = searchTerm;
       const data = await getBlogs(params);
       setBlogs(data.data || []);
-    } catch (error) {
-      console.error('Error loading blogs:', error);
-      showNotification('Блог ачааллахад алдаа гарлаа', 'error');
+    } catch (err) {
+      console.error('Error loading blogs:', err);
     }
   };
 
@@ -127,334 +116,457 @@ const HomePage = () => {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('mn-MN', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
+  const formatDate = (dateString) => new Date(dateString).toLocaleDateString('mn-MN', {
+    year: 'numeric', month: 'long', day: 'numeric',
+  });
 
-  const nextSlide = () => setCurrentSlide(prev => (prev + 1) % heroSlides.length);
-  const prevSlide = () => setCurrentSlide(prev => (prev - 1 + heroSlides.length) % heroSlides.length);
+  const nextSlide = () => setCurrentSlide(p => (p + 1) % heroSlides.length);
+  const prevSlide = () => setCurrentSlide(p => (p - 1 + heroSlides.length) % heroSlides.length);
   const nextPartners = () => partnersContainerRef.current?.scrollBy({ left: 300, behavior: 'smooth' });
   const prevPartners = () => partnersContainerRef.current?.scrollBy({ left: -300, behavior: 'smooth' });
 
   if (loading) return <Loading />;
 
+  const S = {
+    page: {
+      minHeight: '100vh',
+      background: '#f5f5f3',
+      fontFamily: "'DM Sans', 'Helvetica Neue', Arial, sans-serif",
+    },
+    inner: {
+      maxWidth: '1280px',
+      margin: '0 auto',
+    },
+    sectionLabel: {
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '8px',
+      fontSize: '10px',
+      fontWeight: '700',
+      letterSpacing: '0.12em',
+      textTransform: 'uppercase',
+      color: '#888',
+      marginBottom: '10px',
+    },
+    sectionTitle: {
+      fontSize: '22px',
+      fontWeight: '700',
+      color: '#1a1a2e',
+      letterSpacing: '-0.02em',
+      margin: '0 0 4px',
+    },
+    sectionDesc: {
+      fontSize: '13px',
+      color: '#888',
+      margin: 0,
+    },
+    divider: {
+      height: '1px',
+      background: '#e2e2e2',
+    },
+    viewAll: {
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '6px',
+      fontSize: '12px',
+      fontWeight: '600',
+      color: '#1a1a2e',
+      textDecoration: 'none',
+      letterSpacing: '0.02em',
+      borderBottom: '1px solid #1a1a2e',
+      paddingBottom: '1px',
+      whiteSpace: 'nowrap',
+    },
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div style={S.page}>
+      <style>{`
+        @keyframes heroUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+        .hero-active { animation: heroUp 0.65s ease forwards; }
+        .hero-cta:hover { background: #f0f0f0 !important; }
+        .nav-btn:hover { background: rgba(255,255,255,0.92) !important; }
+        .blog-card:hover { border-color: #1a1a2e !important; box-shadow: 0 6px 24px rgba(26,26,46,0.1) !important; }
+        .blog-card:hover .blog-title { color: #1a1a2e !important; }
+        .banner-card:hover { box-shadow: 0 10px 32px rgba(26,26,46,0.18) !important; }
+        .partner-item:hover { border-color: #1a1a2e !important; }
+        .cat-filter-btn:hover { border-color: #1a1a2e !important; color: #1a1a2e !important; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .partner-nav:hover { border-color: #1a1a2e !important; }
+      `}</style>
+
       {notification && (
-        <Notification
-          type={notification.type}
-          message={notification.message}
-          onClose={() => setNotification(null)}
-        />
+        <Notification type={notification.type} message={notification.message} onClose={() => setNotification(null)} />
       )}
 
-      {/* Hero Carousel - Modern Design with Larger Text */}
-      <section className="bg-gradient-to-b from-gray-100 to-gray-50">
-        <div className="w-full">
-          <div className="relative h-[500px] md:h-[600px] lg:h-[700px] bg-white shadow-xl overflow-hidden">
-            {heroSlides.map((slide, index) => (
-              <div
-                key={slide.id}
-                className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
-                  }`}
-              >
-                <div
-                  className="absolute inset-0 bg-cover bg-center transform scale-105"
-                  style={{ backgroundImage: `url(${slide.image})` }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-transparent"></div>
-                </div>
+      {/* ── Hero ── */}
+      <section style={{ background: '#0d0d1a', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', height: '580px' }}>
+          {heroSlides.map((slide, i) => (
+            <div
+              key={slide.id}
+              style={{
+                position: 'absolute', inset: 0,
+                opacity: i === currentSlide ? 1 : 0,
+                transition: 'opacity 0.9s ease',
+                zIndex: i === currentSlide ? 1 : 0,
+              }}
+            >
+              <div style={{
+                position: 'absolute', inset: 0,
+                backgroundImage: `url(${slide.image})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }} />
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: 'linear-gradient(to right, rgba(10,10,24,0.88) 0%, rgba(10,10,24,0.55) 55%, rgba(10,10,24,0.12) 100%)',
+              }} />
+              <div style={{
+                position: 'absolute', bottom: 0, left: 0, right: 0, height: '120px',
+                background: 'linear-gradient(to top, rgba(13,13,26,0.55), transparent)',
+              }} />
 
-                <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center">
-                  <div className="text-white max-w-2xl lg:max-w-3xl animate-fadeIn">
-                   
+              <div style={{ ...S.inner, position: 'relative', zIndex: 2, height: '100%', padding: '0 32px', display: 'flex', alignItems: 'center' }}>
+                {i === currentSlide && (
+                  <div className="hero-active" style={{ maxWidth: '540px' }}>
+                    <div style={{
+                      display: 'inline-block',
+                      background: 'rgba(255,255,255,0.1)',
+                      border: '1px solid rgba(255,255,255,0.22)',
+                      color: 'rgba(255,255,255,0.8)',
+                      fontSize: '10px', fontWeight: '700',
+                      letterSpacing: '0.12em', textTransform: 'uppercase',
+                      padding: '5px 14px', borderRadius: '3px', marginBottom: '20px',
+                    }}>
+                      {slide.label}
+                    </div>
 
-                    {/* Title - Much Larger */}
-                    <h1 className="text-lg md:text-2xl lg:text-3xl mb-8 md:mb-10 text-gray-200 font-light leading-relaxed drop-shadow-lg max-w-xl font-roboto">
-                      <span className="block mb-2 drop-shadow-2xl">
-                        {slide.subtitle}
-                      </span>
-                      <span className="block bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent drop-shadow-2xl animate-gradient">
-                        {slide.highlight}
-                      </span>
+                    <h1 style={{
+                      fontSize: '40px', fontWeight: '700', color: '#ffffff',
+                      lineHeight: '1.15', letterSpacing: '-0.02em', marginBottom: '14px',
+                    }}>
+                      {slide.title}
                     </h1>
 
-                    {/* Description - Larger */}
-                    <p className="text-lg md:text-2xl lg:text-3xl mb-8 md:mb-10 text-gray-200 font-light leading-relaxed drop-shadow-lg max-w-xl font-roboto">
+                    <p style={{
+                      fontSize: '15px', color: 'rgba(255,255,255,0.6)',
+                      lineHeight: '1.6', marginBottom: '30px', fontWeight: '400',
+                    }}>
                       {slide.description}
                     </p>
 
-                    {/* CTA Buttons - Fixed Links */}
-                    <div className="flex flex-wrap gap-4">
-                      <Link
-                        to="/contact"
-                        className="px-8 py-4 bg-white/20 backdrop-blur-md border-2 border-white/50 rounded-xl font-bold text-base md:text-lg hover:bg-white/30 transition-all hover:scale-105"
-                      >
-                        Холбоо барих
-                      </Link>
-                    </div>
+                    <Link
+                      to="/contact"
+                      className="hero-cta"
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '8px',
+                        padding: '11px 24px', background: '#ffffff', color: '#1a1a2e',
+                        borderRadius: '4px', fontSize: '13px', fontWeight: '700',
+                        textDecoration: 'none', letterSpacing: '0.02em',
+                        transition: 'background 0.15s ease',
+                      }}
+                    >
+                      Холбоо барих <ArrowRight size={13} />
+                    </Link>
                   </div>
-                </div>
-
-                {/* Decorative Elements */}
-                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
+                )}
               </div>
-            ))}
-
-           <button
-              onClick={prevSlide}
-              className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white/70 backdrop-blur-sm rounded-full p-2 md:p-3 shadow-2xl z-20 transition-all hover:scale-110 hover:shadow-xl"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <button
-              onClick={nextSlide}
-              className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white/70 backdrop-blur-sm rounded-full p-2 md:p-3 shadow-2xl z-20 transition-all hover:scale-110 hover:shadow-xl"
-            >
-              <ChevronRight size={20} />
-            </button>
-
-            <div className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 flex gap-3 z-20">
-              {heroSlides.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentSlide(index)}
-                  className={`h-2.5 rounded-full transition-all duration-300 ${index === currentSlide
-                    ? 'bg-white w-12 shadow-lg'
-                    : 'bg-white/50 w-2.5 hover:bg-white/75 hover:w-6'
-                    }`}
-                />
-              ))}
             </div>
+          ))}
+
+          {/* Prev/Next */}
+          {[
+            { fn: prevSlide, Icon: ChevronLeft, pos: { left: '20px' } },
+            { fn: nextSlide, Icon: ChevronRight, pos: { right: '20px' } },
+          ].map(({ fn, Icon, pos }) => (
+            <button
+              key={JSON.stringify(pos)}
+              onClick={fn}
+              className="nav-btn"
+              style={{
+                position: 'absolute', ...pos, top: '50%', transform: 'translateY(-50%)',
+                zIndex: 10, background: 'rgba(255,255,255,0.16)',
+                border: '1px solid rgba(255,255,255,0.28)', borderRadius: '4px',
+                padding: '10px', cursor: 'pointer', color: '#fff',
+                display: 'flex', alignItems: 'center', transition: 'background 0.2s ease',
+              }}
+            >
+              <Icon size={18} />
+            </button>
+          ))}
+
+          {/* Dots */}
+          <div style={{
+            position: 'absolute', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
+            display: 'flex', gap: '6px', zIndex: 10,
+          }}>
+            {heroSlides.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentSlide(i)}
+                style={{
+                  height: '3px',
+                  width: i === currentSlide ? '28px' : '8px',
+                  borderRadius: '2px', border: 'none', cursor: 'pointer',
+                  background: i === currentSlide ? '#ffffff' : 'rgba(255,255,255,0.38)',
+                  transition: 'all 0.3s ease', padding: 0,
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Counter */}
+          <div style={{
+            position: 'absolute', bottom: '24px', right: '32px', zIndex: 10,
+            fontSize: '11px', fontWeight: '600', color: 'rgba(255,255,255,0.45)',
+            letterSpacing: '0.05em',
+          }}>
+            {String(currentSlide + 1).padStart(2, '0')} / {String(heroSlides.length).padStart(2, '0')}
           </div>
         </div>
-
-        {/* Gradient animation for text */}
-        <style jsx>{`
-          @keyframes gradient {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-          }
-          .animate-gradient {
-            background-size: 200% auto;
-            animation: gradient 3s ease infinite;
-          }
-          @keyframes fadeIn {
-            from {
-              opacity: 0;
-              transform: translateY(20px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-          .animate-fadeIn {
-            animation: fadeIn 0.8s ease-out;
-          }
-        `}</style>
       </section>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto">
-        <div className="border-x border-gray-200 bg-white shadow-sm">
+      {/* ── Main ── */}
+      <div style={{ ...S.inner, padding: '0 24px' }}>
+        <div style={{ background: '#ffffff', border: '1px solid #e2e2e2', borderTop: 'none' }}>
 
-          {/* Category Mega Menu */}
+          {/* Category Menu */}
           {categories.length > 0 && (
-            <section className="px-4 py-10">
+            <section style={{ padding: '32px 28px 28px' }}>
+              <p style={S.sectionLabel}>
+                <span style={{ width: '20px', height: '1px', background: '#ccc', display: 'inline-block' }} />
+                Ангилал
+              </p>
               <CategoryMegaMenu categories={categories} />
             </section>
           )}
 
-          {/* Featured Products - BestComputers Style */}
+          <div style={S.divider} />
+
+          {/* Featured Products */}
           {featuredProducts.length > 0 && (
-            <section className="px-4 py-10" id="featured-products">
-              <SectionHeader
-                title="Онцлох бүтээгдэхүүн"
-                description="Манай байгууллагын зүгээс хэрэглэгч танд санал болгож буй шилдэг бүтээгдэхүүнүүд"
-                icon={Star}
-                accentColor="yellow"
-                viewAllLink="/biz-print"
-              />
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {featuredProducts.map(product => (
-                  <SimpleProductCard key={product._id} product={product} />
-                ))}
+            <section style={{ padding: '32px 28px' }} id="featured-products">
+              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '20px' }}>
+                <div>
+                  <p style={S.sectionLabel}>
+                    <span style={{ width: '20px', height: '1px', background: '#ccc', display: 'inline-block' }} />
+                    Онцлох бүтээгдэхүүн
+                  </p>
+                  <h2 style={S.sectionTitle}>Шилдэг бүтээгдэхүүнүүд</h2>
+                  <p style={S.sectionDesc}>Манай байгууллагаас санал болгож буй шилдэг сонголтууд</p>
+                </div>
+                <Link to="/biz-print" style={S.viewAll}>Бүгдийг үзэх <ArrowRight size={12} /></Link>
               </div>
-            </section>
-          )}
-           {/* Service Banners - Modern Design */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                <Link
-                  to="/biz-print"
-                  className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300"
-                >
-                  <div className="relative h-56 bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700">
-                    <img
-                      src="https://images.unsplash.com/photo-1542744094-24638eff58bb?w=800&h=400&fit=crop"
-                      alt="Biz Print"
-                      className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity"
-                    />
-                    {/* Decorative Elements */}
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full blur-2xl"></div>
-
-                    <div className="absolute inset-0 flex items-center justify-between px-8">
-                      <div className="text-white z-10">
-                        <h3 className="text-3xl font-bold mb-3">Biz Print</h3>
-                        <p className="text-blue-100 text-base mb-6">
-                          Хэвлэлийн бүтээгдэхүүн<br />Өндөр чанартай
-                        </p>
-                        <div className="inline-flex items-center gap-2 bg-white text-blue-700 px-6 py-3 rounded-xl font-bold text-sm group-hover:bg-blue-50 transition-all shadow-lg">
-                          Дэлгэрэнгүй
-                          <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-
-                <Link
-                  to="/biz-marketing"
-                  className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300"
-                >
-                  <div className="relative h-56 bg-gradient-to-br from-purple-600 via-purple-700 to-pink-700">
-                    <img
-                      src="https://images.unsplash.com/photo-1557838923-2985c318be48?w=800&h=400&fit=crop"
-                      alt="Biz Marketing"
-                      className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity"
-                    />
-                    {/* Decorative Elements */}
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full blur-2xl"></div>
-
-                    <div className="absolute inset-0 flex items-center justify-between px-8">
-                      <div className="text-white z-10">
-                        <h3 className="text-3xl font-bold mb-3">Biz Marketing</h3>
-                        <p className="text-purple-100 text-base mb-6">
-                          Маркетингийн үйлчилгээ<br />Мэргэжлийн
-                        </p>
-                        <div className="inline-flex items-center gap-2 bg-white text-purple-700 px-6 py-3 rounded-xl font-bold text-sm group-hover:bg-purple-50 transition-all shadow-lg">
-                          Дэлгэрэнгүй
-                          <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-          {/* Discount Products - BestComputers Style */}
-          {discountProducts.length > 0 && (
-            <section className="px-4 py-10 bg-gray-50" id="discount-products">
-              <SectionHeader
-                title="Хямдралтай бүтээгдэхүүн"
-                description="Онцгой үнээр санал болгож байна - Хэмнэлттэй худалдан авалт"
-                icon={Zap}
-                accentColor="red"
-                viewAllLink="/biz-print"
-              />
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {discountProducts.slice(0, 10).map((product) => (
-                  <SimpleProductCard key={product._id} product={product} />
-                ))}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '14px' }}>
+                {featuredProducts.map(product => <SimpleProductCard key={product._id} product={product} />)}
               </div>
             </section>
           )}
 
-          {/* Blogs Section */}
-          <section className="px-4 py-12">
-            <div className="relative mb-8">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-1.5 h-8 bg-gradient-to-b from-blue-500 to-cyan-500 rounded-full"></div>
-                <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                  Сүүлийн блог нийтлэлүүд
-                </h2>
-              </div>
-              <p className="text-gray-600 text-base ml-12">
-                Хэвлэлийн талаарх мэдээ, зөвлөгөө, заавар
-              </p>
-            </div>
+          <div style={S.divider} />
 
-            <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-              {blogCategories.map((cat) => (
-                <button
-                  key={cat.value}
-                  onClick={() => setSelectedCategory(cat.value)}
-                  className={`px-6 py-2.5 rounded-xl whitespace-nowrap font-semibold text-sm transition-all ${selectedCategory === cat.value
-                    ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-500/30'
-                    : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-blue-300 hover:shadow-md'
-                    }`}
-                >
-                  {cat.label}
-                </button>
+          {/* Service Banners */}
+          <section style={{ padding: '32px 28px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              {[
+                {
+                  to: '/biz-print',
+                  img: 'https://images.unsplash.com/photo-1542744094-24638eff58bb?w=800&h=400&fit=crop',
+                  tag: 'Үйлчилгээ',
+                  title: 'Biz Print',
+                  desc: 'Хэвлэлийн бүтээгдэхүүн — Өндөр чанартай',
+                  bg: '#1a1a2e',
+                },
+                {
+                  to: '/biz-marketing',
+                  img: 'https://images.unsplash.com/photo-1557838923-2985c318be48?w=800&h=400&fit=crop',
+                  tag: 'Үйлчилгээ',
+                  title: 'Biz Marketing',
+                  desc: 'Маркетингийн үйлчилгээ — Мэргэжлийн',
+                  bg: '#2d2040',
+                },
+              ].map((item) => (
+                <Link key={item.to} to={item.to} style={{ textDecoration: 'none', display: 'block' }}>
+                  <div
+                    className="banner-card"
+                    style={{
+                      position: 'relative', height: '200px', borderRadius: '5px',
+                      overflow: 'hidden', border: '1px solid #ddd',
+                      transition: 'box-shadow 0.2s ease',
+                    }}
+                  >
+                    <img
+                      src={item.img} alt={item.title}
+                      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      background: `linear-gradient(to right, ${item.bg}f0 0%, ${item.bg}99 55%, ${item.bg}30 100%)`,
+                    }} />
+                    <div style={{ position: 'absolute', inset: 0, padding: '24px 28px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                      <span style={{ fontSize: '9px', fontWeight: '700', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', marginBottom: '6px' }}>
+                        {item.tag}
+                      </span>
+                      <h3 style={{ fontSize: '22px', fontWeight: '700', color: '#fff', margin: '0 0 5px', letterSpacing: '-0.01em' }}>
+                        {item.title}
+                      </h3>
+                      <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', margin: '0 0 14px' }}>
+                        {item.desc}
+                      </p>
+                      <div style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '6px',
+                        background: '#fff', color: item.bg,
+                        padding: '7px 16px', borderRadius: '3px',
+                        fontSize: '11px', fontWeight: '700',
+                        letterSpacing: '0.02em', width: 'fit-content',
+                      }}>
+                        Дэлгэрэнгүй <ArrowRight size={11} />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
               ))}
             </div>
+          </section>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div style={S.divider} />
+
+          {/* Discount Products */}
+          {discountProducts.length > 0 && (
+            <section style={{ padding: '32px 28px', background: '#fafafa' }} id="discount-products">
+              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '20px' }}>
+                <div>
+                  <p style={S.sectionLabel}>
+                    <span style={{ width: '20px', height: '1px', background: '#ccc', display: 'inline-block' }} />
+                    Хямдрал
+                  </p>
+                  <h2 style={S.sectionTitle}>Хямдралтай бүтээгдэхүүн</h2>
+                  <p style={S.sectionDesc}>Онцгой үнээр санал болгож байна</p>
+                </div>
+                <Link to="/biz-print" style={S.viewAll}>Бүгдийг үзэх <ArrowRight size={12} /></Link>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '14px' }}>
+                {discountProducts.slice(0, 10).map(product => <SimpleProductCard key={product._id} product={product} />)}
+              </div>
+            </section>
+          )}
+
+          <div style={S.divider} />
+
+          {/* Blog */}
+          <section style={{ padding: '32px 28px' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <p style={S.sectionLabel}>
+                <span style={{ width: '20px', height: '1px', background: '#ccc', display: 'inline-block' }} />
+                Блог
+              </p>
+              <h2 style={S.sectionTitle}>Сүүлийн нийтлэлүүд</h2>
+              <p style={S.sectionDesc}>Хэвлэлийн талаарх мэдээ, зөвлөгөө, заавар</p>
+            </div>
+
+            {/* Filter */}
+            <div style={{ display: 'flex', gap: '6px', marginBottom: '22px', flexWrap: 'wrap' }}>
+              {blogCategories.map((cat) => {
+                const isAct = selectedCategory === cat.value;
+                return (
+                  <button
+                    key={cat.value}
+                    onClick={() => setSelectedCategory(cat.value)}
+                    className={isAct ? '' : 'cat-filter-btn'}
+                    style={{
+                      padding: '7px 18px', borderRadius: '3px',
+                      border: `1.5px solid ${isAct ? '#1a1a2e' : '#dedede'}`,
+                      background: isAct ? '#1a1a2e' : '#fff',
+                      color: isAct ? '#fff' : '#555',
+                      fontSize: '12px', fontWeight: '600',
+                      cursor: 'pointer', letterSpacing: '0.02em',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    {cat.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
               {blogs.map((blog) => (
                 <Link
                   key={blog._id}
                   to={`/blogs/${blog.slug}`}
-                  className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                  className="blog-card"
+                  style={{
+                    textDecoration: 'none', display: 'block',
+                    background: '#fff', border: '1.5px solid #e8e8e8',
+                    borderRadius: '5px', overflow: 'hidden',
+                    transition: 'all 0.2s ease',
+                  }}
                 >
-                  <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-purple-50 h-48">
+                  <div style={{ height: '176px', background: '#f2f2f2', overflow: 'hidden', position: 'relative' }}>
                     {blog.featuredImage ? (
                       <img
-                        src={getImageUrl(blog.featuredImage)}
-                        alt={blog.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        onError={(e) => {
-                          e.target.src = 'https://via.placeholder.com/400x300?text=Blog';
-                        }}
+                        src={getImageUrl(blog.featuredImage)} alt={blog.title}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={(e) => { e.target.src = 'https://via.placeholder.com/400x300?text=Blog'; }}
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-5xl">📝</span>
+                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <span style={{ fontSize: '11px', fontWeight: '700', color: '#c0c0c0', letterSpacing: '0.06em' }}>NO IMAGE</span>
                       </div>
                     )}
                     {blog.featured && (
-                      <div className="absolute top-3 left-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-lg text-xs font-bold shadow-lg">
-                        ⭐ Онцлох
+                      <div style={{
+                        position: 'absolute', top: '10px', left: '10px',
+                        background: '#1a1a2e', color: '#fff',
+                        fontSize: '9px', fontWeight: '700',
+                        padding: '3px 10px', borderRadius: '2px', letterSpacing: '0.08em', textTransform: 'uppercase',
+                      }}>
+                        Онцлох
                       </div>
                     )}
                   </div>
 
-                  <div className="p-5">
-                    <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
-                      <span className="flex items-center gap-1.5">
-                        <Calendar size={14} />
-                        {formatDate(blog.publishedAt || blog.createdAt)}
-                      </span>
-                      <span className="flex items-center gap-1.5">
-                        <Eye size={14} />
-                        {blog.views || 0}
-                      </span>
+                  <div style={{ padding: '14px 16px 16px' }}>
+                    <div style={{ display: 'flex', gap: '12px', marginBottom: '9px' }}>
+                      {[{ Icon: Calendar, text: formatDate(blog.publishedAt || blog.createdAt) }, { Icon: Eye, text: blog.views || 0 }].map(({ Icon, text }, i) => (
+                        <span key={i} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#b0b0b0' }}>
+                          <Icon size={11} />{text}
+                        </span>
+                      ))}
                     </div>
 
-                    <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors leading-tight">
+                    <h3
+                      className="blog-title"
+                      style={{
+                        fontSize: '14px', fontWeight: '600', color: '#2a2a2a',
+                        lineHeight: '1.45', marginBottom: '8px',
+                        overflow: 'hidden', display: '-webkit-box',
+                        WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                        transition: 'color 0.15s ease',
+                      }}
+                    >
                       {blog.title}
                     </h3>
 
                     {blog.excerpt && (
-                      <p className="text-sm text-gray-600 line-clamp-2 mb-4">
+                      <p style={{
+                        fontSize: '12px', color: '#999', lineHeight: '1.5', marginBottom: '12px',
+                        overflow: 'hidden', display: '-webkit-box',
+                        WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                      }}>
                         {blog.excerpt}
                       </p>
                     )}
 
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-xs text-gray-500">
-                        <User size={14} />
-                        <span>{blog.author?.name || 'Admin'}</span>
-                      </div>
-                      <span className="inline-flex items-center gap-1 text-blue-600 font-semibold text-sm group-hover:gap-2 transition-all">
-                        Унших
-                        <ArrowRight size={16} />
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f0f0f0', paddingTop: '10px' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#b0b0b0' }}>
+                        <User size={11} />{blog.author?.name || 'Admin'}
+                      </span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: '700', color: '#1a1a2e', letterSpacing: '0.02em' }}>
+                        Унших <ArrowRight size={11} />
                       </span>
                     </div>
                   </div>
@@ -466,67 +578,65 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* Partners */}
-      <section className="bg-gradient-to-b from-gray-50 to-white py-12 border-t border-gray-200">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="relative mb-8">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-1.5 h-8 bg-gradient-to-b from-gray-600 to-gray-800 rounded-full"></div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-                Хамтран ажиллагч байгууллагууд
-              </h2>
-            </div>
+      {/* ── Partners ── */}
+      <section style={{ padding: '36px 0', borderTop: '1px solid #e2e2e2', background: '#fff' }}>
+        <div style={{ ...S.inner, padding: '0 40px' }}>
+          <div style={{ marginBottom: '22px' }}>
+            <p style={S.sectionLabel}>
+              <span style={{ width: '20px', height: '1px', background: '#ccc', display: 'inline-block' }} />
+              Хамтрагч байгууллагууд
+            </p>
+            <h2 style={S.sectionTitle}>Хамтран ажиллагч байгууллагууд</h2>
           </div>
 
-          <div className="relative">
-            <button
-              onClick={prevPartners}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white shadow-lg rounded-full p-3 z-10 hover:shadow-xl transition-all hover:scale-110"
-            >
-              <ChevronLeft size={22} />
-            </button>
-
-            <button
-              onClick={nextPartners}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white shadow-lg rounded-full p-3 z-10 hover:shadow-xl transition-all hover:scale-110"
-            >
-              <ChevronRight size={22} />
-            </button>
+          <div style={{ position: 'relative' }}>
+            {[
+              { fn: prevPartners, Icon: ChevronLeft, style: { left: '-20px' } },
+              { fn: nextPartners, Icon: ChevronRight, style: { right: '-20px' } },
+            ].map(({ fn, Icon, style: ps }) => (
+              <button
+                key={JSON.stringify(ps)}
+                onClick={fn}
+                className="partner-nav"
+                style={{
+                  position: 'absolute', ...ps, top: '50%', transform: 'translateY(-50%)',
+                  background: '#fff', border: '1.5px solid #e0e0e0', borderRadius: '4px',
+                  padding: '7px', cursor: 'pointer', zIndex: 1, display: 'flex',
+                  transition: 'border-color 0.15s ease',
+                }}
+              >
+                <Icon size={17} />
+              </button>
+            ))}
 
             <div
               ref={partnersContainerRef}
-              className="flex gap-6 overflow-x-auto scrollbar-hide py-2"
-              style={{ scrollBehavior: 'smooth' }}
+              className="scrollbar-hide"
+              style={{ display: 'flex', gap: '10px', overflowX: 'auto', scrollBehavior: 'smooth', padding: '4px 0' }}
             >
               {partners.map((partner) => (
                 <div
                   key={partner.id}
-                  className="flex-shrink-0 w-44 h-28 bg-white border-2 border-gray-200 rounded-xl flex items-center justify-center hover:shadow-lg hover:border-blue-300 transition-all hover:scale-105"
+                  className="partner-item"
+                  style={{
+                    flexShrink: 0, width: '150px', height: '72px',
+                    background: '#fafafa', border: '1.5px solid #e8e8e8',
+                    borderRadius: '4px', display: 'flex',
+                    alignItems: 'center', justifyContent: 'center',
+                    padding: '12px', transition: 'border-color 0.15s ease',
+                  }}
                 >
                   <img
-                    src={partner.logo}
-                    alt={partner.name}
-                    className="max-h-full max-w-full object-contain p-4"
+                    src={partner.logo} alt={partner.name}
+                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
                     onError={(e) => {
                       e.target.style.display = 'none';
-                      e.target.parentElement.innerHTML = `
-                        <span class="text-sm font-bold text-gray-700 text-center px-3">${partner.name}</span>
-                      `;
+                      e.target.parentElement.innerHTML = `<span style="font-size:11px;font-weight:700;color:#888;text-align:center;padding:0 8px">${partner.name}</span>`;
                     }}
                   />
                 </div>
               ))}
             </div>
-
-            <style jsx>{`
-              .scrollbar-hide {
-                -ms-overflow-style: none;
-                scrollbar-width: none;
-              }
-              .scrollbar-hide::-webkit-scrollbar {
-                display: none;
-              }
-            `}</style>
           </div>
         </div>
       </section>

@@ -25,7 +25,7 @@ import WishlistPage from './pages/WishlistPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import AdminLoginPage from './pages/AdminLoginPage';
-
+import AdminRedirectRoute from './components/AdminRedirectRoute';
 function App() {
   return (
     <Router>
@@ -48,7 +48,14 @@ function App() {
                 <Route path="/products/:id" element={<ProductDetailPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/contact" element={<ContactPage />} />
-                <Route path="/admin" element={<AdminLoginPage />} />
+                <Route 
+  path="/admin" 
+  element={
+    <AdminRedirectRoute>
+      <AdminLoginPage />
+    </AdminRedirectRoute>
+  } 
+/>
                 
                 {/* Protected Routes */}
                 <Route path="/cart" element={<CartPage />} />

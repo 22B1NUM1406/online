@@ -17,7 +17,8 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import CheckoutPage from './pages/CheckoutPage';
 import PaymentPage from './pages/PaymentPage';
 import ProfilePage from './pages/ProfilePage';
-
+import WalletPage from './pages/WalletPage';
+import WalletPaymentPage from './pages/WalletPaymentPage';
 import QuotationPage from './pages/QuotationPage';
 import AdminPage from './pages/AdminPage';
 import WishlistPage from './pages/WishlistPage';
@@ -84,6 +85,22 @@ function App() {
                   } 
                 />
                 <Route 
+                  path="/wallet" 
+                  element={
+                    <ProtectedRoute>
+                      <WalletPage />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/wallet/payment" 
+                  element={
+                    <ProtectedRoute>
+                      <WalletPaymentPage />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
                   path="/quotation" 
                   element={
                     <ProtectedRoute>
@@ -94,7 +111,7 @@ function App() {
                 
                 {/* Admin Routes */}
                 <Route 
-                  path="/dashboard" 
+                  path="/admin/dashboard" 
                   element={
                     <ProtectedRoute adminOnly>
                       <AdminPage />

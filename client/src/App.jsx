@@ -94,7 +94,7 @@ function App() {
                 
                 {/* Admin Routes */}
                 <Route 
-                  path="/admin/dashboard" 
+                  path="/dashboard" 
                   element={
                     <ProtectedRoute adminOnly>
                       <AdminPage />

@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  LogOut, Package, ShoppingCart, Plus, Edit, Trash2,
-  Upload, Mail, CheckCircle, XCircle, X,
-  LayoutDashboard, Tag, BookOpen, Briefcase, TrendingUp,
-  ChevronLeft, ChevronRight, Menu, AlertCircle, ArrowRight
+  LogOut, Package, ShoppingCart, MessageSquare,
+  Plus, Edit, Trash2, Upload, Mail, CheckCircle,
+  XCircle, X, LayoutDashboard, Tag, BookOpen,
+  Briefcase, TrendingUp, ChevronLeft, ChevronRight,
+  Menu, AlertCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import {
   getAllOrders, updateOrderStatus, deleteOrder,
-  getAllQuotations, deleteQuotation,
+  getAllQuotations, updateQuotationStatus, deleteQuotation,
   createProduct, updateProduct, deleteProduct, getProducts,
   getAllContactMessages, updateContactMessageStatus, deleteContactMessage,
   getAllCategoriesFlat, createCategory, updateCategory, deleteCategory,
@@ -23,800 +24,1064 @@ import Notification from '../components/Notification';
 import DashboardTab from '../components/DashboardTab';
 import EnhancedTextarea from '../components/EnhancedTextarea';
 
-/* ─── Shared tokens matching HomePage ─── */
-const FONT = "'DM Sans', 'Helvetica Neue', Arial, sans-serif";
+/* ─── Global styles injected once ─── */
+const GLOBAL_CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
-const STATUS = {
-  pending:    { label: 'Хүлээгдэж буй', cls: 'bg-amber-50 text-amber-700 border border-amber-200' },
-  paid:       { label: 'Төлөгдсөн',     cls: 'bg-emerald-50 text-emerald-700 border border-emerald-200' },
-  processing: { label: 'Үйлдвэрлэлд',  cls: 'bg-blue-50 text-blue-700 border border-blue-200' },
-  completed:  { label: 'Дууссан',       cls: 'bg-emerald-50 text-emerald-700 border border-emerald-200' },
-  cancelled:  { label: 'Цуцлагдсан',   cls: 'bg-red-50 text-red-600 border border-red-200' },
-  new:        { label: 'Шинэ',          cls: 'bg-gray-900 text-white border border-gray-900' },
-  read:       { label: 'Уншсан',        cls: 'bg-gray-100 text-gray-500 border border-gray-200' },
-  replied:    { label: 'Хариулсан',     cls: 'bg-emerald-50 text-emerald-700 border border-emerald-200' },
-  archived:   { label: 'Архивласан',    cls: 'bg-gray-100 text-gray-400 border border-gray-200' },
-  draft:      { label: 'Ноорог',        cls: 'bg-amber-50 text-amber-600 border border-amber-200' },
-  published:  { label: 'Нийтлэгдсэн',  cls: 'bg-emerald-50 text-emerald-700 border border-emerald-200' },
+  .adm-root {
+    font-family: 'Outfit', system-ui, sans-serif;
+    background: #060b18;
+    min-height: 100vh;
+  }
+
+  /* Animated mesh background */
+  .adm-bg {
+    position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+  }
+  .adm-orb {
+    position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.45;
+    animation: adm-drift 18s ease-in-out infinite;
+  }
+  .adm-orb-1 { width:700px;height:700px;background:radial-gradient(circle,#1e3a5f,transparent); top:-200px;left:-150px; animation-delay:0s; }
+  .adm-orb-2 { width:500px;height:500px;background:radial-gradient(circle,#0f3d2e,transparent); top:40%;right:-100px; animation-delay:-6s; }
+  .adm-orb-3 { width:450px;height:450px;background:radial-gradient(circle,#2d1b4e,transparent); bottom:-100px;left:35%; animation-delay:-12s; }
+  @keyframes adm-drift {
+    0%,100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(30px,-25px) scale(1.06); }
+    66% { transform: translate(-18px,18px) scale(0.96); }
+  }
+
+  /* Grid dots texture */
+  .adm-grid {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  /* ── Glass primitives ── */
+  .glass {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.10);
+  }
+  .glass-strong {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
+    border: 1px solid rgba(255,255,255,0.13);
+  }
+  .glass-hover {
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  }
+  .glass-hover:hover {
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.20);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    transform: translateY(-1px);
+  }
+
+  /* ── Sidebar ── */
+  .adm-sidebar {
+    background: rgba(6,11,24,0.7);
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
+    border-right: 1px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
+    transition: width 0.25s cubic-bezier(.4,0,.2,1);
+  }
+  .adm-sidebar-open  { width: 220px; }
+  .adm-sidebar-close { width: 60px; }
+
+  .adm-nav-item {
+    display: flex; align-items: center; border-radius: 10px;
+    transition: background 0.15s, color 0.15s;
+    cursor: pointer; border: none; background: transparent;
+    color: rgba(255,255,255,0.45); width: 100%;
+  }
+  .adm-nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85); }
+  .adm-nav-item.active {
+    background: rgba(255,255,255,0.10);
+    color: #fff;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+  }
+
+  /* ── Topbar ── */
+  .adm-topbar {
+    background: rgba(6,11,24,0.6);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    height: 56px;
+  }
+
+  /* ── Cards ── */
+  .adm-card {
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 14px;
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.18s;
+  }
+  .adm-card:hover {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.16);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+    transform: translateY(-1px);
+  }
+
+  /* ── Form panel ── */
+  .adm-formpanel {
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 16px;
+    animation: adm-fadein 0.25s ease both;
+  }
+  @keyframes adm-fadein {
+    from { opacity:0; transform:translateY(-8px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* ── Inputs ── */
+  .adm-input {
+    width: 100%; padding: 9px 13px; font-size: 13.5px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 9px; color: rgba(255,255,255,0.9);
+    font-family: 'Outfit', sans-serif;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    outline: none;
+  }
+  .adm-input::placeholder { color: rgba(255,255,255,0.28); }
+  .adm-input:focus {
+    border-color: rgba(99,179,237,0.55);
+    background: rgba(255,255,255,0.09);
+    box-shadow: 0 0 0 3px rgba(99,179,237,0.12);
+  }
+  .adm-select { appearance: none; cursor: pointer; }
+  .adm-select option { background: #0f1a2e; color: #e2e8f0; }
+
+  /* ── Buttons ── */
+  .adm-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    font-family: 'Outfit', sans-serif; font-weight: 500; font-size: 13px;
+    border-radius: 9px; border: none; cursor: pointer;
+    transition: all 0.15s; outline: none;
+  }
+  .adm-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .adm-btn-primary {
+    background: rgba(99,179,237,0.18);
+    border: 1px solid rgba(99,179,237,0.35);
+    color: #90cdf4;
+    padding: 8px 16px;
+  }
+  .adm-btn-primary:hover {
+    background: rgba(99,179,237,0.28);
+    border-color: rgba(99,179,237,0.6);
+    box-shadow: 0 0 16px rgba(99,179,237,0.2);
+  }
+
+  .adm-btn-secondary {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.6);
+    padding: 8px 16px;
+  }
+  .adm-btn-secondary:hover { background: rgba(255,255,255,0.10); color: rgba(255,255,255,0.85); }
+
+  .adm-btn-danger {
+    background: rgba(252,129,74,0.10);
+    border: 1px solid rgba(252,129,74,0.25);
+    color: rgba(252,129,74,0.8);
+    padding: 7px 10px;
+  }
+  .adm-btn-danger:hover { background: rgba(252,129,74,0.20); border-color: rgba(252,129,74,0.5); }
+
+  .adm-btn-ghost {
+    background: transparent; border: 1px solid transparent;
+    color: rgba(255,255,255,0.4); padding: 6px 9px;
+  }
+  .adm-btn-ghost:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.1); }
+
+  .adm-btn-icon-danger { color: rgba(252,129,74,0.65); }
+  .adm-btn-icon-danger:hover { background: rgba(252,129,74,0.12); color: rgba(252,129,74,1); border-color: rgba(252,129,74,0.25); }
+
+  /* ── Badges ── */
+  .adm-badge {
+    display: inline-flex; align-items: center;
+    padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600;
+  }
+  .adm-badge-pending  { background:rgba(251,191,36,0.12); color:#fcd34d; border:1px solid rgba(251,191,36,0.25); }
+  .adm-badge-paid     { background:rgba(52,211,153,0.12); color:#6ee7b7; border:1px solid rgba(52,211,153,0.25); }
+  .adm-badge-processing{background:rgba(99,179,237,0.12); color:#90cdf4; border:1px solid rgba(99,179,237,0.25); }
+  .adm-badge-completed{ background:rgba(52,211,153,0.12); color:#6ee7b7; border:1px solid rgba(52,211,153,0.25); }
+  .adm-badge-cancelled{ background:rgba(252,129,74,0.12); color:#fdba74; border:1px solid rgba(252,129,74,0.25); }
+  .adm-badge-new      { background:rgba(99,179,237,0.12); color:#90cdf4; border:1px solid rgba(99,179,237,0.25); }
+  .adm-badge-read     { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.45); border:1px solid rgba(255,255,255,0.1); }
+  .adm-badge-replied  { background:rgba(52,211,153,0.12); color:#6ee7b7; border:1px solid rgba(52,211,153,0.25); }
+  .adm-badge-archived { background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.3); border:1px solid rgba(255,255,255,0.08); }
+  .adm-badge-draft    { background:rgba(251,191,36,0.12); color:#fcd34d; border:1px solid rgba(251,191,36,0.25); }
+  .adm-badge-published{ background:rgba(52,211,153,0.12); color:#6ee7b7; border:1px solid rgba(52,211,153,0.25); }
+  .adm-badge-featured { background:rgba(167,139,250,0.12); color:#c4b5fd; border:1px solid rgba(167,139,250,0.25); }
+  .adm-badge-purple   { background:rgba(167,139,250,0.12); color:#c4b5fd; border:1px solid rgba(167,139,250,0.25); }
+  .adm-badge-default  { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1px solid rgba(255,255,255,0.1); }
+
+  /* ── Text colors ── */
+  .adm-text-primary   { color: rgba(255,255,255,0.92); }
+  .adm-text-secondary { color: rgba(255,255,255,0.55); }
+  .adm-text-muted     { color: rgba(255,255,255,0.32); }
+  .adm-text-accent    { color: #90cdf4; }
+  .adm-text-price     { color: #6ee7b7; }
+
+  /* ── Label ── */
+  .adm-label {
+    display: block; font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    color: rgba(255,255,255,0.38); margin-bottom: 6px;
+  }
+
+  /* ── Divider ── */
+  .adm-divider { border-color: rgba(255,255,255,0.07); }
+
+  /* ── Section header ── */
+  .adm-section-title {
+    font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.88);
+    letter-spacing: -0.02em;
+  }
+
+  /* ── Toggle collapse button ── */
+  .adm-collapse-btn {
+    position: absolute; right: -12px; top: 68px;
+    width: 24px; height: 24px; border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.14);
+    color: rgba(255,255,255,0.5);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.15s; z-index: 10;
+  }
+  .adm-collapse-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+  /* ── Alert badge ── */
+  .adm-alert-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 600;
+    background: rgba(252,129,74,0.12);
+    border: 1px solid rgba(252,129,74,0.25);
+    color: #fdba74;
+  }
+
+  /* ── Image upload area ── */
+  .adm-upload {
+    border: 1.5px dashed rgba(255,255,255,0.15); border-radius: 10px;
+    padding: 24px; text-align: center; cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .adm-upload:hover { border-color: rgba(99,179,237,0.4); background: rgba(99,179,237,0.04); }
+
+  /* ── Scrollbar ── */
+  .adm-scroll::-webkit-scrollbar { width: 4px; }
+  .adm-scroll::-webkit-scrollbar-track { background: transparent; }
+  .adm-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+
+  /* ── Page enter animation ── */
+  .adm-page-enter { animation: adm-fadein 0.3s ease both; }
+
+  /* ── Status select ── */
+  .adm-status-select {
+    font-size: 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px; padding: 5px 10px;
+    color: rgba(255,255,255,0.75);
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer; outline: none;
+    transition: border-color 0.15s;
+  }
+  .adm-status-select:focus { border-color: rgba(99,179,237,0.4); }
+  .adm-status-select option { background: #0f1a2e; }
+
+  /* ── Mobile sidebar ── */
+  .adm-mobile-sidebar {
+    position: fixed; inset-y: 0; left: 0; z-index: 50; width: 240px;
+    background: rgba(6,11,24,0.92);
+    backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+    border-right: 1px solid rgba(255,255,255,0.09);
+    transform: translateX(-100%);
+    transition: transform 0.25s cubic-bezier(.4,0,.2,1);
+  }
+  .adm-mobile-sidebar.open { transform: translateX(0); }
+
+  .adm-overlay {
+    position: fixed; inset: 0; z-index: 40;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(2px);
+  }
+
+  /* ── Checkbox ── */
+  .adm-checkbox { accent-color: #63b3ed; width: 15px; height: 15px; }
+
+  /* ── Featured row ── */
+  .adm-featured-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-radius: 10px;
+    background: rgba(251,191,36,0.06);
+    border: 1px solid rgba(251,191,36,0.15);
+  }
+
+  /* ── Reply box ── */
+  .adm-reply-box {
+    margin-top: 10px; padding: 10px 14px;
+    background: rgba(52,211,153,0.06);
+    border-left: 2px solid rgba(52,211,153,0.4);
+    border-radius: 0 8px 8px 0;
+  }
+
+  /* ── Sub-category indent ── */
+  .adm-subcategory { margin-left: 24px; margin-top: 6px; }
+  .adm-cat-primary  { border-left: 2px solid rgba(99,179,237,0.4) !important; }
+  .adm-cat-secondary{ border-left: 2px solid rgba(255,255,255,0.1) !important; }
+`;
+
+/* ─── Inject CSS once ─── */
+let cssInjected = false;
+const injectCSS = () => {
+  if (cssInjected) return;
+  const el = document.createElement('style');
+  el.textContent = GLOBAL_CSS;
+  document.head.appendChild(el);
+  cssInjected = true;
 };
 
-/* ─── Primitives ─── */
-
-// Matches HomePage's "Онцлох бүтээгдэхүүн" label style exactly
-const SectionLabel = ({ children }) => (
-  <div className="flex items-center gap-2 mb-2">
-    <span className="w-5 h-px bg-gray-300 inline-block" />
-    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">{children}</span>
-  </div>
+/* ─────────────────────────────────────────────
+   Reusable primitives
+───────────────────────────────────────────── */
+const Badge = ({ variant = 'default', children }) => (
+  <span className={`adm-badge adm-badge-${variant}`}>{children}</span>
 );
 
-const Badge = ({ status }) => {
-  const s = STATUS[status] || { label: status, cls: 'bg-gray-100 text-gray-500 border border-gray-200' };
-  return <span className={`inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-bold ${s.cls}`}>{s.label}</span>;
+const Btn = ({ variant = 'primary', size = 'md', className = '', children, ...props }) => {
+  const v = {
+    primary: 'adm-btn adm-btn-primary',
+    secondary: 'adm-btn adm-btn-secondary',
+    danger: 'adm-btn adm-btn-danger',
+    ghost: 'adm-btn adm-btn-ghost',
+  };
+  return (
+    <button className={`${v[variant] || v.primary} ${className}`} {...props}>
+      {children}
+    </button>
+  );
 };
 
-// Matches HomePage input style
-const iCls = 'w-full px-3 py-2.5 text-sm bg-white border border-gray-200 rounded text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-900 transition-colors';
-
-const Field = ({ label, required, hint, children }) => (
+const Field = ({ label, required, children, hint }) => (
   <div>
     {label && (
-      <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">
-        {label}{required && <span className="text-red-500 ml-0.5">*</span>}
+      <label className="adm-label">
+        {label}{required && <span style={{ color: '#fc8181', marginLeft: 2 }}>*</span>}
       </label>
     )}
     {children}
-    {hint && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
+    {hint && <p style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.28)' }}>{hint}</p>}
   </div>
 );
 
-// Matches HomePage "Холбоо барих" button
-const Btn = ({ variant = 'primary', size = 'md', className = '', children, ...p }) => {
-  const base = 'inline-flex items-center justify-center gap-1.5 font-bold rounded transition-all duration-150 focus:outline-none disabled:opacity-50 cursor-pointer';
-  const sz = { sm: 'px-3 py-1.5 text-xs', md: 'px-5 py-2.5 text-sm', lg: 'px-6 py-3 text-sm' };
-  const vr = {
-    primary:   'bg-gray-900 text-white hover:bg-gray-700',
-    secondary: 'bg-white text-gray-700 border border-gray-300 hover:border-gray-900',
-    ghost:     'bg-transparent text-gray-500 hover:text-gray-900 hover:bg-gray-100',
-  };
-  return <button className={`${base} ${sz[size]} ${vr[variant] || vr.primary} ${className}`} {...p}>{children}</button>;
-};
+const SectionHeader = ({ title, action }) => (
+  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom: 20, paddingBottom: 14, borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+    <h2 className="adm-section-title">{title}</h2>
+    {action}
+  </div>
+);
 
-// Form panel with gray-50 bg — matches discount product section
 const FormPanel = ({ title, children }) => (
-  <div className="mb-6 p-5 bg-gray-50 border border-gray-200 rounded">
-    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest pb-3 mb-4 border-b border-gray-200">{title}</p>
+  <div className="adm-formpanel" style={{ padding: 20, marginBottom: 20 }}>
+    <h3 style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.6)', marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+      {title}
+    </h3>
     {children}
   </div>
 );
 
 const EmptyState = ({ icon: Icon, message }) => (
-  <div className="flex flex-col items-center justify-center py-16">
-    <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center mb-3">
-      <Icon size={20} className="text-gray-300" />
+  <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding: '64px 0', color: 'rgba(255,255,255,0.25)' }}>
+    <div style={{ width:48, height:48, background:'rgba(255,255,255,0.05)', borderRadius:14, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12, border:'1px solid rgba(255,255,255,0.08)' }}>
+      <Icon size={20} />
     </div>
-    <p className="text-sm text-gray-400">{message}</p>
+    <p style={{ fontSize: 13 }}>{message}</p>
   </div>
 );
 
-// Matches blog card hover exactly
-const Row = ({ children, delay = 0, className = '' }) => (
-  <div
-    className={`bg-white border border-gray-200 rounded hover:border-gray-900 hover:shadow-lg transition-all duration-300 fade-up ${className}`}
-    style={{ animationDelay: `${delay}s` }}
-  >
+const Card = ({ children, className = '', style = {} }) => (
+  <div className={`adm-card ${className}`} style={{ padding: '14px 16px', ...style }}>
     {children}
   </div>
 );
 
-const UploadZone = ({ id, file, preview, onFile, onClear }) => (
-  preview ? (
-    <div className="relative">
-      <img src={preview} alt="preview" className="w-full h-44 object-cover rounded border border-gray-200" />
-      <button type="button" onClick={onClear} className="absolute top-2 right-2 w-7 h-7 bg-white border border-gray-200 rounded flex items-center justify-center text-gray-500 hover:text-red-500 hover:border-red-300 transition-colors">
-        <X size={13} />
-      </button>
-    </div>
-  ) : (
-    <div className="border-2 border-dashed border-gray-200 rounded p-6 text-center hover:border-gray-900 transition-colors cursor-pointer">
-      <input type="file" accept="image/*" onChange={onFile} className="hidden" id={id} />
-      <label htmlFor={id} className="cursor-pointer flex flex-col items-center gap-2 text-gray-400 hover:text-gray-700 transition-colors">
-        <Upload size={20} />
-        <span className="text-sm font-medium">{file ? file.name : 'Зураг сонгох'}</span>
-      </label>
-    </div>
-  )
-);
+const inputCls = 'adm-input';
+const selectCls = 'adm-input adm-select';
 
-/* ─── AdminPage ─── */
-export default function AdminPage() {
+const statusLabel = {
+  pending: 'Хүлээгдэж буй', paid: 'Төлөгдсөн', processing: 'Үйлдвэрлэлд',
+  completed: 'Дууссан', cancelled: 'Цуцлагдсан',
+  new: 'Шинэ', read: 'Уншсан', replied: 'Хариулсан', archived: 'Архивласан',
+  draft: 'Ноорог', published: 'Нийтлэгдсэн',
+};
+
+/* ─────────────────────────────────────────────
+   Main Component
+───────────────────────────────────────────── */
+const AdminPage = () => {
+  injectCSS();
   const navigate = useNavigate();
   const { user, isAdmin, logout } = useAuth();
-  const [tab, setTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(false);
-  const [notif, setNotif] = useState(null);
+  const [notification, setNotification] = useState(null);
+  const [dashboardStats, setDashboardStats] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-  // Data
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [quotations, setQuotations] = useState([]);
-  const [messages, setMessages] = useState([]);
+  const [contactMessages, setContactMessages] = useState([]);
   const [categories, setCategories] = useState([]);
   const [blogs, setBlogs] = useState([]);
-  const [services, setServices] = useState([]);
+  const [marketingServices, setMarketingServices] = useState([]);
 
-  // Forms
-  const EP = { name:'', price:'', category:'', description:'', material:'', size:'', format:'', stock:'', image:'', featured:false, discount:'', oldPrice:'' };
-  const EC = { name:'', description:'', parent:'', icon:'Package', order:0 };
-  const EB = { title:'', excerpt:'', content:'', category:'other', tags:'', status:'published', featured:false };
-  const ES = { name:'', description:'', shortDescription:'', features:'', price:'', category:'other', icon:'TrendingUp', featured:false };
+  const [showProductForm, setShowProductForm] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const emptyProduct = { name:'', price:'', category:'', description:'', material:'', size:'', format:'', stock:'', image:'', featured:false, discount:'', oldPrice:'' };
+  const [productForm, setProductForm] = useState(emptyProduct);
 
-  const [showPF, setShowPF] = useState(false); const [editP, setEditP] = useState(null); const [pForm, setPForm] = useState(EP);
-  const [selImg, setSelImg] = useState(null); const [imgPrev, setImgPrev] = useState(null);
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const emptyCategory = { name:'', description:'', parent:'', icon:'Package', order:0 };
+  const [categoryForm, setCategoryForm] = useState(emptyCategory);
 
-  const [showCF, setShowCF] = useState(false); const [editC, setEditC] = useState(null); const [cForm, setCForm] = useState(EC);
+  const [showBlogForm, setShowBlogForm] = useState(false);
+  const [editingBlog, setEditingBlog] = useState(null);
+  const emptyBlog = { title:'', excerpt:'', content:'', category:'other', tags:'', status:'published', featured:false };
+  const [blogForm, setBlogForm] = useState(emptyBlog);
+  const [blogImage, setBlogImage] = useState(null);
+  const [blogImagePreview, setBlogImagePreview] = useState('');
 
-  const [showBF, setShowBF] = useState(false); const [editB, setEditB] = useState(null); const [bForm, setBForm] = useState(EB);
-  const [bImg, setBImg] = useState(null); const [bImgPrev, setBImgPrev] = useState('');
+  const [showServiceForm, setShowServiceForm] = useState(false);
+  const [editingService, setEditingService] = useState(null);
+  const emptyService = { name:'', description:'', shortDescription:'', features:'', price:'', category:'other', icon:'TrendingUp', featured:false };
+  const [serviceForm, setServiceForm] = useState(emptyService);
+  const [serviceImage, setServiceImage] = useState(null);
+  const [serviceImagePreview, setServiceImagePreview] = useState('');
 
-  const [showSF, setShowSF] = useState(false); const [editS, setEditS] = useState(null); const [sForm, setSForm] = useState(ES);
-  const [sImg, setSImg] = useState(null); const [sImgPrev, setSImgPrev] = useState('');
+  useEffect(() => {
+    if (!isAdmin) { navigate('/'); return; }
+    loadTabData(activeTab);
+  }, [activeTab, isAdmin]);
 
-  useEffect(() => { if (!isAdmin) { navigate('/'); return; } loadTab(tab); }, [tab, isAdmin]);
-  useEffect(() => { setMobileOpen(false); }, [tab]);
+  useEffect(() => { setMobileSidebarOpen(false); }, [activeTab]);
 
-  const notify = (message, type = 'success') => setNotif({ message, type });
+  const notify = (message, type = 'success') => setNotification({ message, type });
 
-  const loadTab = async (t) => {
+  const loadTabData = async (tab) => {
     try {
       setLoading(true);
-      if (t === 'dashboard') {
-        const [o, q, m] = await Promise.all([getAllOrders().catch(()=>({data:[]})), getAllQuotations().catch(()=>({data:[]})), getAllContactMessages().catch(()=>({data:[]}))]);
-        setOrders(o.data); setQuotations(q.data); setMessages(m.data);
-      } else if (t === 'products') {
-        const [p, c] = await Promise.all([getProducts(), getAllCategoriesFlat()]);
-        setProducts(p.data); setCategories(c.data);
-      } else if (t === 'orders') { const d = await getAllOrders(); setOrders(d.data);
-      } else if (t === 'quotations') { const d = await getAllQuotations(); setQuotations(d.data);
-      } else if (t === 'messages') { const d = await getAllContactMessages(); setMessages(d.data);
-      } else if (t === 'categories') { const d = await getAllCategoriesFlat(); setCategories(d.data);
-      } else if (t === 'blogs') { const d = await getAllBlogs(); setBlogs(d.data);
-      } else if (t === 'services') { const d = await getAllMarketingServices(); setServices(d.data); }
+      if (tab === 'dashboard') {
+        if (!dashboardStats) { const s = await getDashboardStats().catch(()=>null); if(s) setDashboardStats(s.data); }
+        const [o,q,m] = await Promise.all([getAllOrders().catch(()=>({data:[]})), getAllQuotations().catch(()=>({data:[]})), getAllContactMessages().catch(()=>({data:[]}))]);
+        setOrders(o.data); setQuotations(q.data); setContactMessages(m.data);
+      } else if (tab==='products') { const [p,c]=await Promise.all([getProducts(),getAllCategoriesFlat()]); setProducts(p.data); setCategories(c.data); }
+      else if (tab==='orders')     { const d=await getAllOrders(); setOrders(d.data); }
+      else if (tab==='quotations') { const d=await getAllQuotations(); setQuotations(d.data); }
+      else if (tab==='messages')   { const d=await getAllContactMessages(); setContactMessages(d.data); }
+      else if (tab==='categories') { const d=await getAllCategoriesFlat(); setCategories(d.data); }
+      else if (tab==='blogs')      { const d=await getAllBlogs(); setBlogs(d.data); }
+      else if (tab==='services')   { const d=await getAllMarketingServices(); setMarketingServices(d.data); }
     } catch(e) { console.error(e); } finally { setLoading(false); }
   };
-  const reload = () => loadTab(tab);
+  const loadData = () => loadTabData(activeTab);
 
-  /* Product */
-  const submitProduct = async (e) => {
+  /* ── Handlers (unchanged logic) ── */
+  const handleProductSubmit = async (e) => {
     e.preventDefault();
     try {
       const fd = new FormData();
-      ['name','price','category','description','material','size','format','stock','featured'].forEach(k=>fd.append(k,pForm[k]));
-      if (pForm.discount) fd.append('discount', pForm.discount);
-      if (pForm.oldPrice) fd.append('oldPrice', pForm.oldPrice);
-      if (selImg) fd.append('image', selImg); else if (pForm.image) fd.append('image', pForm.image);
-      if (editP) { await updateProduct(editP._id, fd); notify('Бүтээгдэхүүн шинэчлэгдлээ'); }
-      else { await createProduct(fd); notify('Бүтээгдэхүүн нэмэгдлээ'); }
-      setShowPF(false); setEditP(null); setSelImg(null); setImgPrev(null); setPForm(EP); reload();
+      ['name','price','category','description','material','size','format','stock','featured'].forEach(k=>fd.append(k,productForm[k]));
+      if(productForm.discount) fd.append('discount',productForm.discount);
+      if(productForm.oldPrice) fd.append('oldPrice',productForm.oldPrice);
+      if(selectedImage) fd.append('image',selectedImage); else if(productForm.image) fd.append('image',productForm.image);
+      if(editingProduct){await updateProduct(editingProduct._id,fd);notify('Бүтээгдэхүүн шинэчлэгдлээ');}
+      else{await createProduct(fd);notify('Бүтээгдэхүүн нэмэгдлээ');}
+      setShowProductForm(false); setEditingProduct(null); setSelectedImage(null); setImagePreview(null); setProductForm(emptyProduct); loadData();
     } catch { notify('Алдаа гарлаа','error'); }
   };
-  const deleteP = async (id) => { if(!window.confirm('Устгах уу?'))return; try{await deleteProduct(id);notify('Устгагдлаа');reload();}catch{notify('Алдаа','error');} };
-  const editProduct = (p) => {
-    setEditP(p); setSelImg(null);
-    setPForm({name:p.name,price:p.price,category:typeof p.category==='object'?p.category._id:p.category,description:p.description||'',material:p.material||'',size:p.size||'',format:p.format||'',stock:p.stock||'',image:p.image||'',featured:p.featured||false,discount:p.discount||'',oldPrice:p.oldPrice||''});
-    setImgPrev(p.image||null); setShowPF(true);
-  };
+  const handleDeleteProduct = async (id) => { if(!window.confirm('Устгах уу?'))return; try{await deleteProduct(id);notify('Устгагдлаа');loadData();}catch{notify('Алдаа','error');} };
+  const handleEditProduct = (p) => { setEditingProduct(p); setProductForm({name:p.name,price:p.price,category:typeof p.category==='object'?p.category._id:p.category,description:p.description||'',material:p.material||'',size:p.size||'',format:p.format||'',stock:p.stock||'',image:p.image||'',featured:p.featured||false,discount:p.discount||'',oldPrice:p.oldPrice||''}); setImagePreview(p.image||null); setSelectedImage(null); setShowProductForm(true); };
+  const handleImageChange = (e) => { const f=e.target.files[0]; if(f){setSelectedImage(f);const r=new FileReader();r.onloadend=()=>setImagePreview(r.result);r.readAsDataURL(f);} };
+  const handleUpdateOrderStatus = async (id,status) => { try{await updateOrderStatus(id,status);notify('Статус шинэчлэгдлээ');loadData();}catch{notify('Алдаа','error');} };
+  const handleDeleteOrder = async (id) => { if(!window.confirm('Устгах уу?'))return; try{await deleteOrder(id);notify('Устгагдлаа');loadData();}catch{notify('Алдаа','error');} };
+  const handleDeleteQuotation = async (id) => { if(!window.confirm('Устгах уу?'))return; try{await deleteQuotation(id);notify('Устгагдлаа');loadData();}catch{notify('Алдаа','error');} };
+  const handleMessageStatusUpdate = async (id,status) => { try{await updateContactMessageStatus(id,status);notify('Статус шинэчлэгдлээ');loadData();}catch{notify('Алдаа','error');} };
+  const handleDeleteMessage = async (id) => { if(!window.confirm('Устгах уу?'))return; try{await deleteContactMessage(id);notify('Устгагдлаа');loadData();}catch{notify('Алдаа','error');} };
+  const handleCategorySubmit = async (e) => { e.preventDefault(); try{if(editingCategory){await updateCategory(editingCategory._id,categoryForm);notify('Ангилал шинэчлэгдлээ');}else{await createCategory(categoryForm);notify('Ангилал нэмэгдлээ');}setShowCategoryForm(false);setEditingCategory(null);setCategoryForm(emptyCategory);loadData();}catch(e){notify(e.response?.data?.message||'Алдаа','error');} };
+  const handleEditCategory = (c) => { setEditingCategory(c); setCategoryForm({name:c.name,description:c.description||'',parent:c.parent?._id||'',icon:c.icon||'Package',order:c.order||0}); setShowCategoryForm(true); };
+  const handleDeleteCategory = async (id) => { if(!window.confirm('Устгах уу?'))return; try{await deleteCategory(id);notify('Устгагдлаа');loadData();}catch(e){notify(e.response?.data?.message||'Алдаа','error');} };
+  const handleBlogSubmit = async (e) => { e.preventDefault(); try{const fd=new FormData();fd.append('title',blogForm.title);fd.append('excerpt',blogForm.excerpt);fd.append('content',blogForm.content);fd.append('category',blogForm.category);fd.append('tags',blogForm.tags?blogForm.tags.split(',').map(t=>t.trim()).join(','):'');fd.append('status',blogForm.status);fd.append('featured',blogForm.featured);if(blogImage)fd.append('file',blogImage);if(editingBlog){await updateBlog(editingBlog._id,fd);notify('Блог шинэчлэгдлээ');}else{await createBlog(fd);notify('Блог нэмэгдлээ');}setShowBlogForm(false);setEditingBlog(null);setBlogForm(emptyBlog);setBlogImage(null);setBlogImagePreview('');loadData();}catch(e){notify(e.response?.data?.message||'Алдаа','error');} };
+  const handleEditBlog = (b) => { setEditingBlog(b); setBlogForm({title:b.title,excerpt:b.excerpt||'',content:b.content,category:b.category,tags:b.tags?b.tags.join(', '):'',status:b.status,featured:b.featured||false}); if(b.image)setBlogImagePreview(b.image); setShowBlogForm(true); };
+  const handleDeleteBlog = async (id) => { if(!window.confirm('Устгах уу?'))return; try{await deleteBlog(id);notify('Устгагдлаа');loadData();}catch(e){notify(e.response?.data?.message||'Алдаа','error');} };
+  const handleServiceSubmit = async (e) => { e.preventDefault(); try{const fd=new FormData();fd.append('name',serviceForm.name);fd.append('description',serviceForm.description);fd.append('shortDescription',serviceForm.shortDescription);fd.append('features',serviceForm.features?serviceForm.features.split('\n').map(f=>f.trim()).filter(Boolean).join('\n'):'');fd.append('price',serviceForm.price);fd.append('category',serviceForm.category);fd.append('icon',serviceForm.icon);fd.append('featured',serviceForm.featured);if(serviceImage)fd.append('file',serviceImage);if(editingService){await updateMarketingService(editingService._id,fd);notify('Үйлчилгээ шинэчлэгдлээ');}else{await createMarketingService(fd);notify('Үйлчилгээ нэмэгдлээ');}setShowServiceForm(false);setEditingService(null);setServiceForm(emptyService);setServiceImage(null);setServiceImagePreview('');loadData();}catch(e){notify(e.response?.data?.message||'Алдаа','error');} };
+  const handleEditService = (s) => { setEditingService(s); setServiceForm({name:s.name,description:s.description,shortDescription:s.shortDescription||'',features:s.features?s.features.join('\n'):'',price:s.price||'',category:s.category,icon:s.icon||'TrendingUp',featured:s.featured||false}); if(s.image)setServiceImagePreview(s.image); setShowServiceForm(true); };
+  const handleDeleteService = async (id) => { if(!window.confirm('Устгах уу?'))return; try{await deleteMarketingService(id);notify('Устгагдлаа');loadData();}catch(e){notify(e.response?.data?.message||'Алдаа','error');} };
 
-  /* Order */
-  const updateOrder = async (id, status) => { try{await updateOrderStatus(id,status);notify('Шинэчлэгдлээ');reload();}catch{notify('Алдаа','error');} };
-  const deleteO = async (id) => { if(!window.confirm('Устгах уу?'))return; try{await deleteOrder(id);notify('Устгагдлаа');reload();}catch{notify('Алдаа','error');} };
-
-  /* Quotation */
-  const deleteQ = async (id) => { if(!window.confirm('Устгах уу?'))return; try{await deleteQuotation(id);notify('Устгагдлаа');reload();}catch{notify('Алдаа','error');} };
-
-  /* Message */
-  const updateMsg = async (id, status) => { try{await updateContactMessageStatus(id,status);notify('Шинэчлэгдлээ');reload();}catch{notify('Алдаа','error');} };
-  const deleteMsg = async (id) => { if(!window.confirm('Устгах уу?'))return; try{await deleteContactMessage(id);notify('Устгагдлаа');reload();}catch{notify('Алдаа','error');} };
-
-  /* Category */
-  const submitCategory = async (e) => {
-    e.preventDefault();
-    try {
-      if (editC) { await updateCategory(editC._id, cForm); notify('Шинэчлэгдлээ'); }
-      else { await createCategory(cForm); notify('Нэмэгдлээ'); }
-      setShowCF(false); setEditC(null); setCForm(EC); reload();
-    } catch(e) { notify(e.response?.data?.message||'Алдаа','error'); }
-  };
-  const editCat = (c) => { setEditC(c); setCForm({name:c.name,description:c.description||'',parent:c.parent?._id||'',icon:c.icon||'Package',order:c.order||0}); setShowCF(true); };
-  const deleteCat = async (id) => { if(!window.confirm('Устгах уу?'))return; try{await deleteCategory(id);notify('Устгагдлаа');reload();}catch(e){notify(e.response?.data?.message||'Алдаа','error');} };
-
-  /* Blog */
-  const submitBlog = async (e) => {
-    e.preventDefault();
-    try {
-      const fd = new FormData();
-      fd.append('title',bForm.title); fd.append('excerpt',bForm.excerpt); fd.append('content',bForm.content);
-      fd.append('category',bForm.category); fd.append('tags',bForm.tags?bForm.tags.split(',').map(t=>t.trim()).join(','):'');
-      fd.append('status',bForm.status); fd.append('featured',bForm.featured);
-      if (bImg) fd.append('file',bImg);
-      if (editB) { await updateBlog(editB._id,fd); notify('Шинэчлэгдлээ'); }
-      else { await createBlog(fd); notify('Нэмэгдлээ'); }
-      setShowBF(false); setEditB(null); setBForm(EB); setBImg(null); setBImgPrev(''); reload();
-    } catch(e) { notify(e.response?.data?.message||'Алдаа','error'); }
-  };
-  const editBlog = (b) => {
-    setEditB(b); setBForm({title:b.title,excerpt:b.excerpt||'',content:b.content,category:b.category,tags:b.tags?b.tags.join(', '):'',status:b.status,featured:b.featured||false});
-    if(b.image)setBImgPrev(b.image); setShowBF(true);
-  };
-  const deleteBlog_ = async (id) => { if(!window.confirm('Устгах уу?'))return; try{await deleteBlog(id);notify('Устгагдлаа');reload();}catch(e){notify(e.response?.data?.message||'Алдаа','error');} };
-
-  /* Service */
-  const submitService = async (e) => {
-    e.preventDefault();
-    try {
-      const fd = new FormData();
-      fd.append('name',sForm.name); fd.append('description',sForm.description); fd.append('shortDescription',sForm.shortDescription);
-      fd.append('features',sForm.features?sForm.features.split('\n').map(f=>f.trim()).filter(Boolean).join('\n'):'');
-      fd.append('price',sForm.price); fd.append('category',sForm.category); fd.append('icon',sForm.icon); fd.append('featured',sForm.featured);
-      if (sImg) fd.append('file',sImg);
-      if (editS) { await updateMarketingService(editS._id,fd); notify('Шинэчлэгдлээ'); }
-      else { await createMarketingService(fd); notify('Нэмэгдлээ'); }
-      setShowSF(false); setEditS(null); setSForm(ES); setSImg(null); setSImgPrev(''); reload();
-    } catch(e) { notify(e.response?.data?.message||'Алдаа','error'); }
-  };
-  const editSvc = (s) => {
-    setEditS(s); setSForm({name:s.name,description:s.description,shortDescription:s.shortDescription||'',features:s.features?s.features.join('\n'):'',price:s.price||'',category:s.category,icon:s.icon||'TrendingUp',featured:s.featured||false});
-    if(s.image)setSImgPrev(s.image); setShowSF(true);
-  };
-  const deleteSvc = async (id) => { if(!window.confirm('Устгах уу?'))return; try{await deleteMarketingService(id);notify('Устгагдлаа');reload();}catch(e){notify(e.response?.data?.message||'Алдаа','error');} };
-
-  /* Nav */
   const navItems = [
-    { id:'dashboard',  label:'Самбар',       Icon:LayoutDashboard },
-    { id:'products',   label:'Бүтээгдэхүүн', Icon:Package,      stat:products.length },
-    { id:'orders',     label:'Захиалга',      Icon:ShoppingCart, stat:orders.length },
-    { id:'quotations', label:'Үнийн санал',   Icon:TrendingUp,   badge:quotations.filter(q=>q.status==='pending').length },
-    { id:'messages',   label:'Мессеж',        Icon:Mail,         badge:messages.filter(m=>m.status==='new').length },
-    { id:'categories', label:'Ангилал',       Icon:Tag },
-    { id:'blogs',      label:'Блог',          Icon:BookOpen,     stat:blogs.length },
-    { id:'services',   label:'Үйлчилгээ',     Icon:Briefcase,    stat:services.length },
+    { id:'dashboard',  label:'Самбар',        icon:LayoutDashboard },
+    { id:'products',   label:'Бүтээгдэхүүн',  icon:Package,        stat:products.length },
+    { id:'orders',     label:'Захиалга',       icon:ShoppingCart,   stat:orders.length },
+    { id:'quotations', label:'Үнийн санал',    icon:TrendingUp,     badge:quotations.filter(q=>q.status==='pending').length },
+    { id:'messages',   label:'Мессеж',         icon:Mail,           badge:contactMessages.filter(m=>m.status==='new').length },
+    { id:'categories', label:'Ангилал',        icon:Tag },
+    { id:'blogs',      label:'Блог',           icon:BookOpen,       stat:blogs.length },
+    { id:'services',   label:'Үйлчилгээ',      icon:Briefcase,      stat:marketingServices.length },
   ];
-  const activeNav = navItems.find(n=>n.id===tab);
+  const activeNav = navItems.find(n=>n.id===activeTab);
   const totalAlerts = navItems.reduce((s,n)=>s+(n.badge||0),0);
 
-  /* Nav item component */
-  const NavBtn = ({ item, collapsed }) => {
-    const { Icon } = item;
-    const active = tab === item.id;
-    return (
-      <button
-        onClick={()=>setTab(item.id)}
-        title={collapsed ? item.label : undefined}
-        className={`w-full flex items-center rounded transition-all duration-150
-          ${collapsed ? 'justify-center p-2.5' : 'gap-3 px-3 py-2.5'}
-          ${active ? 'bg-white text-gray-900' : 'text-gray-400 hover:bg-white/10 hover:text-white'}`}
-      >
-        <Icon size={15} className="flex-shrink-0" />
-        {!collapsed && (
-          <>
-            <span className="flex-1 text-left text-sm font-bold tracking-tight">{item.label}</span>
-            {item.badge > 0 && <span className="bg-white text-gray-900 text-xs font-black px-1.5 py-0.5 rounded-sm">{item.badge}</span>}
-            {!item.badge && item.stat > 0 && <span className={`text-xs px-1.5 py-0.5 rounded-sm font-bold ${active?'bg-gray-200 text-gray-700':'bg-white/10 text-gray-500'}`}>{item.stat}</span>}
-          </>
-        )}
-      </button>
-    );
-  };
+  /* ── Sidebar nav items ── */
+  const NavItems = ({ collapsed }) => (
+    <>
+      {navItems.map(item => {
+        const Icon = item.icon;
+        const isActive = activeTab === item.id;
+        return (
+          <button
+            key={item.id}
+            onClick={() => setActiveTab(item.id)}
+            title={collapsed ? item.label : undefined}
+            className={`adm-nav-item ${isActive ? 'active' : ''}`}
+            style={{ padding: collapsed ? '10px' : '9px 12px', justifyContent: collapsed ? 'center' : 'flex-start', position: 'relative' }}
+          >
+            <Icon size={16} style={{ flexShrink: 0 }} />
+            {!collapsed && (
+              <>
+                <span style={{ flex: 1, textAlign: 'left', marginLeft: 10, fontSize: 13.5, fontWeight: 500 }}>{item.label}</span>
+                {item.badge > 0 && (
+                  <span style={{ background: '#ef4444', color: '#fff', fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 10, minWidth: 18, textAlign: 'center' }}>
+                    {item.badge}
+                  </span>
+                )}
+                {!item.badge && item.stat > 0 && (
+                  <span style={{ fontSize: 11, padding: '1px 7px', borderRadius: 6, background: isActive ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.05)', color: isActive ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.3)' }}>
+                    {item.stat}
+                  </span>
+                )}
+              </>
+            )}
+            {collapsed && item.badge > 0 && (
+              <span style={{ position:'absolute', top:6, right:6, width:6, height:6, background:'#ef4444', borderRadius:'50%' }} />
+            )}
+          </button>
+        );
+      })}
+    </>
+  );
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ fontFamily: FONT, background: '#f3f4f6' }}>
-      <style>{`
-        @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-        .fade-up{animation:fadeUp .35s ease forwards}
-        @keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-        .slide-in{animation:slideIn .25s ease forwards}
-        .scrollbar-hide{-ms-overflow-style:none;scrollbar-width:none}
-        .scrollbar-hide::-webkit-scrollbar{display:none}
-      `}</style>
+    <div className="adm-root" style={{ display:'flex', height:'100vh', overflow:'hidden' }}>
+      {/* Background */}
+      <div className="adm-bg">
+        <div className="adm-orb adm-orb-1" />
+        <div className="adm-orb adm-orb-2" />
+        <div className="adm-orb adm-orb-3" />
+      </div>
+      <div className="adm-grid" />
 
-      {notif && <Notification type={notif.type} message={notif.message} onClose={()=>setNotif(null)} />}
+      {notification && <Notification type={notification.type} message={notification.message} onClose={()=>setNotification(null)} />}
 
       {/* Mobile overlay */}
-      {mobileOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={()=>setMobileOpen(false)} />}
+      {mobileSidebarOpen && <div className="adm-overlay" onClick={()=>setMobileSidebarOpen(false)} />}
 
       {/* Mobile sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-60 bg-gray-950 flex flex-col transform transition-transform duration-300 lg:hidden ${mobileOpen?'translate-x-0':'-translate-x-full'}`}>
-        <div className="flex items-center justify-between px-4 py-4 border-b border-white/10">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 bg-white rounded flex items-center justify-center"><span className="text-gray-900 font-black text-xs">A</span></div>
-            <div><p className="text-white font-bold text-sm leading-tight">Admin Panel</p><p className="text-gray-500 text-xs truncate max-w-[120px]">{user?.name}</p></div>
+      <div className={`adm-mobile-sidebar ${mobileSidebarOpen?'open':''}`} style={{ display:'flex', flexDirection:'column' }}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'18px 16px', borderBottom:'1px solid rgba(255,255,255,0.07)' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            <div style={{ width:30, height:30, borderRadius:8, background:'rgba(99,179,237,0.15)', border:'1px solid rgba(99,179,237,0.25)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <span style={{ color:'#90cdf4', fontWeight:700, fontSize:13 }}>A</span>
+            </div>
+            <span className="adm-text-primary" style={{ fontWeight:600, fontSize:14 }}>Admin Panel</span>
           </div>
-          <button onClick={()=>setMobileOpen(false)} className="text-gray-500 hover:text-white p-1 transition-colors"><X size={16}/></button>
+          <button onClick={()=>setMobileSidebarOpen(false)} className="adm-btn adm-btn-ghost" style={{ padding:'5px' }}><X size={16}/></button>
         </div>
-        <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto scrollbar-hide">
-          {navItems.map(item=><NavBtn key={item.id} item={item} collapsed={false}/>)}
+        <nav className="adm-scroll" style={{ flex:1, padding:'10px 8px', display:'flex', flexDirection:'column', gap:3, overflowY:'auto' }}>
+          <NavItems collapsed={false} />
         </nav>
-        <div className="px-2 pb-4 pt-2 border-t border-white/10">
-          <button onClick={()=>{logout();navigate('/');}} className="w-full flex items-center gap-3 px-3 py-2.5 rounded text-gray-500 hover:text-red-400 hover:bg-red-500/10 text-sm font-bold transition-all">
-            <LogOut size={15}/><span>Гарах</span>
+        <div style={{ padding:'10px 8px', borderTop:'1px solid rgba(255,255,255,0.07)' }}>
+          <button onClick={()=>{logout();navigate('/');}} className="adm-nav-item" style={{ padding:'9px 12px', gap:10 }}>
+            <LogOut size={15}/><span style={{ fontSize:13 }}>Гарах</span>
           </button>
         </div>
-      </aside>
+      </div>
 
       {/* Desktop sidebar */}
-      <aside className={`hidden lg:flex flex-col flex-shrink-0 bg-gray-950 transition-all duration-300 relative ${sidebarOpen?'w-56':'w-14'}`}>
-        <div className={`flex items-center border-b border-white/10 ${sidebarOpen?'gap-2.5 px-4 py-5':'justify-center px-2 py-5'}`}>
-          <div className="w-8 h-8 bg-white rounded flex items-center justify-center flex-shrink-0">
-            <span className="text-gray-900 font-black text-sm">A</span>
+      <aside
+        className={`adm-sidebar ${sidebarOpen?'adm-sidebar-open':'adm-sidebar-close'}`}
+        style={{ display:'none', flexDirection:'column', position:'relative', zIndex:10 }}
+        ref={el => { if(el) el.style.display = 'flex'; }}
+      >
+        {/* Logo */}
+        <div style={{ display:'flex', alignItems:'center', gap:10, padding: sidebarOpen?'18px 16px':'16px', borderBottom:'1px solid rgba(255,255,255,0.07)', overflow:'hidden' }}>
+          <div style={{ width:32, height:32, borderRadius:9, background:'rgba(99,179,237,0.15)', border:'1px solid rgba(99,179,237,0.25)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+            <span style={{ color:'#90cdf4', fontWeight:700, fontSize:14 }}>A</span>
           </div>
           {sidebarOpen && (
-            <div className="overflow-hidden">
-              <p className="text-white font-bold text-sm leading-tight tracking-tight">Admin Panel</p>
-              <p className="text-gray-500 text-xs truncate max-w-[130px]">{user?.name}</p>
+            <div style={{ overflow:'hidden' }}>
+              <div className="adm-text-primary" style={{ fontWeight:600, fontSize:14, lineHeight:1.3 }}>Admin Panel</div>
+              <div className="adm-text-muted" style={{ fontSize:11, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:140 }}>{user?.name}</div>
             </div>
           )}
         </div>
-        {/* Toggle */}
-        <button onClick={()=>setSidebarOpen(!sidebarOpen)} className="absolute -right-3 top-[68px] w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-900 shadow-sm z-10 transition-colors">
-          {sidebarOpen ? <ChevronLeft size={11}/> : <ChevronRight size={11}/>}
-        </button>
-        <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto scrollbar-hide">
-          {sidebarOpen && <p className="px-3 py-2 text-xs font-bold text-gray-600 uppercase tracking-widest">Цэс</p>}
-          {navItems.map(item=><NavBtn key={item.id} item={item} collapsed={!sidebarOpen}/>)}
+
+        {/* Nav */}
+        <nav className="adm-scroll" style={{ flex:1, padding:'10px 8px', display:'flex', flexDirection:'column', gap:3, overflowY:'auto' }}>
+          {sidebarOpen && <p style={{ padding:'6px 10px 4px', fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.1em', color:'rgba(255,255,255,0.25)' }}>Цэс</p>}
+          <NavItems collapsed={!sidebarOpen} />
         </nav>
-        <div className="px-2 pb-4 pt-2 border-t border-white/10">
-          <button onClick={()=>{logout();navigate('/');}} title={!sidebarOpen?'Гарах':undefined}
-            className={`w-full flex items-center rounded text-gray-500 hover:text-red-400 hover:bg-red-500/10 text-sm font-bold transition-all ${sidebarOpen?'gap-3 px-3 py-2.5':'justify-center p-2.5'}`}>
-            <LogOut size={15} className="flex-shrink-0"/>
-            {sidebarOpen && <span>Гарах</span>}
+
+        {/* Logout */}
+        <div style={{ padding:'10px 8px', borderTop:'1px solid rgba(255,255,255,0.07)' }}>
+          <button onClick={()=>{logout();navigate('/');}} className="adm-nav-item" style={{ padding: sidebarOpen?'9px 12px':'10px', justifyContent: sidebarOpen?'flex-start':'center', gap: sidebarOpen?10:0 }} title={!sidebarOpen?'Гарах':undefined}>
+            <LogOut size={15} style={{ color:'rgba(252,129,74,0.6)' }}/>
+            {sidebarOpen && <span style={{ fontSize:13 }}>Гарах</span>}
           </button>
         </div>
+
+        {/* Collapse toggle */}
+        <button className="adm-collapse-btn" onClick={()=>setSidebarOpen(!sidebarOpen)}>
+          {sidebarOpen ? <ChevronLeft size={11}/> : <ChevronRight size={11}/>}
+        </button>
       </aside>
 
       {/* Main */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Topbar — matches HomePage header */}
-        <header className="flex-shrink-0 h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-6">
-          <div className="flex items-center gap-3">
-            <button onClick={()=>setMobileOpen(true)} className="lg:hidden p-1.5 rounded text-gray-500 hover:bg-gray-100 transition-colors"><Menu size={17}/></button>
-            <div className="flex items-center gap-2">
-              <SectionLabel>Удирдлага</SectionLabel>
-              <ChevronRight size={12} className="text-gray-300 -mb-2"/>
-              <span className="text-xs font-bold text-gray-900 uppercase tracking-widest">{activeNav?.label}</span>
+      <div style={{ flex:1, display:'flex', flexDirection:'column', minWidth:0, overflow:'hidden', position:'relative', zIndex:1 }}>
+
+        {/* Topbar */}
+        <header className="adm-topbar" style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 20px', flexShrink:0 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            <button onClick={()=>setMobileSidebarOpen(true)} className="adm-btn adm-btn-ghost" style={{ padding:7 }}>
+              <Menu size={17}/>
+            </button>
+            <div style={{ display:'flex', alignItems:'center', gap:6, fontSize:13 }}>
+              <span className="adm-text-muted">Удирдлага</span>
+              <ChevronRight size={12} style={{ color:'rgba(255,255,255,0.2)' }}/>
+              <span className="adm-text-primary" style={{ fontWeight:500 }}>{activeNav?.label}</span>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
             {totalAlerts > 0 && (
-              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900 text-white rounded text-xs font-bold">
+              <div className="adm-alert-chip">
                 <AlertCircle size={11}/><span>{totalAlerts} шинэ</span>
               </div>
             )}
-            <div className="w-8 h-8 bg-gray-900 rounded flex items-center justify-center text-white text-xs font-black">
+            <div style={{ width:32, height:32, borderRadius:9, background:'rgba(99,179,237,0.15)', border:'1px solid rgba(99,179,237,0.25)', display:'flex', alignItems:'center', justifyContent:'center', color:'#90cdf4', fontWeight:700, fontSize:13 }}>
               {user?.name?.[0]?.toUpperCase()||'A'}
             </div>
           </div>
         </header>
 
-        {/* Page — matches HomePage max-w + white panel */}
-        <main className="flex-1 overflow-y-auto scrollbar-hide">
-          <div className="max-w-5xl mx-auto px-4 md:px-6">
-            <div className="bg-white border-x border-b border-gray-200 min-h-full">
+        {/* Page content */}
+        <main className="adm-scroll" style={{ flex:1, overflowY:'auto', padding:24 }}>
+          <div style={{ maxWidth:880, margin:'0 auto' }} className="adm-page-enter">
 
-              {/* ── DASHBOARD ── */}
-              {tab === 'dashboard' && (
-                <div className="px-5 md:px-8 py-9 fade-up">
-                  <SectionLabel>Удирдлагын самбар</SectionLabel>
-                  <h2 className="text-2xl font-bold text-gray-900 tracking-tight mb-6">Самбар</h2>
-                  <DashboardTab onTabChange={setTab} />
-                </div>
-              )}
+            {/* Dashboard */}
+            {activeTab==='dashboard' && <DashboardTab onTabChange={setActiveTab} />}
 
-              {/* ── PRODUCTS ── */}
-              {tab === 'products' && (
-                <div className="px-5 md:px-8 py-9 fade-up">
-                  <div className="flex items-end justify-between mb-6">
-                    <div><SectionLabel>Каталог</SectionLabel><h2 className="text-2xl font-bold text-gray-900 tracking-tight">Бүтээгдэхүүн</h2></div>
-                    <Btn onClick={()=>{setShowPF(!showPF);if(showPF){setEditP(null);setPForm(EP);setSelImg(null);setImgPrev(null);}}}><Plus size={13}/>{showPF?'Хаах':'Нэмэх'}</Btn>
-                  </div>
-
-                  {showPF && (
-                    <FormPanel title={editP?'Бүтээгдэхүүн засах':'Шинэ бүтээгдэхүүн'}>
-                      <form onSubmit={submitProduct} className="space-y-4 slide-in">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <Field label="Нэр" required><input type="text" placeholder="Бүтээгдэхүүний нэр" value={pForm.name} required onChange={e=>setPForm({...pForm,name:e.target.value})} className={iCls}/></Field>
-                          <Field label="Үнэ (₮)" required><input type="number" placeholder="50000" value={pForm.price} required onChange={e=>setPForm({...pForm,price:e.target.value})} className={iCls}/></Field>
-                          <Field label="Ангилал" required>
-                            <select value={pForm.category} onChange={e=>setPForm({...pForm,category:e.target.value})} required className={`${iCls} cursor-pointer`}>
-                              <option value="">Сонгох...</option>
-                              {categories.filter(c=>!c.parent).map(cat=>(
-                                <optgroup key={cat._id} label={cat.name}>
-                                  <option value={cat._id}>{cat.name}</option>
-                                  {categories.filter(s=>s.parent?._id===cat._id).map(s=><option key={s._id} value={s._id}>  {s.name}</option>)}
-                                </optgroup>
-                              ))}
-                            </select>
-                          </Field>
-                          <Field label="Нөөц"><input type="number" placeholder="1000" value={pForm.stock} onChange={e=>setPForm({...pForm,stock:e.target.value})} className={iCls}/></Field>
-                          <Field label="Хэмжээ"><input type="text" placeholder="A4, 85x54mm" value={pForm.size} onChange={e=>setPForm({...pForm,size:e.target.value})} className={iCls}/></Field>
-                          <Field label="Материал"><input type="text" placeholder="300gsm цаас" value={pForm.material} onChange={e=>setPForm({...pForm,material:e.target.value})} className={iCls}/></Field>
-                        </div>
-                        <Field label="Тайлбар">
-                          <EnhancedTextarea value={pForm.description} onChange={e=>setPForm({...pForm,description:e.target.value})} placeholder="Тайлбар..." rows={4} maxLength={2000} showInstructions/>
+            {/* ── PRODUCTS ── */}
+            {activeTab==='products' && (
+              <div>
+                <SectionHeader
+                  title="Бүтээгдэхүүн"
+                  action={
+                    <Btn onClick={()=>{setShowProductForm(!showProductForm);if(showProductForm){setEditingProduct(null);setProductForm(emptyProduct);setSelectedImage(null);setImagePreview(null);}}}>
+                      <Plus size={13}/>{showProductForm?'Хаах':'Нэмэх'}
+                    </Btn>
+                  }
+                />
+                {showProductForm && (
+                  <FormPanel title={editingProduct?'Бүтээгдэхүүн засах':'Шинэ бүтээгдэхүүн'}>
+                    <form onSubmit={handleProductSubmit} style={{ display:'flex', flexDirection:'column', gap:14 }}>
+                      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                        <Field label="Нэр" required><input type="text" value={productForm.name} required onChange={e=>setProductForm({...productForm,name:e.target.value})} className={inputCls} placeholder="Бүтээгдэхүүний нэр"/></Field>
+                        <Field label="Үнэ (₮)" required><input type="number" value={productForm.price} required onChange={e=>setProductForm({...productForm,price:e.target.value})} className={inputCls} placeholder="50000"/></Field>
+                        <Field label="Ангилал" required>
+                          <select value={productForm.category} onChange={e=>setProductForm({...productForm,category:e.target.value})} required className={selectCls}>
+                            <option value="">Сонгох...</option>
+                            {categories.filter(c=>!c.parent).map(cat=>(
+                              <optgroup key={cat._id} label={cat.name}>
+                                <option value={cat._id}>{cat.name}</option>
+                                {categories.filter(s=>s.parent?._id===cat._id).map(s=><option key={s._id} value={s._id}>  {s.name}</option>)}
+                              </optgroup>
+                            ))}
+                          </select>
                         </Field>
-                        <Field label="Зураг">
-                          <UploadZone id="pImg" file={selImg} preview={imgPrev}
-                            onFile={e=>{const f=e.target.files[0];if(f){setSelImg(f);const r=new FileReader();r.onloadend=()=>setImgPrev(r.result);r.readAsDataURL(f);}}}
-                            onClear={()=>{setSelImg(null);setImgPrev(null);}}/>
-                        </Field>
-                        <div className="flex items-center gap-2 p-3 bg-white border border-gray-200 rounded">
-                          <input type="checkbox" id="feat" checked={pForm.featured} onChange={e=>setPForm({...pForm,featured:e.target.checked})} className="w-4 h-4 accent-gray-900"/>
-                          <label htmlFor="feat" className="text-sm font-semibold text-gray-700 cursor-pointer">Онцлох бүтээгдэхүүн — нүүр хуудсанд харагдана</label>
-                        </div>
-                        <div className="p-4 bg-white border border-gray-200 rounded">
-                          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Хямдрал</p>
-                          <div className="grid grid-cols-2 gap-4">
-                            <Field label="Хувь (%)"><input type="number" min="0" max="100" value={pForm.discount} onChange={e=>{const d=e.target.value;setPForm(prev=>{const u={...prev,discount:d};if(d&&prev.price)u.oldPrice=Math.round(parseFloat(prev.price)/(1-parseFloat(d)/100)).toString();return u;})}} className={iCls}/></Field>
-                            <Field label="Хуучин үнэ (₮)"><input type="number" value={pForm.oldPrice} onChange={e=>setPForm({...pForm,oldPrice:e.target.value})} className={iCls}/></Field>
+                        <Field label="Нөөц"><input type="number" value={productForm.stock} onChange={e=>setProductForm({...productForm,stock:e.target.value})} className={inputCls} placeholder="1000"/></Field>
+                        <Field label="Хэмжээ"><input type="text" value={productForm.size} onChange={e=>setProductForm({...productForm,size:e.target.value})} className={inputCls} placeholder="A4, 85x54mm"/></Field>
+                        <Field label="Материал"><input type="text" value={productForm.material} onChange={e=>setProductForm({...productForm,material:e.target.value})} className={inputCls} placeholder="300gsm цаас"/></Field>
+                      </div>
+                      <Field label="Тайлбар">
+                        <EnhancedTextarea value={productForm.description} onChange={e=>setProductForm({...productForm,description:e.target.value})} placeholder="Бүтээгдэхүүний тайлбар..." rows={4} maxLength={2000} showInstructions/>
+                      </Field>
+                      <Field label="Зураг">
+                        <div style={{ display:'flex', gap:12, alignItems:'flex-start' }}>
+                          <div style={{ flex:1 }}>
+                            <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" id="productImage"/>
+                            <label htmlFor="productImage" className="adm-upload" style={{ display:'flex', alignItems:'center', gap:8 }}>
+                              <Upload size={15} style={{ color:'rgba(255,255,255,0.35)' }}/>
+                              <span style={{ fontSize:13, color:'rgba(255,255,255,0.4)' }}>{selectedImage?selectedImage.name:'Зураг сонгох'}</span>
+                            </label>
                           </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <Btn type="submit" className="flex-1 justify-center py-3">{editP?'Шинэчлэх':'Нэмэх'}</Btn>
-                          <Btn type="button" variant="secondary" onClick={()=>{setShowPF(false);setEditP(null);setSelImg(null);setImgPrev(null);setPForm(EP);}}>Болих</Btn>
-                        </div>
-                      </form>
-                    </FormPanel>
-                  )}
-
-                  {loading ? <Loading/> : products.length===0 ? <EmptyState icon={Package} message="Бүтээгдэхүүн байхгүй байна"/> : (
-                    <div className="space-y-2">
-                      {products.map((p,i)=>(
-                        <Row key={p._id} delay={i*0.04} className="flex items-center gap-4 p-4">
-                          <img src={getImageUrl(p.image)} alt={p.name} className="w-14 h-14 object-cover rounded border border-gray-100 flex-shrink-0" onError={e=>{e.target.src='/placeholder.png';}}/>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold text-gray-900 truncate">{p.name}</p>
-                            <p className="text-sm font-bold text-gray-700">{formatPrice(p.price)}</p>
-                            <p className="text-xs text-gray-400 mt-0.5">{typeof p.category==='object'?p.category?.name:p.category}</p>
-                          </div>
-                          <div className="flex gap-1 flex-shrink-0">
-                            <Btn variant="ghost" size="sm" onClick={()=>editProduct(p)}><Edit size={13}/></Btn>
-                            <Btn variant="ghost" size="sm" className="hover:text-red-600 hover:bg-red-50" onClick={()=>deleteP(p._id)}><Trash2 size={13}/></Btn>
-                          </div>
-                        </Row>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* ── ORDERS ── */}
-              {tab === 'orders' && (
-                <div className="px-5 md:px-8 py-9 fade-up">
-                  <div className="mb-6"><SectionLabel>Борлуулалт</SectionLabel><h2 className="text-2xl font-bold text-gray-900 tracking-tight">Захиалга удирдах</h2></div>
-                  {loading ? <Loading/> : orders.length===0 ? <EmptyState icon={ShoppingCart} message="Захиалга байхгүй байна"/> : (
-                    <div className="space-y-2">
-                      {orders.map((o,i)=>(
-                        <Row key={o._id} delay={i*0.04} className="p-4">
-                          <div className="flex flex-wrap items-start justify-between gap-3">
-                            <div>
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="text-xs font-black text-gray-400 uppercase tracking-widest"># {o._id.slice(-6).toUpperCase()}</span>
-                                <Badge status={o.status}/>
-                              </div>
-                              <p className="text-sm font-semibold text-gray-800">{o.shippingInfo.name} — {o.shippingInfo.phone}</p>
-                              <p className="text-xs text-gray-400 mt-0.5">{formatDate(o.createdAt)}</p>
-                            </div>
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="text-base font-bold text-gray-900">{formatPrice(o.total)}</span>
-                              <select value={o.status} onChange={e=>updateOrder(o._id,e.target.value)} className="text-xs border border-gray-200 rounded px-2.5 py-1.5 bg-white text-gray-700 font-semibold focus:outline-none focus:border-gray-900 cursor-pointer transition-colors">
-                                <option value="pending">Хүлээгдэж буй</option>
-                                <option value="paid">Төлөгдсөн</option>
-                                <option value="processing">Үйлдвэрлэлд</option>
-                                <option value="completed">Дууссан</option>
-                                <option value="cancelled">Цуцлагдсан</option>
-                              </select>
-                              <Btn variant="ghost" size="sm" className="hover:text-red-600 hover:bg-red-50" onClick={()=>deleteO(o._id)}><Trash2 size={13}/></Btn>
-                            </div>
-                          </div>
-                        </Row>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* ── QUOTATIONS ── */}
-              {tab === 'quotations' && (
-                <div className="px-5 md:px-8 py-9 fade-up">
-                  <div className="mb-6"><SectionLabel>Хүсэлт</SectionLabel><h2 className="text-2xl font-bold text-gray-900 tracking-tight">Үнийн санал удирдах</h2></div>
-                  {loading ? <Loading/> : quotations.length===0 ? <EmptyState icon={TrendingUp} message="Үнийн санал байхгүй байна"/> : (
-                    <div className="space-y-2">
-                      {quotations.map((q,i)=>(
-                        <Row key={q._id} delay={i*0.04} className="p-4">
-                          <div className="flex justify-between items-start gap-3">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                <span className="text-sm font-bold text-gray-900">{q.name}</span>
-                                <Badge status={q.status==='pending'?'pending':'replied'}/>
-                              </div>
-                              <p className="text-xs text-gray-400 mb-2">{q.phone} · {q.email}</p>
-                              <p className="text-sm text-gray-700 mb-1"><span className="font-bold">Төрөл:</span> {q.productType}</p>
-                              <p className="text-sm text-gray-500 bg-gray-50 px-3 py-2 rounded border border-gray-100">{q.description}</p>
-                              {q.designFile && (
-                                <div className="mt-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded">
-                                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Дизайн файл</p>
-                                  <a href={getImageUrl(q.designFile.fileUrl)} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-gray-900 hover:underline inline-flex items-center gap-1">{q.designFile.fileName}<ArrowRight size={10}/></a>
-                                </div>
-                              )}
-                            </div>
-                            <Btn variant="ghost" size="sm" className="hover:text-red-600 hover:bg-red-50 flex-shrink-0" onClick={()=>deleteQ(q._id)}><Trash2 size={13}/></Btn>
-                          </div>
-                        </Row>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* ── MESSAGES ── */}
-              {tab === 'messages' && (
-                <div className="px-5 md:px-8 py-9 fade-up">
-                  <div className="mb-6"><SectionLabel>Харилцаа</SectionLabel><h2 className="text-2xl font-bold text-gray-900 tracking-tight">Холбоо барих мессежүүд</h2></div>
-                  {loading ? <Loading/> : messages.length===0 ? <EmptyState icon={Mail} message="Мессеж байхгүй байна"/> : (
-                    <div className="space-y-2">
-                      {messages.map((m,i)=>(
-                        <Row key={m._id} delay={i*0.04} className="p-4">
-                          <div className="flex justify-between items-start gap-3">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 flex-wrap mb-1">
-                                <span className="text-sm font-bold text-gray-900">{m.name}</span>
-                                <Badge status={m.status}/>
-                              </div>
-                              <p className="text-xs text-gray-400 mb-2">{m.email} · {formatDate(m.createdAt)}</p>
-                              <p className="text-sm font-bold text-gray-700 mb-1">{m.subject}</p>
-                              <p className="text-sm text-gray-500 bg-gray-50 px-3 py-2 rounded border border-gray-100">{m.message}</p>
-                              {m.adminReply && (
-                                <div className="mt-2 px-3 py-2 bg-gray-50 border-l-2 border-gray-900">
-                                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-0.5">Админ хариу</p>
-                                  <p className="text-sm text-gray-700">{m.adminReply.message}</p>
-                                  <p className="text-xs text-gray-400 mt-1">{formatDate(m.adminReply.repliedAt)}</p>
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex flex-col gap-1 flex-shrink-0">
-                              {m.status==='new' && <Btn variant="ghost" size="sm" onClick={()=>updateMsg(m._id,'read')} title="Уншсан"><CheckCircle size={13} className="text-gray-700"/></Btn>}
-                              {m.status!=='archived' && <Btn variant="ghost" size="sm" onClick={()=>updateMsg(m._id,'archived')} title="Архивлах"><XCircle size={13}/></Btn>}
-                              <Btn variant="ghost" size="sm" className="hover:text-red-600 hover:bg-red-50" onClick={()=>deleteMsg(m._id)} title="Устгах"><Trash2 size={13}/></Btn>
-                            </div>
-                          </div>
-                        </Row>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* ── CATEGORIES ── */}
-              {tab === 'categories' && (
-                <div className="px-5 md:px-8 py-9 fade-up">
-                  <div className="flex items-end justify-between mb-6">
-                    <div><SectionLabel>Бүтэц</SectionLabel><h2 className="text-2xl font-bold text-gray-900 tracking-tight">Ангилал удирдах</h2></div>
-                    <Btn onClick={()=>{setShowCF(!showCF);if(!showCF){setEditC(null);setCForm(EC);}}}><Plus size={13}/>{showCF?'Хаах':'Нэмэх'}</Btn>
-                  </div>
-                  {showCF && (
-                    <FormPanel title={editC?'Ангилал засах':'Шинэ ангилал'}>
-                      <form onSubmit={submitCategory} className="space-y-4 slide-in">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <Field label="Нэр" required><input type="text" required value={cForm.name} onChange={e=>setCForm({...cForm,name:e.target.value})} className={iCls} placeholder="Ангиллын нэр"/></Field>
-                          <Field label="Үндсэн ангилал">
-                            <select value={cForm.parent} onChange={e=>setCForm({...cForm,parent:e.target.value})} className={`${iCls} cursor-pointer`}>
-                              <option value="">-- Үндсэн ангилал --</option>
-                              {categories.filter(c=>!c.parent).map(c=><option key={c._id} value={c._id}>{c.name}</option>)}
-                            </select>
-                          </Field>
-                          <Field label="Icon" hint="lucide-react icon нэр"><input type="text" value={cForm.icon} onChange={e=>setCForm({...cForm,icon:e.target.value})} className={iCls} placeholder="Package"/></Field>
-                          <Field label="Дараалал"><input type="number" value={cForm.order} onChange={e=>setCForm({...cForm,order:parseInt(e.target.value)||0})} className={iCls}/></Field>
-                        </div>
-                        <Field label="Тайлбар"><textarea rows="3" value={cForm.description} onChange={e=>setCForm({...cForm,description:e.target.value})} className={`${iCls} resize-y`}/></Field>
-                        <div className="flex gap-2">
-                          <Btn type="submit" className="flex-1 justify-center py-3">{editC?'Шинэчлэх':'Нэмэх'}</Btn>
-                          <Btn type="button" variant="secondary" onClick={()=>{setShowCF(false);setEditC(null);}}>Болих</Btn>
-                        </div>
-                      </form>
-                    </FormPanel>
-                  )}
-                  {loading ? <Loading/> : categories.length===0 ? <EmptyState icon={Tag} message="Ангилал байхгүй байна"/> : (
-                    <div className="space-y-2">
-                      {categories.filter(c=>!c.parent).map((cat,i)=>(
-                        <div key={cat._id} className="fade-up" style={{animationDelay:`${i*0.04}s`}}>
-                          <Row className="flex items-center gap-3 p-4">
-                            <div className="w-1 h-9 bg-gray-900 rounded-full flex-shrink-0"/>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-bold text-gray-900">{cat.name}</p>
-                              {cat.description && <p className="text-xs text-gray-400 mt-0.5">{cat.description}</p>}
-                              <p className="text-xs text-gray-300 mt-0.5">Icon: {cat.icon} · Order: {cat.order}</p>
-                            </div>
-                            <div className="flex gap-1">
-                              <Btn variant="ghost" size="sm" onClick={()=>editCat(cat)}><Edit size={13}/></Btn>
-                              <Btn variant="ghost" size="sm" className="hover:text-red-600 hover:bg-red-50" onClick={()=>deleteCat(cat._id)}><Trash2 size={13}/></Btn>
-                            </div>
-                          </Row>
-                          {categories.filter(s=>s.parent?._id===cat._id).map(s=>(
-                            <div key={s._id} className="ml-6 mt-1.5 flex items-center gap-3 p-3.5 bg-gray-50 border border-gray-200 rounded hover:border-gray-400 transition-all duration-200">
-                              <div className="w-1 h-6 bg-gray-300 rounded-full flex-shrink-0"/>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-semibold text-gray-700">{s.name}</p>
-                                {s.description && <p className="text-xs text-gray-400">{s.description}</p>}
-                              </div>
-                              <div className="flex gap-1">
-                                <Btn variant="ghost" size="sm" onClick={()=>editCat(s)}><Edit size={13}/></Btn>
-                                <Btn variant="ghost" size="sm" className="hover:text-red-600 hover:bg-red-50" onClick={()=>deleteCat(s._id)}><Trash2 size={13}/></Btn>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* ── BLOGS ── */}
-              {tab === 'blogs' && (
-                <div className="px-5 md:px-8 py-9 fade-up">
-                  <div className="flex items-end justify-between mb-6">
-                    <div><SectionLabel>Контент</SectionLabel><h2 className="text-2xl font-bold text-gray-900 tracking-tight">Блог удирдах</h2></div>
-                    <Btn onClick={()=>{setShowBF(!showBF);if(!showBF){setEditB(null);setBForm(EB);setBImg(null);setBImgPrev('');}}}><Plus size={13}/>{showBF?'Хаах':'Нэмэх'}</Btn>
-                  </div>
-                  {showBF && (
-                    <FormPanel title={editB?'Блог засах':'Шинэ блог'}>
-                      <form onSubmit={submitBlog} className="space-y-4 slide-in">
-                        <Field label="Гарчиг" required><input type="text" required value={bForm.title} onChange={e=>setBForm({...bForm,title:e.target.value})} className={iCls} placeholder="Блогийн гарчиг"/></Field>
-                        <Field label="Товч агуулга"><textarea rows="2" value={bForm.excerpt} onChange={e=>setBForm({...bForm,excerpt:e.target.value})} maxLength="500" className={`${iCls} resize-y`}/></Field>
-                        <Field label="Агуулга" required><textarea rows="10" required value={bForm.content} onChange={e=>setBForm({...bForm,content:e.target.value})} className={`${iCls} resize-y`}/></Field>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <Field label="Ангилал">
-                            <select value={bForm.category} onChange={e=>setBForm({...bForm,category:e.target.value})} className={`${iCls} cursor-pointer`}>
-                              <option value="other">Бусад</option><option value="news">Мэдээ</option>
-                              <option value="tutorial">Заавар</option><option value="tips">Зөвлөмж</option>
-                              <option value="case-study">Туршилт</option><option value="announcement">Мэдэгдэл</option>
-                            </select>
-                          </Field>
-                          <Field label="Статус">
-                            <select value={bForm.status} onChange={e=>setBForm({...bForm,status:e.target.value})} className={`${iCls} cursor-pointer`}>
-                              <option value="draft">Ноорог</option><option value="published">Нийтлэгдсэн</option><option value="archived">Архивласан</option>
-                            </select>
-                          </Field>
-                        </div>
-                        <Field label="Tags" hint="Таслалаар тусгаарлана"><input type="text" value={bForm.tags} onChange={e=>setBForm({...bForm,tags:e.target.value})} className={iCls} placeholder="хэвлэл, дизайн"/></Field>
-                        <div className="flex items-center gap-2">
-                          <input type="checkbox" id="bFeat" checked={bForm.featured} onChange={e=>setBForm({...bForm,featured:e.target.checked})} className="w-4 h-4 accent-gray-900"/>
-                          <label htmlFor="bFeat" className="text-sm font-semibold text-gray-700 cursor-pointer">Онцлох блог</label>
-                        </div>
-                        <Field label="Зураг">
-                          <UploadZone id="bImg" file={bImg} preview={bImgPrev}
-                            onFile={e=>{const f=e.target.files[0];if(f){setBImg(f);const r=new FileReader();r.onloadend=()=>setBImgPrev(r.result);r.readAsDataURL(f);}}}
-                            onClear={()=>{setBImg(null);setBImgPrev('');}}/>
-                        </Field>
-                        <div className="flex gap-2">
-                          <Btn type="submit" className="flex-1 justify-center py-3">{editB?'Шинэчлэх':'Нэмэх'}</Btn>
-                          <Btn type="button" variant="secondary" onClick={()=>{setShowBF(false);setEditB(null);}}>Болих</Btn>
-                        </div>
-                      </form>
-                    </FormPanel>
-                  )}
-                  {/* Blog grid matching HomePage blog grid */}
-                  {loading ? <Loading/> : blogs.length===0 ? <EmptyState icon={BookOpen} message="Блог байхгүй байна"/> : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                      {blogs.map((b,i)=>(
-                        <div key={b._id} className="group bg-white border border-gray-200 rounded overflow-hidden hover:border-gray-900 hover:shadow-lg transition-all duration-300 fade-up" style={{animationDelay:`${i*0.06}s`}}>
-                          <div className="relative h-44 bg-gray-100 overflow-hidden">
-                            {b.image
-                              ? <img src={getImageUrl(b.image)} alt={b.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={e=>{e.target.parentElement.innerHTML='<div class="w-full h-full flex items-center justify-center"><span class="text-xs font-bold text-gray-300 uppercase tracking-widest">No Image</span></div>';}}/>
-                              : <div className="w-full h-full flex items-center justify-center"><span className="text-xs font-bold text-gray-300 uppercase tracking-widest">No Image</span></div>
-                            }
-                            {b.featured && <div className="absolute top-2.5 left-2.5 bg-gray-900 text-white text-xs font-bold px-2.5 py-1 rounded-sm uppercase tracking-wider">Онцлох</div>}
-                          </div>
-                          <div className="p-4">
-                            <div className="mb-2"><Badge status={b.status}/></div>
-                            <h3 className="text-sm font-bold text-gray-900 leading-snug mb-1 line-clamp-2">{b.title}</h3>
-                            {b.excerpt && <p className="text-xs text-gray-400 line-clamp-2 mb-3">{b.excerpt}</p>}
-                            <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                              <span className="text-xs text-gray-400">{formatDate(b.createdAt)}</span>
-                              <div className="flex gap-1">
-                                <Btn variant="ghost" size="sm" onClick={()=>editBlog(b)}><Edit size={13}/></Btn>
-                                <Btn variant="ghost" size="sm" className="hover:text-red-600 hover:bg-red-50" onClick={()=>deleteBlog_(b._id)}><Trash2 size={13}/></Btn>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* ── SERVICES ── */}
-              {tab === 'services' && (
-                <div className="px-5 md:px-8 py-9 fade-up">
-                  <div className="flex items-end justify-between mb-6">
-                    <div><SectionLabel>Маркетинг</SectionLabel><h2 className="text-2xl font-bold text-gray-900 tracking-tight">Үйлчилгээ удирдах</h2></div>
-                    <Btn onClick={()=>{setShowSF(!showSF);if(!showSF){setEditS(null);setSForm(ES);setSImg(null);setSImgPrev('');}}}><Plus size={13}/>{showSF?'Хаах':'Нэмэх'}</Btn>
-                  </div>
-                  {showSF && (
-                    <FormPanel title={editS?'Үйлчилгээ засах':'Шинэ үйлчилгээ'}>
-                      <form onSubmit={submitService} className="space-y-4 slide-in">
-                        <Field label="Нэр" required><input type="text" required value={sForm.name} onChange={e=>setSForm({...sForm,name:e.target.value})} className={iCls}/></Field>
-                        <Field label="Товч тайлбар"><textarea rows="2" value={sForm.shortDescription} onChange={e=>setSForm({...sForm,shortDescription:e.target.value})} maxLength="200" className={`${iCls} resize-y`}/></Field>
-                        <Field label="Дэлгэрэнгүй тайлбар" required><textarea rows="5" required value={sForm.description} onChange={e=>setSForm({...sForm,description:e.target.value})} className={`${iCls} resize-y`}/></Field>
-                        <Field label="Онцлогууд" hint="Мөр бүрд нэг"><textarea rows="4" value={sForm.features} onChange={e=>setSForm({...sForm,features:e.target.value})} className={`${iCls} resize-y`}/></Field>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <Field label="Үнэ"><input type="text" value={sForm.price} onChange={e=>setSForm({...sForm,price:e.target.value})} className={iCls} placeholder="50,000₮/сар"/></Field>
-                          <Field label="Ангилал">
-                            <select value={sForm.category} onChange={e=>setSForm({...sForm,category:e.target.value})} className={`${iCls} cursor-pointer`}>
-                              <option value="other">Бусад</option><option value="social-media">Сошиал медиа</option>
-                              <option value="seo">SEO</option><option value="content">Контент</option>
-                              <option value="advertising">Сурталчилгаа</option><option value="branding">Брэндинг</option>
-                            </select>
-                          </Field>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <input type="checkbox" id="sFeat" checked={sForm.featured} onChange={e=>setSForm({...sForm,featured:e.target.checked})} className="w-4 h-4 accent-gray-900"/>
-                          <label htmlFor="sFeat" className="text-sm font-semibold text-gray-700 cursor-pointer">Онцлох үйлчилгээ</label>
-                        </div>
-                        <Field label="Зураг">
-                          <UploadZone id="sImg" file={sImg} preview={sImgPrev}
-                            onFile={e=>{const f=e.target.files[0];if(f){setSImg(f);const r=new FileReader();r.onloadend=()=>setSImgPrev(r.result);r.readAsDataURL(f);}}}
-                            onClear={()=>{setSImg(null);setSImgPrev('');}}/>
-                        </Field>
-                        <div className="flex gap-2">
-                          <Btn type="submit" className="flex-1 justify-center py-3">{editS?'Шинэчлэх':'Нэмэх'}</Btn>
-                          <Btn type="button" variant="secondary" onClick={()=>{setShowSF(false);setEditS(null);}}>Болих</Btn>
-                        </div>
-                      </form>
-                    </FormPanel>
-                  )}
-                  {/* Service banners matching HomePage service banner grid */}
-                  {loading ? <Loading/> : services.length===0 ? <EmptyState icon={Briefcase} message="Үйлчилгээ байхгүй байна"/> : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {services.map((s,i)=>(
-                        <div key={s._id} className="group bg-white border border-gray-200 rounded overflow-hidden hover:border-gray-900 hover:shadow-lg transition-all duration-300 fade-up" style={{animationDelay:`${i*0.06}s`}}>
-                          {s.image && (
-                            <div className="h-28 overflow-hidden">
-                              <img src={getImageUrl(s.image)} alt={s.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+                          {imagePreview && (
+                            <div style={{ width:56, height:56, borderRadius:10, overflow:'hidden', border:'1px solid rgba(255,255,255,0.12)', flexShrink:0 }}>
+                              <img src={imagePreview} alt="Preview" style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
                             </div>
                           )}
-                          <div className="p-4">
-                            <div className="flex items-start justify-between gap-2 mb-2">
-                              <div>
-                                <p className="text-sm font-bold text-gray-900">{s.name}</p>
-                                <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                                  <span className="text-xs font-bold text-gray-400 uppercase tracking-widest border border-gray-200 px-2 py-0.5 rounded-sm">
-                                    {s.category==='social-media'?'Сошиал':s.category==='seo'?'SEO':s.category==='content'?'Контент':s.category==='advertising'?'Реклам':s.category==='branding'?'Брэнд':'Бусад'}
-                                  </span>
-                                  {s.featured && <span className="text-xs font-bold text-gray-900 uppercase tracking-widest border border-gray-900 px-2 py-0.5 rounded-sm">Онцлох</span>}
-                                </div>
-                              </div>
-                              <div className="flex gap-1 flex-shrink-0">
-                                <Btn variant="ghost" size="sm" onClick={()=>editSvc(s)}><Edit size={13}/></Btn>
-                                <Btn variant="ghost" size="sm" className="hover:text-red-600 hover:bg-red-50" onClick={()=>deleteSvc(s._id)}><Trash2 size={13}/></Btn>
-                              </div>
+                        </div>
+                      </Field>
+                      <div className="adm-featured-row">
+                        <input type="checkbox" id="featured" checked={productForm.featured} onChange={e=>setProductForm({...productForm,featured:e.target.checked})} className="adm-checkbox"/>
+                        <label htmlFor="featured" style={{ fontSize:13, fontWeight:500, color:'rgba(251,191,36,0.85)', cursor:'pointer' }}>Онцлох бүтээгдэхүүн — нүүр хуудсанд харагдана</label>
+                      </div>
+                      <div style={{ padding:'14px 16px', background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:10 }}>
+                        <p style={{ fontSize:11, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.07em', color:'rgba(255,255,255,0.3)', marginBottom:10 }}>Хямдрал</p>
+                        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                          <Field label="Хувь (%)"><input type="number" min="0" max="100" value={productForm.discount} onChange={e=>{const d=e.target.value;setProductForm(prev=>{const up={...prev,discount:d};if(d&&prev.price)up.oldPrice=Math.round(parseFloat(prev.price)/(1-parseFloat(d)/100)).toString();return up;})}} className={inputCls}/></Field>
+                          <Field label="Хуучин үнэ (₮)"><input type="number" value={productForm.oldPrice} onChange={e=>setProductForm({...productForm,oldPrice:e.target.value})} className={inputCls}/></Field>
+                        </div>
+                      </div>
+                      <div style={{ display:'flex', gap:8 }}>
+                        <Btn type="submit" style={{ flex:1, justifyContent:'center' }}>{editingProduct?'Шинэчлэх':'Нэмэх'}</Btn>
+                        <Btn type="button" variant="secondary" onClick={()=>{setShowProductForm(false);setEditingProduct(null);setSelectedImage(null);setImagePreview(null);setProductForm(emptyProduct);}}>Болих</Btn>
+                      </div>
+                    </form>
+                  </FormPanel>
+                )}
+                {loading?<Loading/>:products.length===0?<EmptyState icon={Package} message="Бүтээгдэхүүн байхгүй байна"/>:(
+                  <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                    {products.map(p=>(
+                      <Card key={p._id} style={{ display:'flex', alignItems:'center', gap:14 }}>
+                        <img src={getImageUrl(p.image)} alt={p.name} style={{ width:48, height:48, objectFit:'cover', borderRadius:10, border:'1px solid rgba(255,255,255,0.08)', flexShrink:0 }} onError={e=>{e.target.src='/placeholder.png';}}/>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <p className="adm-text-primary" style={{ fontSize:14, fontWeight:600, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{p.name}</p>
+                          <p className="adm-text-price" style={{ fontSize:13, fontWeight:700 }}>{formatPrice(p.price)}</p>
+                          <p className="adm-text-muted" style={{ fontSize:12 }}>{typeof p.category==='object'?p.category?.name:p.category}</p>
+                        </div>
+                        <div style={{ display:'flex', gap:4 }}>
+                          <Btn variant="ghost" onClick={()=>handleEditProduct(p)}><Edit size={14}/></Btn>
+                          <Btn variant="ghost" className="adm-btn-icon-danger" onClick={()=>handleDeleteProduct(p._id)}><Trash2 size={14}/></Btn>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── ORDERS ── */}
+            {activeTab==='orders' && (
+              <div>
+                <SectionHeader title="Захиалга"/>
+                {loading?<Loading/>:orders.length===0?<EmptyState icon={ShoppingCart} message="Захиалга байхгүй байна"/>:(
+                  <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                    {orders.map(o=>(
+                      <Card key={o._id}>
+                        <div style={{ display:'flex', flexWrap:'wrap', alignItems:'flex-start', justifyContent:'space-between', gap:12 }}>
+                          <div>
+                            <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
+                              <span className="adm-text-accent" style={{ fontSize:13, fontFamily:'monospace', fontWeight:600 }}>#{o._id.slice(-6).toUpperCase()}</span>
+                              <Badge variant={o.status}>{statusLabel[o.status]||o.status}</Badge>
                             </div>
-                            {s.shortDescription && <p className="text-xs text-gray-400 line-clamp-2">{s.shortDescription}</p>}
-                            {s.price && <p className="text-xs font-bold text-gray-700 mt-2">{s.price}</p>}
+                            <p className="adm-text-secondary" style={{ fontSize:13 }}>{o.shippingInfo.name} — {o.shippingInfo.phone}</p>
+                            <p className="adm-text-muted" style={{ fontSize:12, marginTop:2 }}>{formatDate(o.createdAt)}</p>
+                          </div>
+                          <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap' }}>
+                            <span className="adm-text-price" style={{ fontSize:15, fontWeight:700 }}>{formatPrice(o.total)}</span>
+                            <select value={o.status} onChange={e=>handleUpdateOrderStatus(o._id,e.target.value)} className="adm-status-select">
+                              <option value="pending">Хүлээгдэж буй</option>
+                              <option value="paid">Төлөгдсөн</option>
+                              <option value="processing">Үйлдвэрлэлд</option>
+                              <option value="completed">Дууссан</option>
+                              <option value="cancelled">Цуцлагдсан</option>
+                            </select>
+                            <Btn variant="ghost" className="adm-btn-icon-danger" onClick={()=>handleDeleteOrder(o._id)}><Trash2 size={14}/></Btn>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
-            </div>
+            {/* ── QUOTATIONS ── */}
+            {activeTab==='quotations' && (
+              <div>
+                <SectionHeader title="Үнийн санал"/>
+                {loading?<Loading/>:quotations.length===0?<EmptyState icon={TrendingUp} message="Үнийн санал байхгүй байна"/>:(
+                  <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                    {quotations.map(q=>(
+                      <Card key={q._id}>
+                        <div style={{ display:'flex', justifyContent:'space-between', gap:12 }}>
+                          <div style={{ flex:1, minWidth:0 }}>
+                            <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap', marginBottom:4 }}>
+                              <span className="adm-text-primary" style={{ fontSize:14, fontWeight:600 }}>{q.name}</span>
+                              <Badge variant={q.status==='pending'?'pending':'replied'}>{q.status==='pending'?'Хүлээгдэж буй':'Хариулсан'}</Badge>
+                            </div>
+                            <p className="adm-text-muted" style={{ fontSize:12, marginBottom:8 }}>{q.phone} · {q.email}</p>
+                            <p className="adm-text-secondary" style={{ fontSize:13, marginBottom:6 }}><span style={{ color:'rgba(255,255,255,0.55)', fontWeight:500 }}>Төрөл:</span> {q.productType}</p>
+                            <p className="adm-text-secondary" style={{ fontSize:13, padding:'8px 12px', background:'rgba(255,255,255,0.04)', borderRadius:8, border:'1px solid rgba(255,255,255,0.07)' }}>{q.description}</p>
+                            {q.designFile && (
+                              <div style={{ marginTop:8, padding:'8px 12px', background:'rgba(99,179,237,0.05)', borderRadius:8, border:'1px solid rgba(99,179,237,0.15)' }}>
+                                <p style={{ fontSize:11, fontWeight:700, color:'rgba(144,205,244,0.6)', marginBottom:2 }}>Дизайн файл</p>
+                                <a href={getImageUrl(q.designFile.fileUrl)} target="_blank" rel="noopener noreferrer" style={{ fontSize:12, color:'#90cdf4' }}>{q.designFile.fileName}</a>
+                              </div>
+                            )}
+                          </div>
+                          <Btn variant="ghost" className="adm-btn-icon-danger" style={{ flexShrink:0 }} onClick={()=>handleDeleteQuotation(q._id)}><Trash2 size={14}/></Btn>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── MESSAGES ── */}
+            {activeTab==='messages' && (
+              <div>
+                <SectionHeader title="Мессежүүд"/>
+                {loading?<Loading/>:contactMessages.length===0?<EmptyState icon={Mail} message="Мессеж байхгүй байна"/>:(
+                  <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                    {contactMessages.map(m=>(
+                      <Card key={m._id}>
+                        <div style={{ display:'flex', justifyContent:'space-between', gap:12 }}>
+                          <div style={{ flex:1, minWidth:0 }}>
+                            <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap', marginBottom:4 }}>
+                              <span className="adm-text-primary" style={{ fontSize:14, fontWeight:600 }}>{m.name}</span>
+                              <Badge variant={m.status}>{statusLabel[m.status]||m.status}</Badge>
+                            </div>
+                            <p className="adm-text-muted" style={{ fontSize:12, marginBottom:6 }}>{m.email} · {formatDate(m.createdAt)}</p>
+                            <p className="adm-text-secondary" style={{ fontSize:13, fontWeight:500, marginBottom:4 }}>{m.subject}</p>
+                            <p className="adm-text-secondary" style={{ fontSize:13, padding:'8px 12px', background:'rgba(255,255,255,0.04)', borderRadius:8, border:'1px solid rgba(255,255,255,0.07)' }}>{m.message}</p>
+                            {m.adminReply && (
+                              <div className="adm-reply-box">
+                                <p style={{ fontSize:11, fontWeight:700, color:'rgba(110,231,183,0.7)', marginBottom:3 }}>Админ хариу</p>
+                                <p className="adm-text-secondary" style={{ fontSize:13 }}>{m.adminReply.message}</p>
+                                <p style={{ fontSize:11, color:'rgba(110,231,183,0.4)', marginTop:4 }}>{formatDate(m.adminReply.repliedAt)}</p>
+                              </div>
+                            )}
+                          </div>
+                          <div style={{ display:'flex', flexDirection:'column', gap:4, flexShrink:0 }}>
+                            {m.status==='new' && <Btn variant="ghost" onClick={()=>handleMessageStatusUpdate(m._id,'read')} title="Уншсан" style={{ color:'rgba(99,179,237,0.6)' }}><CheckCircle size={14}/></Btn>}
+                            {m.status!=='archived' && <Btn variant="ghost" onClick={()=>handleMessageStatusUpdate(m._id,'archived')} title="Архивлах"><XCircle size={14}/></Btn>}
+                            <Btn variant="ghost" className="adm-btn-icon-danger" onClick={()=>handleDeleteMessage(m._id)}><Trash2 size={14}/></Btn>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── CATEGORIES ── */}
+            {activeTab==='categories' && (
+              <div>
+                <SectionHeader title="Ангилал" action={<Btn onClick={()=>{setShowCategoryForm(!showCategoryForm);if(!showCategoryForm){setEditingCategory(null);setCategoryForm(emptyCategory);}}}><Plus size={13}/>{showCategoryForm?'Хаах':'Нэмэх'}</Btn>}/>
+                {showCategoryForm && (
+                  <FormPanel title={editingCategory?'Ангилал засах':'Шинэ ангилал'}>
+                    <form onSubmit={handleCategorySubmit} style={{ display:'flex', flexDirection:'column', gap:12 }}>
+                      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                        <Field label="Нэр" required><input type="text" required value={categoryForm.name} onChange={e=>setCategoryForm({...categoryForm,name:e.target.value})} className={inputCls} placeholder="Ангиллын нэр"/></Field>
+                        <Field label="Үндсэн ангилал"><select value={categoryForm.parent} onChange={e=>setCategoryForm({...categoryForm,parent:e.target.value})} className={selectCls}><option value="">-- Үндсэн --</option>{categories.filter(c=>!c.parent).map(c=><option key={c._id} value={c._id}>{c.name}</option>)}</select></Field>
+                        <Field label="Icon" hint="lucide-react icon нэр"><input type="text" value={categoryForm.icon} onChange={e=>setCategoryForm({...categoryForm,icon:e.target.value})} className={inputCls} placeholder="Package"/></Field>
+                        <Field label="Дараалал"><input type="number" value={categoryForm.order} onChange={e=>setCategoryForm({...categoryForm,order:parseInt(e.target.value)||0})} className={inputCls}/></Field>
+                      </div>
+                      <Field label="Тайлбар"><textarea rows="2" value={categoryForm.description} onChange={e=>setCategoryForm({...categoryForm,description:e.target.value})} className={inputCls} style={{ resize:'vertical' }}/></Field>
+                      <div style={{ display:'flex', gap:8 }}><Btn type="submit" style={{ flex:1, justifyContent:'center' }}>{editingCategory?'Шинэчлэх':'Нэмэх'}</Btn><Btn type="button" variant="secondary" onClick={()=>{setShowCategoryForm(false);setEditingCategory(null);}}>Болих</Btn></div>
+                    </form>
+                  </FormPanel>
+                )}
+                {loading?<Loading/>:categories.length===0?<EmptyState icon={Tag} message="Ангилал байхгүй байна"/>:(
+                  <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+                    {categories.filter(c=>!c.parent).map(cat=>(
+                      <div key={cat._id}>
+                        <Card className="adm-cat-primary" style={{ borderLeftWidth:2 }}>
+                          <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                            <div style={{ flex:1, minWidth:0 }}>
+                              <p className="adm-text-primary" style={{ fontSize:14, fontWeight:600 }}>{cat.name}</p>
+                              {cat.description && <p className="adm-text-muted" style={{ fontSize:12, marginTop:2 }}>{cat.description}</p>}
+                              <p className="adm-text-muted" style={{ fontSize:11, marginTop:2 }}>Icon: {cat.icon} · Order: {cat.order}</p>
+                            </div>
+                            <div style={{ display:'flex', gap:4 }}>
+                              <Btn variant="ghost" onClick={()=>handleEditCategory(cat)}><Edit size={14}/></Btn>
+                              <Btn variant="ghost" className="adm-btn-icon-danger" onClick={()=>handleDeleteCategory(cat._id)}><Trash2 size={14}/></Btn>
+                            </div>
+                          </div>
+                        </Card>
+                        {categories.filter(s=>s.parent?._id===cat._id).map(s=>(
+                          <div key={s._id} className="adm-subcategory">
+                            <Card className="adm-cat-secondary" style={{ borderLeftWidth:2 }}>
+                              <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                                <div style={{ flex:1 }}>
+                                  <p className="adm-text-secondary" style={{ fontSize:13, fontWeight:500 }}>{s.name}</p>
+                                  {s.description && <p className="adm-text-muted" style={{ fontSize:12 }}>{s.description}</p>}
+                                </div>
+                                <div style={{ display:'flex', gap:4 }}>
+                                  <Btn variant="ghost" onClick={()=>handleEditCategory(s)}><Edit size={14}/></Btn>
+                                  <Btn variant="ghost" className="adm-btn-icon-danger" onClick={()=>handleDeleteCategory(s._id)}><Trash2 size={14}/></Btn>
+                                </div>
+                              </div>
+                            </Card>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── BLOGS ── */}
+            {activeTab==='blogs' && (
+              <div>
+                <SectionHeader title="Блог" action={<Btn onClick={()=>{setShowBlogForm(!showBlogForm);if(!showBlogForm){setEditingBlog(null);setBlogForm(emptyBlog);}}}><Plus size={13}/>{showBlogForm?'Хаах':'Нэмэх'}</Btn>}/>
+                {showBlogForm && (
+                  <FormPanel title={editingBlog?'Блог засах':'Шинэ блог'}>
+                    <form onSubmit={handleBlogSubmit} style={{ display:'flex', flexDirection:'column', gap:14 }}>
+                      <Field label="Гарчиг" required><input type="text" required value={blogForm.title} onChange={e=>setBlogForm({...blogForm,title:e.target.value})} className={inputCls} placeholder="Блогийн гарчиг"/></Field>
+                      <Field label="Товч агуулга"><textarea rows="2" value={blogForm.excerpt} onChange={e=>setBlogForm({...blogForm,excerpt:e.target.value})} maxLength="500" className={inputCls} style={{ resize:'vertical' }}/></Field>
+                      <Field label="Агуулга" required><textarea rows="10" required value={blogForm.content} onChange={e=>setBlogForm({...blogForm,content:e.target.value})} className={inputCls} style={{ resize:'vertical' }}/></Field>
+                      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                        <Field label="Ангилал"><select value={blogForm.category} onChange={e=>setBlogForm({...blogForm,category:e.target.value})} className={selectCls}><option value="other">Бусад</option><option value="news">Мэдээ</option><option value="tutorial">Заавар</option><option value="tips">Зөвлөмж</option><option value="case-study">Туршилт</option><option value="announcement">Мэдэгдэл</option></select></Field>
+                        <Field label="Статус"><select value={blogForm.status} onChange={e=>setBlogForm({...blogForm,status:e.target.value})} className={selectCls}><option value="draft">Ноорог</option><option value="published">Нийтлэгдсэн</option><option value="archived">Архивласан</option></select></Field>
+                      </div>
+                      <Field label="Tags" hint="Таслалаар: хэвлэл, дизайн"><input type="text" value={blogForm.tags} onChange={e=>setBlogForm({...blogForm,tags:e.target.value})} className={inputCls} placeholder="хэвлэл, дизайн"/></Field>
+                      <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                        <input type="checkbox" id="blogFeatured" checked={blogForm.featured} onChange={e=>setBlogForm({...blogForm,featured:e.target.checked})} className="adm-checkbox"/>
+                        <label htmlFor="blogFeatured" className="adm-text-secondary" style={{ fontSize:13, cursor:'pointer' }}>Онцлох блог</label>
+                      </div>
+                      <Field label="Зураг">
+                        {blogImagePreview?(
+                          <div style={{ position:'relative' }}>
+                            <img src={blogImagePreview} alt="Preview" style={{ width:'100%', height:160, objectFit:'cover', borderRadius:10 }}/>
+                            <button type="button" onClick={()=>{setBlogImage(null);setBlogImagePreview('');}} style={{ position:'absolute', top:8, right:8, width:28, height:28, borderRadius:'50%', background:'rgba(0,0,0,0.5)', border:'1px solid rgba(255,255,255,0.2)', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' }}><X size={13}/></button>
+                          </div>
+                        ):(
+                          <div className="adm-upload">
+                            <input type="file" accept="image/*" onChange={e=>{const f=e.target.files[0];if(f){setBlogImage(f);const r=new FileReader();r.onloadend=()=>setBlogImagePreview(r.result);r.readAsDataURL(f);}}} className="hidden" id="blog-img"/>
+                            <label htmlFor="blog-img" style={{ cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:6, color:'rgba(255,255,255,0.35)' }}>
+                              <Upload size={18}/><span style={{ fontSize:13 }}>Зураг сонгох</span>
+                            </label>
+                          </div>
+                        )}
+                      </Field>
+                      <div style={{ display:'flex', gap:8 }}><Btn type="submit" style={{ flex:1, justifyContent:'center' }}>{editingBlog?'Шинэчлэх':'Нэмэх'}</Btn><Btn type="button" variant="secondary" onClick={()=>{setShowBlogForm(false);setEditingBlog(null);}}>Болих</Btn></div>
+                    </form>
+                  </FormPanel>
+                )}
+                {loading?<Loading/>:blogs.length===0?<EmptyState icon={BookOpen} message="Блог байхгүй байна"/>:(
+                  <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                    {blogs.map(b=>(
+                      <Card key={b._id} style={{ display:'flex', alignItems:'flex-start', gap:12 }}>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap', marginBottom:4 }}>
+                            <span className="adm-text-primary" style={{ fontSize:14, fontWeight:600 }}>{b.title}</span>
+                            <Badge variant={b.status}>{statusLabel[b.status]||b.status}</Badge>
+                            {b.featured && <Badge variant="featured">Онцлох</Badge>}
+                          </div>
+                          {b.excerpt && <p className="adm-text-muted" style={{ fontSize:12, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{b.excerpt}</p>}
+                          <p className="adm-text-muted" style={{ fontSize:11, marginTop:4 }}>{formatDate(b.createdAt)}</p>
+                        </div>
+                        <div style={{ display:'flex', gap:4, flexShrink:0 }}>
+                          <Btn variant="ghost" onClick={()=>handleEditBlog(b)}><Edit size={14}/></Btn>
+                          <Btn variant="ghost" className="adm-btn-icon-danger" onClick={()=>handleDeleteBlog(b._id)}><Trash2 size={14}/></Btn>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── SERVICES ── */}
+            {activeTab==='services' && (
+              <div>
+                <SectionHeader title="Маркетингийн үйлчилгээ" action={<Btn onClick={()=>{setShowServiceForm(!showServiceForm);if(!showServiceForm){setEditingService(null);setServiceForm(emptyService);}}}><Plus size={13}/>{showServiceForm?'Хаах':'Нэмэх'}</Btn>}/>
+                {showServiceForm && (
+                  <FormPanel title={editingService?'Үйлчилгээ засах':'Шинэ үйлчилгээ'}>
+                    <form onSubmit={handleServiceSubmit} style={{ display:'flex', flexDirection:'column', gap:14 }}>
+                      <Field label="Нэр" required><input type="text" required value={serviceForm.name} onChange={e=>setServiceForm({...serviceForm,name:e.target.value})} className={inputCls}/></Field>
+                      <Field label="Товч тайлбар"><textarea rows="2" value={serviceForm.shortDescription} onChange={e=>setServiceForm({...serviceForm,shortDescription:e.target.value})} maxLength="200" className={inputCls} style={{ resize:'vertical' }}/></Field>
+                      <Field label="Дэлгэрэнгүй тайлбар" required><textarea rows="5" required value={serviceForm.description} onChange={e=>setServiceForm({...serviceForm,description:e.target.value})} className={inputCls} style={{ resize:'vertical' }}/></Field>
+                      <Field label="Онцлогууд" hint="Мөр бүрд нэг онцлог"><textarea rows="4" value={serviceForm.features} onChange={e=>setServiceForm({...serviceForm,features:e.target.value})} className={inputCls} style={{ resize:'vertical' }}/></Field>
+                      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                        <Field label="Үнэ"><input type="text" value={serviceForm.price} onChange={e=>setServiceForm({...serviceForm,price:e.target.value})} className={inputCls} placeholder="50,000₮/сар"/></Field>
+                        <Field label="Ангилал"><select value={serviceForm.category} onChange={e=>setServiceForm({...serviceForm,category:e.target.value})} className={selectCls}><option value="other">Бусад</option><option value="social-media">Сошиал медиа</option><option value="seo">SEO</option><option value="content">Контент</option><option value="advertising">Сурталчилгаа</option><option value="branding">Брэндинг</option></select></Field>
+                      </div>
+                      <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                        <input type="checkbox" id="svcFeat" checked={serviceForm.featured} onChange={e=>setServiceForm({...serviceForm,featured:e.target.checked})} className="adm-checkbox"/>
+                        <label htmlFor="svcFeat" className="adm-text-secondary" style={{ fontSize:13, cursor:'pointer' }}>Онцлох үйлчилгээ</label>
+                      </div>
+                      <Field label="Зураг">
+                        {serviceImagePreview?(
+                          <div style={{ position:'relative' }}>
+                            <img src={serviceImagePreview} alt="Preview" style={{ width:'100%', height:160, objectFit:'cover', borderRadius:10 }}/>
+                            <button type="button" onClick={()=>{setServiceImage(null);setServiceImagePreview('');}} style={{ position:'absolute', top:8, right:8, width:28, height:28, borderRadius:'50%', background:'rgba(0,0,0,0.5)', border:'1px solid rgba(255,255,255,0.2)', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' }}><X size={13}/></button>
+                          </div>
+                        ):(
+                          <div className="adm-upload">
+                            <input type="file" accept="image/*" onChange={e=>{const f=e.target.files[0];if(f){setServiceImage(f);const r=new FileReader();r.onloadend=()=>setServiceImagePreview(r.result);r.readAsDataURL(f);}}} className="hidden" id="svc-img"/>
+                            <label htmlFor="svc-img" style={{ cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:6, color:'rgba(255,255,255,0.35)' }}>
+                              <Upload size={18}/><span style={{ fontSize:13 }}>Зураг сонгох</span>
+                            </label>
+                          </div>
+                        )}
+                      </Field>
+                      <div style={{ display:'flex', gap:8 }}><Btn type="submit" style={{ flex:1, justifyContent:'center' }}>{editingService?'Шинэчлэх':'Нэмэх'}</Btn><Btn type="button" variant="secondary" onClick={()=>{setShowServiceForm(false);setEditingService(null);}}>Болих</Btn></div>
+                    </form>
+                  </FormPanel>
+                )}
+                {loading?<Loading/>:marketingServices.length===0?<EmptyState icon={Briefcase} message="Үйлчилгээ байхгүй байна"/>:(
+                  <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                    {marketingServices.map(s=>(
+                      <Card key={s._id} style={{ display:'flex', alignItems:'flex-start', gap:12 }}>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap', marginBottom:4 }}>
+                            <span className="adm-text-primary" style={{ fontSize:14, fontWeight:600 }}>{s.name}</span>
+                            <Badge variant="purple">{s.category==='social-media'?'Сошиал':s.category==='seo'?'SEO':s.category==='content'?'Контент':s.category==='advertising'?'Реклам':s.category==='branding'?'Брэнд':'Бусад'}</Badge>
+                            {s.featured && <Badge variant="featured">Онцлох</Badge>}
+                          </div>
+                          {s.shortDescription && <p className="adm-text-muted" style={{ fontSize:12, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{s.shortDescription}</p>}
+                          {s.price && <p className="adm-text-accent" style={{ fontSize:12, fontWeight:600, marginTop:4 }}>{s.price}</p>}
+                        </div>
+                        <div style={{ display:'flex', gap:4, flexShrink:0 }}>
+                          <Btn variant="ghost" onClick={()=>handleEditService(s)}><Edit size={14}/></Btn>
+                          <Btn variant="ghost" className="adm-btn-icon-danger" onClick={()=>handleDeleteService(s._id)}><Trash2 size={14}/></Btn>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
           </div>
         </main>
       </div>
     </div>
   );
-}
+};
+
+export default AdminPage;

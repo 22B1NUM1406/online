@@ -21,9 +21,7 @@ const Header = () => {
   // Mega Menu States
   const [categories, setCategories] = useState([]);
   const [printProducts, setPrintProducts] = useState([]);
-  const [marketingProducts, setMarketingProducts] = useState([]);
   const [loadingPrint, setLoadingPrint] = useState(false);
-  const [loadingMarketing, setLoadingMarketing] = useState(false);
 
   // Load categories on mount
   useEffect(() => {
@@ -51,21 +49,6 @@ const Header = () => {
       console.error('Error loading print products:', error);
     } finally {
       setLoadingPrint(false);
-    }
-  };
-
-  // Load Biz Marketing products on hover
-  const loadMarketingProducts = async () => {
-    if (marketingProducts.length > 0) return; // Already loaded
-    
-    try {
-      setLoadingMarketing(true);
-      const data = await getProducts({ limit: 4 });
-      setMarketingProducts(data.data || []);
-    } catch (error) {
-      console.error('Error loading marketing products:', error);
-    } finally {
-      setLoadingMarketing(false);
     }
   };
 
@@ -331,8 +314,8 @@ const Header = () => {
                   </div>
                 </div>
 
-                {/* Biz Marketing - BestComputers Style Mega Menu */}
-                <div className="relative group" onMouseEnter={loadMarketingProducts}>
+                {/* Biz Marketing - Services (not products) */}
+                <div className="relative group">
                   <Link
                     to="/biz-marketing"
                     className="hover:text-purple-400 font-medium transition-colors flex items-center gap-1"
@@ -341,92 +324,77 @@ const Header = () => {
                     <ChevronDown size={16} className="group-hover:rotate-180 transition-transform" />
                   </Link>
                   
-                  {/* Large Dropdown with Real Products */}
+                  {/* Large Dropdown with Services */}
                   <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-screen max-w-5xl bg-white rounded-lg shadow-2xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                     <div className="p-8">
-                      {loadingMarketing ? (
-                        <div className="flex items-center justify-center py-12">
-                          <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-purple-600"></div>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="grid grid-cols-4 gap-6">
-                            {marketingProducts.length > 0 ? (
-                              marketingProducts.map((product) => (
-                                <Link key={product._id} to={`/products/${product._id}`} className="group/item">
-                                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-purple-400 transition-all">
-                                    <div className="aspect-square bg-gray-50 flex items-center justify-center p-4">
-                                      <img 
-                                        src={getImageUrl(product.image)}
-                                        alt={product.name}
-                                        className="w-full h-full object-contain group-hover/item:scale-105 transition-transform"
-                                        onError={(e) => {
-                                          e.target.src = 'https://via.placeholder.com/300x300?text=Product';
-                                        }}
-                                      />
-                                    </div>
-                                    <div className="p-4 border-t border-gray-100">
-                                      <h4 className="font-bold text-gray-900 text-sm line-clamp-2 mb-2 group-hover/item:text-purple-600 transition min-h-[40px]">
-                                        {product.name}
-                                      </h4>
-                                      <div className="flex items-baseline gap-2">
-                                        {product.discount ? (
-                                          <>
-                                            <span className="text-base font-bold text-red-600">
-                                              {formatPrice(product.price * (1 - product.discount / 100))}₮
-                                            </span>
-                                            <span className="text-xs text-gray-400 line-through">
-                                              {formatPrice(product.price)}₮
-                                            </span>
-                                          </>
-                                        ) : (
-                                          <span className="text-base font-bold text-gray-900">
-                                            {formatPrice(product.price)}₮
-                                          </span>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </Link>
-                              ))
-                            ) : (
-                              // Fallback if no products
-                              <>
-                                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden p-6">
-                                  <div className="text-center">
-                                    <div className="text-6xl mb-2">🎨</div>
-                                    <div className="text-sm text-gray-600">Брэнд дизайн</div>
-                                  </div>
-                                </div>
-                                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden p-6">
-                                  <div className="text-center">
-                                    <div className="text-6xl mb-2">📱</div>
-                                    <div className="text-sm text-gray-600">Сошиал медиа</div>
-                                  </div>
-                                </div>
-                                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden p-6">
-                                  <div className="text-center">
-                                    <div className="text-6xl mb-2">✍️</div>
-                                    <div className="text-sm text-gray-600">Контент</div>
-                                  </div>
-                                </div>
-                                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden p-6">
-                                  <div className="text-center">
-                                    <div className="text-6xl mb-2">📊</div>
-                                    <div className="text-sm text-gray-600">Зар сурталчилгаа</div>
-                                  </div>
-                                </div>
-                              </>
-                            )}
+                      <div className="grid grid-cols-4 gap-6">
+                        {/* Service Cards - Static */}
+                        <Link to="/biz-marketing" className="group/item">
+                          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-purple-400 transition-all">
+                            <div className="aspect-square bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center p-6">
+                              <div className="text-center">
+                                <div className="text-6xl mb-2">🎨</div>
+                                <div className="text-sm font-semibold text-purple-900">Брэнд дизайн</div>
+                              </div>
+                            </div>
+                            <div className="p-4 border-t border-gray-100">
+                              <h4 className="font-bold text-gray-900 text-center group-hover/item:text-purple-600 transition">Лого, фирм загвар</h4>
+                              <p className="text-xs text-gray-500 text-center mt-2">Таны брэндийг бүтээх</p>
+                            </div>
                           </div>
-                          
-                          <div className="mt-6 text-center">
-                            <Link to="/biz-marketing" className="inline-block px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-semibold">
-                              Бүгдийг үзэх →
-                            </Link>
+                        </Link>
+
+                        <Link to="/biz-marketing" className="group/item">
+                          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-purple-400 transition-all">
+                            <div className="aspect-square bg-gradient-to-br from-blue-50 to-cyan-50 flex items-center justify-center p-6">
+                              <div className="text-center">
+                                <div className="text-6xl mb-2">📱</div>
+                                <div className="text-sm font-semibold text-blue-900">Сошиал медиа</div>
+                              </div>
+                            </div>
+                            <div className="p-4 border-t border-gray-100">
+                              <h4 className="font-bold text-gray-900 text-center group-hover/item:text-purple-600 transition">SMM үйлчилгээ</h4>
+                              <p className="text-xs text-gray-500 text-center mt-2">Сошиал платформ удирдлага</p>
+                            </div>
                           </div>
-                        </>
-                      )}
+                        </Link>
+
+                        <Link to="/biz-marketing" className="group/item">
+                          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-purple-400 transition-all">
+                            <div className="aspect-square bg-gradient-to-br from-yellow-50 to-orange-50 flex items-center justify-center p-6">
+                              <div className="text-center">
+                                <div className="text-6xl mb-2">✍️</div>
+                                <div className="text-sm font-semibold text-orange-900">Контент</div>
+                              </div>
+                            </div>
+                            <div className="p-4 border-t border-gray-100">
+                              <h4 className="font-bold text-gray-900 text-center group-hover/item:text-purple-600 transition">Агуулга бүтээх</h4>
+                              <p className="text-xs text-gray-500 text-center mt-2">Контент маркетинг</p>
+                            </div>
+                          </div>
+                        </Link>
+
+                        <Link to="/biz-marketing" className="group/item">
+                          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-purple-400 transition-all">
+                            <div className="aspect-square bg-gradient-to-br from-red-50 to-pink-50 flex items-center justify-center p-6">
+                              <div className="text-center">
+                                <div className="text-6xl mb-2">📊</div>
+                                <div className="text-sm font-semibold text-red-900">Зар сурталчилгаа</div>
+                              </div>
+                            </div>
+                            <div className="p-4 border-t border-gray-100">
+                              <h4 className="font-bold text-gray-900 text-center group-hover/item:text-purple-600 transition">Онлайн маркетинг</h4>
+                              <p className="text-xs text-gray-500 text-center mt-2">Дижитал кампанит ажил</p>
+                            </div>
+                          </div>
+                        </Link>
+                      </div>
+                      
+                      <div className="mt-6 text-center">
+                        <Link to="/biz-marketing" className="inline-block px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-semibold">
+                          Бүх үйлчилгээ үзэх →
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>

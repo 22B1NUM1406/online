@@ -77,28 +77,30 @@ const Header = () => {
   const toggleMobile = (key) =>
     setMobileExpanded(prev => ({ ...prev, [key]: !prev[key] }));
 
-  // Lazy load on first hover — fetch only 6 items for the dropdown preview
   const loadPrintProducts = async () => {
     if (printLoaded) return;
+    setPrintLoaded(true); // set early to prevent duplicate calls
     try {
-      const data = await getProducts({ limit: 6 });
-      setPrintProducts(data.data.slice(0, 6));
+      const res = await getProducts({});
+      // API may return { data: [...] } or { data: { data: [...] } } or plain array
+      const raw = res?.data ?? res;
+      const list = Array.isArray(raw) ? raw : (Array.isArray(raw?.data) ? raw.data : []);
+      setPrintProducts(list.slice(0, 6));
     } catch (e) {
-      console.error(e);
-    } finally {
-      setPrintLoaded(true);
+      console.error('Header: loadPrintProducts failed', e);
     }
   };
 
   const loadMarketingServices = async () => {
     if (marketingLoaded) return;
+    setMarketingLoaded(true);
     try {
-      const data = await getMarketingServices({ limit: 6 });
-      setMarketingServices(data.data.slice(0, 6));
+      const res = await getMarketingServices({});
+      const raw = res?.data ?? res;
+      const list = Array.isArray(raw) ? raw : (Array.isArray(raw?.data) ? raw.data : []);
+      setMarketingServices(list.slice(0, 6));
     } catch (e) {
-      console.error(e);
-    } finally {
-      setMarketingLoaded(true);
+      console.error('Header: loadMarketingServices failed', e);
     }
   };
 

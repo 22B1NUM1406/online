@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  ShoppingCart, Phone, Search, Menu, X, Mail, Wallet,
+  ShoppingCart, Phone, Search, Menu, X, Mail,
   ChevronDown, User, Home, Heart, LogOut, Settings
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -26,7 +26,7 @@ const Header = () => {
   return (
     <>
       {/* Top Bar */}
-      <div className=" text-black py-2 border-t border-gray-100">
+      <div className="text-black py-2 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-6">
@@ -128,8 +128,6 @@ const Header = () => {
                 )}
               </div>
 
-              
-
               {/* Wishlist */}
               <Link
                 to="/wishlist"
@@ -147,10 +145,7 @@ const Header = () => {
               </Link>
 
               {/* Cart */}
-              <Link
-                to="/cart"
-                className="relative group"
-              >
+              <Link to="/cart" className="relative group">
                 <div className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors border border-gray-300">
                   <div className="relative">
                     <ShoppingCart className="text-gray-700 group-hover:text-blue-600 transition-colors" size={24} />
@@ -167,48 +162,180 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Navigation Bar */}
-        <nav className="hidden md:block  text-black border-t border-gray-100">
+        {/* Navigation Bar with Mega Menus */}
+        <nav className="hidden md:block text-black border-t border-gray-100">
           <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-8 py-3">
-                <Link
-                  to="/"
-                  className="flex items-center gap-2 hover:text-blue-400 font-medium transition-colors"
-                >
-                  <Home size={18} />
-                  Эхлэл
-                </Link>
-                <Link
-                  to="/biz-print"
-                  className="hover:text-blue-400 font-medium transition-colors"
-                >
+            <div className="flex items-center gap-8 py-3">
+              {/* Эхлэл */}
+              <Link to="/" className="flex items-center gap-2 hover:text-blue-600 font-medium transition-colors">
+                <Home size={18} />
+                Эхлэл
+              </Link>
+
+              {/* Biz Print - Mega Menu */}
+              <div className="relative group">
+                <Link to="/biz-print" className="hover:text-blue-600 font-medium transition-colors flex items-center gap-1">
                   Biz Print
+                  <ChevronDown size={16} className="group-hover:rotate-180 transition-transform" />
                 </Link>
-                <Link
-                  to="/biz-marketing"
-                  className="hover:text-purple-400 font-medium transition-colors"
-                >
+                
+                <div className="absolute left-0 top-full mt-2 w-96 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="p-6">
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">Хэвлэлийн бүтээгдэхүүн</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-3 hover:bg-blue-50 rounded-lg transition cursor-pointer">
+                        <h4 className="font-semibold text-gray-900 mb-1">Ном, сурах бичиг</h4>
+                        <p className="text-xs text-gray-500">Сургалтын материал</p>
+                      </div>
+                      <div className="p-3 hover:bg-blue-50 rounded-lg transition cursor-pointer">
+                        <h4 className="font-semibold text-gray-900 mb-1">Оффисын хэвлэл</h4>
+                        <p className="text-xs text-gray-500">Бичиг баримт</p>
+                      </div>
+                      <div className="p-3 hover:bg-blue-50 rounded-lg transition cursor-pointer">
+                        <h4 className="font-semibold text-gray-900 mb-1">Сурталчилгаа</h4>
+                        <p className="text-xs text-gray-500">Зар сурталчилгаа</p>
+                      </div>
+                      <div className="p-3 hover:bg-blue-50 rounded-lg transition cursor-pointer">
+                        <h4 className="font-semibold text-gray-900 mb-1">Баннер</h4>
+                        <p className="text-xs text-gray-500">Томоохон хэвлэл</p>
+                      </div>
+                    </div>
+                    <Link to="/biz-print" className="mt-4 block text-center text-blue-600 hover:text-blue-700 font-medium text-sm">
+                      Бүгдийг үзэх →
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* Biz Marketing - Mega Menu */}
+              <div className="relative group">
+                <Link to="/biz-marketing" className="hover:text-purple-600 font-medium transition-colors flex items-center gap-1">
                   Biz Marketing
+                  <ChevronDown size={16} className="group-hover:rotate-180 transition-transform" />
                 </Link>
-                <Link
-                  to="/quotation"
-                  className="hover:text-blue-400 font-medium transition-colors"
-                >
+                
+                <div className="absolute left-0 top-full mt-2 w-96 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="p-6">
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">Маркетингийн үйлчилгээ</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-3 hover:bg-purple-50 rounded-lg transition cursor-pointer">
+                        <h4 className="font-semibold text-gray-900 mb-1">Брэнд дизайн</h4>
+                        <p className="text-xs text-gray-500">Лого, фирм дизайн</p>
+                      </div>
+                      <div className="p-3 hover:bg-purple-50 rounded-lg transition cursor-pointer">
+                        <h4 className="font-semibold text-gray-900 mb-1">Сошиал медиа</h4>
+                        <p className="text-xs text-gray-500">SMM үйлчилгээ</p>
+                      </div>
+                      <div className="p-3 hover:bg-purple-50 rounded-lg transition cursor-pointer">
+                        <h4 className="font-semibold text-gray-900 mb-1">Контент</h4>
+                        <p className="text-xs text-gray-500">Агуулга бүтээх</p>
+                      </div>
+                      <div className="p-3 hover:bg-purple-50 rounded-lg transition cursor-pointer">
+                        <h4 className="font-semibold text-gray-900 mb-1">Зар сурталчилгаа</h4>
+                        <p className="text-xs text-gray-500">Онлайн маркетинг</p>
+                      </div>
+                    </div>
+                    <Link to="/biz-marketing" className="mt-4 block text-center text-purple-600 hover:text-purple-700 font-medium text-sm">
+                      Бүгдийг үзэх →
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* Үнийн санал */}
+              <div className="relative group">
+                <Link to="/quotation" className="hover:text-blue-600 font-medium transition-colors flex items-center gap-1">
                   Үнийн санал
+                  <ChevronDown size={16} className="group-hover:rotate-180 transition-transform" />
                 </Link>
-                <Link
-                  to="/about"
-                  className="hover:text-blue-400 font-medium transition-colors"
-                >
+                
+                <div className="absolute left-0 top-full mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="p-6">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">Үнийн санал авах</h3>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Таны хэрэгцээнд тохирсон үнийн санал авахын тулд маягт бөглөнө үү.
+                    </p>
+                    <ul className="space-y-2 text-sm text-gray-600">
+                      <li>✓ Үнэгүй зөвлөгөө</li>
+                      <li>✓ 24 цагийн дотор хариу</li>
+                      <li>✓ Тохируулах боломжтой</li>
+                    </ul>
+                    <Link to="/quotation" className="mt-4 block text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-medium text-sm">
+                      Санал авах
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* Бидний тухай */}
+              <div className="relative group">
+                <Link to="/about" className="hover:text-blue-600 font-medium transition-colors flex items-center gap-1">
                   Бидний тухай
+                  <ChevronDown size={16} className="group-hover:rotate-180 transition-transform" />
                 </Link>
-                <Link
-                  to="/contact"
-                  className="hover:text-blue-400 font-medium transition-colors"
-                >
+                
+                <div className="absolute left-0 top-full mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="p-6">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">BIZ PRINT PRO</h3>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Монголд үйл ажиллагаа явуулж буй хэвлэл, маркетингийн мэргэжлийн компани.
+                    </p>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <span className="text-blue-600">✓</span>
+                        <span>10+ жилийн туршлага</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <span className="text-blue-600">✓</span>
+                        <span>Орчин үеийн тоног төхөөрөмж</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <span className="text-blue-600">✓</span>
+                        <span>Мэргэжлийн баг</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Холбоо барих */}
+              <div className="relative group">
+                <Link to="/contact" className="hover:text-blue-600 font-medium transition-colors flex items-center gap-1">
                   Холбоо барих
+                  <ChevronDown size={16} className="group-hover:rotate-180 transition-transform" />
                 </Link>
+                
+                <div className="absolute left-0 top-full mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="p-6">
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">Холбогдох</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3">
+                        <Phone size={18} className="text-blue-600 mt-1" />
+                        <div>
+                          <p className="font-semibold text-gray-900">Утас</p>
+                          <p className="text-sm text-gray-600">+976 7200-0444</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <Mail size={18} className="text-blue-600 mt-1" />
+                        <div>
+                          <p className="font-semibold text-gray-900">Имэйл</p>
+                          <p className="text-sm text-gray-600">bizprintpro@gmail.com</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <Home size={18} className="text-blue-600 mt-1" />
+                        <div>
+                          <p className="font-semibold text-gray-900">Хаяг</p>
+                          <p className="text-sm text-gray-600">Улаанбаатар, Монгол Улс</p>
+                        </div>
+                      </div>
+                    </div>
+                    <Link to="/contact" className="mt-4 block text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-medium text-sm">
+                      Мессеж илгээх
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -235,7 +362,6 @@ const Header = () => {
               {isAuthenticated ? (
                 <>
                   <Link to="/profile" className="block py-3 hover:bg-gray-100 rounded-lg px-4">Профайл</Link>
-                 
                   {isAdmin && <Link to="/admin" className="block py-3 hover:bg-gray-100 rounded-lg px-4">Админ</Link>}
                   <button onClick={handleLogout} className="block w-full text-left py-3 hover:bg-gray-100 rounded-lg px-4 text-red-600">Гарах</button>
                 </>

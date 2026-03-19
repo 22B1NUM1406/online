@@ -34,14 +34,14 @@ const Header = () => {
     if (menu === 'print' && printProducts.length === 0) {
       setLoadingPrint(true);
       getProducts({})
-        .then(d => setPrintProducts((d.data || []).slice(0, 4)))
+        .then(d => setPrintProducts((d.data || []).slice(0, 8)))
         .catch(() => {})
         .finally(() => setLoadingPrint(false));
     }
     if (menu === 'marketing' && marketingServices.length === 0) {
       setLoadingMarketing(true);
       getMarketingServices({})
-        .then(d => setMarketingServices((d.data || []).slice(0, 4)))
+        .then(d => setMarketingServices((d.data || []).slice(0, 8)))
         .catch(() => {})
         .finally(() => setLoadingMarketing(false));
     }
@@ -78,10 +78,10 @@ const Header = () => {
   );
 
   const SkeletonGrid = () => (
-    <div className="grid grid-cols-4 gap-3 p-5">
-      {[...Array(4)].map((_, i) => (
+    <div className="grid grid-cols-8 gap-2 p-5">
+      {[...Array(8)].map((_, i) => (
         <div key={i} className="rounded-lg overflow-hidden border border-gray-100">
-          <div className="aspect-square bg-gray-100 animate-pulse" />
+          <div className="h-16 bg-gray-100 animate-pulse" />
           <div className="p-2.5 space-y-1.5">
             <div className="h-2.5 bg-gray-100 rounded animate-pulse" />
             <div className="h-2.5 bg-gray-100 rounded animate-pulse w-1/2" />
@@ -204,7 +204,7 @@ const Header = () => {
           {/* ════ DROPDOWNS ════ */}
           {activeMenu && (
             <div
-              className="absolute left-0 right-0 bg-white border-t border-gray-200 shadow-xl z-40"
+              className="absolute left-0 right-0 bg-white border-t border-gray-200 shadow-xl z-40" style={{ minHeight: "240px" }}
               style={{ top: '100%' }}
               onMouseEnter={() => clearTimeout(hideTimer.current)}
               onMouseLeave={hide}
@@ -212,10 +212,10 @@ const Header = () => {
 
               {/* ── BIZ PRINT ── */}
               {activeMenu === 'print' && (
-                <div className="max-w-7xl mx-auto px-6 py-5">
+                <div className="max-w-7xl mx-auto px-6 py-6" style={{ minHeight: "220px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                   {loadingPrint ? <SkeletonGrid /> : (
                     <>
-                      <div className="grid grid-cols-4 gap-4">
+                      <div className="grid grid-cols-8 gap-2">
                         {printProducts.map(p => (
                           <Link
                             key={p._id}
@@ -223,7 +223,7 @@ const Header = () => {
                             onClick={() => setActiveMenu(null)}
                             className="group/c rounded-lg border border-gray-200 overflow-hidden hover:border-blue-400 hover:shadow-md transition-all bg-white"
                           >
-                            <div className="aspect-square bg-gray-50 overflow-hidden p-3">
+                            <div className="h-20 bg-gray-50 overflow-hidden p-2">
                               <img
                                 src={getImageUrl(p.image)}
                                 alt={p.name}
@@ -232,7 +232,7 @@ const Header = () => {
                               />
                             </div>
                             <div className="p-3 border-t border-gray-100">
-                              <p className="text-xs font-semibold text-gray-800 line-clamp-2 min-h-[32px] group-hover/c:text-blue-600 transition-colors">{p.name}</p>
+                              <p className="text-xs font-semibold text-gray-800 line-clamp-2 min-h-[28px] group-hover/c:text-blue-600 transition-colors">{p.name}</p>
                               <div className="mt-1.5">
                                 {p.discount ? (
                                   <div className="flex items-baseline gap-1.5">
@@ -264,10 +264,10 @@ const Header = () => {
 
               {/* ── BIZ MARKETING ── */}
               {activeMenu === 'marketing' && (
-                <div className="max-w-7xl mx-auto px-6 py-5">
+                <div className="max-w-7xl mx-auto px-6 py-6" style={{ minHeight: "220px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                   {loadingMarketing ? <SkeletonGrid /> : (
                     <>
-                      <div className="grid grid-cols-4 gap-4">
+                      <div className="grid grid-cols-8 gap-2">
                         {marketingServices.map(s => (
                           <Link
                             key={s._id}
@@ -275,7 +275,7 @@ const Header = () => {
                             onClick={() => setActiveMenu(null)}
                             className="group/c rounded-lg border border-gray-200 overflow-hidden hover:border-purple-400 hover:shadow-md transition-all bg-white"
                           >
-                            <div className="h-32 bg-gray-50 overflow-hidden">
+                            <div className="h-20 bg-gray-50 overflow-hidden">
                               {s.image ? (
                                 <img
                                   src={getImageUrl(s.image)}
@@ -288,7 +288,7 @@ const Header = () => {
                               )}
                             </div>
                             <div className="p-3 border-t border-gray-100">
-                              <p className="text-xs font-semibold text-gray-800 line-clamp-2 min-h-[32px] group-hover/c:text-purple-600 transition-colors">{s.name}</p>
+                              <p className="text-xs font-semibold text-gray-800 line-clamp-2 min-h-[28px] group-hover/c:text-purple-600 transition-colors">{s.name}</p>
                               {s.shortDescription && (
                                 <p className="text-[11px] text-gray-400 line-clamp-1 mt-1">{s.shortDescription}</p>
                               )}
@@ -314,7 +314,7 @@ const Header = () => {
 
               {/* ── ҮНИЙН САНАЛ ── */}
               {activeMenu === 'quotation' && (
-                <div className="max-w-7xl mx-auto px-6 py-5">
+                <div className="max-w-7xl mx-auto px-6 py-6" style={{ minHeight: "220px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                   <div className="flex gap-4">
                     {[
                       { title: 'Хэвлэлийн үнийн санал', desc: 'Ном, каталог, флаер, баннер', accent: 'border-blue-500 bg-blue-50 hover:bg-blue-100' },
@@ -342,7 +342,7 @@ const Header = () => {
 
               {/* ── БИДНИЙ ТУХАЙ ── */}
               {activeMenu === 'about' && (
-                <div className="max-w-7xl mx-auto px-6 py-5">
+                <div className="max-w-7xl mx-auto px-6 py-6" style={{ minHeight: "220px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                   <div className="flex gap-6">
                     <div className="flex-1 grid grid-cols-2 gap-3">
                       {[
@@ -376,7 +376,7 @@ const Header = () => {
 
               {/* ── ХОЛБОО БАРИХ ── */}
               {activeMenu === 'contact' && (
-                <div className="max-w-7xl mx-auto px-6 py-5">
+                <div className="max-w-7xl mx-auto px-6 py-6" style={{ minHeight: "220px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                   <div className="flex gap-4">
                     {[
                       { icon: <Phone size={16} className="text-blue-600" />, label: 'Утас', value: '+976 7200-0444', bg: 'bg-blue-50 border-blue-100' },

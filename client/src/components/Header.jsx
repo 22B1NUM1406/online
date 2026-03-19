@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   ShoppingCart, Phone, Menu, X, Mail,
@@ -18,7 +18,7 @@ const ProductGrid = ({ items, to, accentHover }) => (
     {items.map((item) => (
       <Link
         key={item._id}
-        to={`${to}/${item.slug || ''}`}
+        to={to}
         className="group/item rounded-xl border border-transparent hover:border-gray-200 hover:shadow-md transition-all overflow-hidden bg-white"
       >
         <div className="h-28 overflow-hidden bg-gray-100">
@@ -79,15 +79,12 @@ const Header = () => {
 
   const loadPrintProducts = async () => {
     if (printLoaded) return;
-    setPrintLoaded(true); // set early to prevent duplicate calls
+    setPrintLoaded(true);
     try {
-      const res = await getProducts({});
-      // API may return { data: [...] } or { data: { data: [...] } } or plain array
-      const raw = res?.data ?? res;
-      const list = Array.isArray(raw) ? raw : (Array.isArray(raw?.data) ? raw.data : []);
-      setPrintProducts(list.slice(0, 6));
+      const data = await getProducts({});
+      setPrintProducts((data.data || []).slice(0, 6));
     } catch (e) {
-      console.error('Header: loadPrintProducts failed', e);
+      console.error('Header print load error:', e);
     }
   };
 
@@ -95,12 +92,10 @@ const Header = () => {
     if (marketingLoaded) return;
     setMarketingLoaded(true);
     try {
-      const res = await getMarketingServices({});
-      const raw = res?.data ?? res;
-      const list = Array.isArray(raw) ? raw : (Array.isArray(raw?.data) ? raw.data : []);
-      setMarketingServices(list.slice(0, 6));
+      const data = await getMarketingServices({});
+      setMarketingServices((data.data || []).slice(0, 6));
     } catch (e) {
-      console.error('Header: loadMarketingServices failed', e);
+      console.error('Header marketing load error:', e);
     }
   };
 
@@ -461,7 +456,7 @@ const Header = () => {
                 {mobileExpanded.print && (
                   <div className="ml-4 space-y-0.5 mb-1">
                     {printProducts.length > 0 ? printProducts.map((item) => (
-                      <Link key={item._id} to={`/biz-print/${item.slug || ''}`} onClick={() => setMobileMenuOpen(false)}
+                      <Link key={item._id} to="/biz-print" onClick={() => setMobileMenuOpen(false)}
                         className="flex items-center gap-3 py-2 px-3 hover:bg-blue-50 rounded-lg text-sm text-gray-700">
                         {item.image ? (
                           <img src={getImageUrl(item.image)} alt={item.name} className="w-8 h-8 rounded object-cover flex-shrink-0" />
@@ -492,7 +487,7 @@ const Header = () => {
                 {mobileExpanded.marketing && (
                   <div className="ml-4 space-y-0.5 mb-1">
                     {marketingServices.length > 0 ? marketingServices.map((item) => (
-                      <Link key={item._id} to={`/services/${item.slug || ''}`} onClick={() => setMobileMenuOpen(false)}
+                      <Link key={item._id} to="/biz-marketing" onClick={() => setMobileMenuOpen(false)}
                         className="flex items-center gap-3 py-2 px-3 hover:bg-purple-50 rounded-lg text-sm text-gray-700">
                         {item.image ? (
                           <img src={getImageUrl(item.image)} alt={item.name} className="w-8 h-8 rounded object-cover flex-shrink-0" />

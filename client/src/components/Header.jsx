@@ -162,7 +162,7 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Navigation Bar with Mega Menus */}
+        {/* Navigation Bar with BestComputers Style Mega Menus */}
         <nav className="hidden md:block text-black border-t border-gray-100">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center gap-8 py-3">
@@ -172,171 +172,200 @@ const Header = () => {
                 Эхлэл
               </Link>
 
-              {/* Biz Print - Mega Menu */}
+              {/* Biz Print - LARGE Mega Menu with Images */}
               <div className="relative group">
                 <Link to="/biz-print" className="hover:text-blue-600 font-medium transition-colors flex items-center gap-1">
                   Biz Print
                   <ChevronDown size={16} className="group-hover:rotate-180 transition-transform" />
                 </Link>
                 
-                <div className="absolute left-0 top-full mt-2 w-96 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <div className="p-6">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Хэвлэлийн бүтээгдэхүүн</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="p-3 hover:bg-blue-50 rounded-lg transition cursor-pointer">
-                        <h4 className="font-semibold text-gray-900 mb-1">Ном, сурах бичиг</h4>
-                        <p className="text-xs text-gray-500">Сургалтын материал</p>
-                      </div>
-                      <div className="p-3 hover:bg-blue-50 rounded-lg transition cursor-pointer">
-                        <h4 className="font-semibold text-gray-900 mb-1">Оффисын хэвлэл</h4>
-                        <p className="text-xs text-gray-500">Бичиг баримт</p>
-                      </div>
-                      <div className="p-3 hover:bg-blue-50 rounded-lg transition cursor-pointer">
-                        <h4 className="font-semibold text-gray-900 mb-1">Сурталчилгаа</h4>
-                        <p className="text-xs text-gray-500">Зар сурталчилгаа</p>
-                      </div>
-                      <div className="p-3 hover:bg-blue-50 rounded-lg transition cursor-pointer">
-                        <h4 className="font-semibold text-gray-900 mb-1">Баннер</h4>
-                        <p className="text-xs text-gray-500">Томоохон хэвлэл</p>
-                      </div>
+                {/* Full Width Dropdown with Product Images */}
+                <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-screen max-w-6xl bg-white rounded-lg shadow-2xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                  <div className="p-8">
+                    <div className="grid grid-cols-4 gap-6">
+                      {/* Product 1 */}
+                      <Link to="/biz-print" className="group/item">
+                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-blue-400 transition-all">
+                          <div className="aspect-square bg-gray-50 flex items-center justify-center p-4">
+                            <img 
+                              src="https://via.placeholder.com/300x300/e3f2fd/1976d2?text=Ном+Сурах+Бичиг" 
+                              alt="Ном, сурах бичиг"
+                              className="w-full h-full object-contain group-hover/item:scale-105 transition-transform"
+                            />
+                          </div>
+                          <div className="p-4 border-t border-gray-100">
+                            <h4 className="font-bold text-gray-900 mb-1 group-hover/item:text-blue-600 transition">Ном, сурах бичиг</h4>
+                            <p className="text-xs text-gray-500">Сургалтын материал</p>
+                          </div>
+                        </div>
+                      </Link>
+
+                      {/* Product 2 */}
+                      <Link to="/biz-print" className="group/item">
+                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-blue-400 transition-all">
+                          <div className="aspect-square bg-gray-50 flex items-center justify-center p-4">
+                            <img 
+                              src="https://via.placeholder.com/300x300/f3e5f5/7b1fa2?text=Оффис+Хэвлэл" 
+                              alt="Оффисын хэвлэл"
+                              className="w-full h-full object-contain group-hover/item:scale-105 transition-transform"
+                            />
+                          </div>
+                          <div className="p-4 border-t border-gray-100">
+                            <h4 className="font-bold text-gray-900 mb-1 group-hover/item:text-blue-600 transition">Оффисын хэвлэл</h4>
+                            <p className="text-xs text-gray-500">Бичиг баримт, хуудас</p>
+                          </div>
+                        </div>
+                      </Link>
+
+                      {/* Product 3 */}
+                      <Link to="/biz-print" className="group/item">
+                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-blue-400 transition-all">
+                          <div className="aspect-square bg-gray-50 flex items-center justify-center p-4">
+                            <img 
+                              src="https://via.placeholder.com/300x300/fff3e0/f57c00?text=Сурталчилгаа" 
+                              alt="Сурталчилгаа"
+                              className="w-full h-full object-contain group-hover/item:scale-105 transition-transform"
+                            />
+                          </div>
+                          <div className="p-4 border-t border-gray-100">
+                            <h4 className="font-bold text-gray-900 mb-1 group-hover/item:text-blue-600 transition">Сурталчилгаа</h4>
+                            <p className="text-xs text-gray-500">Зар, флаер, каталог</p>
+                          </div>
+                        </div>
+                      </Link>
+
+                      {/* Product 4 */}
+                      <Link to="/biz-print" className="group/item">
+                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-blue-400 transition-all">
+                          <div className="aspect-square bg-gray-50 flex items-center justify-center p-4">
+                            <img 
+                              src="https://via.placeholder.com/300x300/e8f5e9/388e3c?text=Баннер" 
+                              alt="Баннер"
+                              className="w-full h-full object-contain group-hover/item:scale-105 transition-transform"
+                            />
+                          </div>
+                          <div className="p-4 border-t border-gray-100">
+                            <h4 className="font-bold text-gray-900 mb-1 group-hover/item:text-blue-600 transition">Баннер</h4>
+                            <p className="text-xs text-gray-500">Томоохон хэвлэл</p>
+                          </div>
+                        </div>
+                      </Link>
                     </div>
-                    <Link to="/biz-print" className="mt-4 block text-center text-blue-600 hover:text-blue-700 font-medium text-sm">
-                      Бүгдийг үзэх →
-                    </Link>
+
+                    {/* View All Button */}
+                    <div className="mt-6 text-center">
+                      <Link to="/biz-print" className="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">
+                        Бүх бүтээгдэхүүн үзэх →
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Biz Marketing - Mega Menu */}
+              {/* Biz Marketing - LARGE Mega Menu with Images */}
               <div className="relative group">
                 <Link to="/biz-marketing" className="hover:text-purple-600 font-medium transition-colors flex items-center gap-1">
                   Biz Marketing
                   <ChevronDown size={16} className="group-hover:rotate-180 transition-transform" />
                 </Link>
                 
-                <div className="absolute left-0 top-full mt-2 w-96 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <div className="p-6">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Маркетингийн үйлчилгээ</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="p-3 hover:bg-purple-50 rounded-lg transition cursor-pointer">
-                        <h4 className="font-semibold text-gray-900 mb-1">Брэнд дизайн</h4>
-                        <p className="text-xs text-gray-500">Лого, фирм дизайн</p>
-                      </div>
-                      <div className="p-3 hover:bg-purple-50 rounded-lg transition cursor-pointer">
-                        <h4 className="font-semibold text-gray-900 mb-1">Сошиал медиа</h4>
-                        <p className="text-xs text-gray-500">SMM үйлчилгээ</p>
-                      </div>
-                      <div className="p-3 hover:bg-purple-50 rounded-lg transition cursor-pointer">
-                        <h4 className="font-semibold text-gray-900 mb-1">Контент</h4>
-                        <p className="text-xs text-gray-500">Агуулга бүтээх</p>
-                      </div>
-                      <div className="p-3 hover:bg-purple-50 rounded-lg transition cursor-pointer">
-                        <h4 className="font-semibold text-gray-900 mb-1">Зар сурталчилгаа</h4>
-                        <p className="text-xs text-gray-500">Онлайн маркетинг</p>
-                      </div>
+                {/* Full Width Dropdown with Service Images */}
+                <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-screen max-w-6xl bg-white rounded-lg shadow-2xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                  <div className="p-8">
+                    <div className="grid grid-cols-4 gap-6">
+                      {/* Service 1 */}
+                      <Link to="/biz-marketing" className="group/item">
+                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-purple-400 transition-all">
+                          <div className="aspect-square bg-gray-50 flex items-center justify-center p-4">
+                            <img 
+                              src="https://via.placeholder.com/300x300/f3e5f5/8e24aa?text=Брэнд+Дизайн" 
+                              alt="Брэнд дизайн"
+                              className="w-full h-full object-contain group-hover/item:scale-105 transition-transform"
+                            />
+                          </div>
+                          <div className="p-4 border-t border-gray-100">
+                            <h4 className="font-bold text-gray-900 mb-1 group-hover/item:text-purple-600 transition">Брэнд дизайн</h4>
+                            <p className="text-xs text-gray-500">Лого, фирм загвар</p>
+                          </div>
+                        </div>
+                      </Link>
+
+                      {/* Service 2 */}
+                      <Link to="/biz-marketing" className="group/item">
+                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-purple-400 transition-all">
+                          <div className="aspect-square bg-gray-50 flex items-center justify-center p-4">
+                            <img 
+                              src="https://via.placeholder.com/300x300/e1f5fe/0288d1?text=Сошиал+Медиа" 
+                              alt="Сошиал медиа"
+                              className="w-full h-full object-contain group-hover/item:scale-105 transition-transform"
+                            />
+                          </div>
+                          <div className="p-4 border-t border-gray-100">
+                            <h4 className="font-bold text-gray-900 mb-1 group-hover/item:text-purple-600 transition">Сошиал медиа</h4>
+                            <p className="text-xs text-gray-500">SMM үйлчилгээ</p>
+                          </div>
+                        </div>
+                      </Link>
+
+                      {/* Service 3 */}
+                      <Link to="/biz-marketing" className="group/item">
+                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-purple-400 transition-all">
+                          <div className="aspect-square bg-gray-50 flex items-center justify-center p-4">
+                            <img 
+                              src="https://via.placeholder.com/300x300/fff9c4/f9a825?text=Контент" 
+                              alt="Контент"
+                              className="w-full h-full object-contain group-hover/item:scale-105 transition-transform"
+                            />
+                          </div>
+                          <div className="p-4 border-t border-gray-100">
+                            <h4 className="font-bold text-gray-900 mb-1 group-hover/item:text-purple-600 transition">Контент</h4>
+                            <p className="text-xs text-gray-500">Агуулга бүтээх</p>
+                          </div>
+                        </div>
+                      </Link>
+
+                      {/* Service 4 */}
+                      <Link to="/biz-marketing" className="group/item">
+                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-purple-400 transition-all">
+                          <div className="aspect-square bg-gray-50 flex items-center justify-center p-4">
+                            <img 
+                              src="https://via.placeholder.com/300x300/ffebee/d32f2f?text=Зар+Сурталчилгаа" 
+                              alt="Зар сурталчилгаа"
+                              className="w-full h-full object-contain group-hover/item:scale-105 transition-transform"
+                            />
+                          </div>
+                          <div className="p-4 border-t border-gray-100">
+                            <h4 className="font-bold text-gray-900 mb-1 group-hover/item:text-purple-600 transition">Зар сурталчилгаа</h4>
+                            <p className="text-xs text-gray-500">Онлайн маркетинг</p>
+                          </div>
+                        </div>
+                      </Link>
                     </div>
-                    <Link to="/biz-marketing" className="mt-4 block text-center text-purple-600 hover:text-purple-700 font-medium text-sm">
-                      Бүгдийг үзэх →
-                    </Link>
+
+                    {/* View All Button */}
+                    <div className="mt-6 text-center">
+                      <Link to="/biz-marketing" className="inline-block px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-semibold">
+                        Бүх үйлчилгээ үзэх →
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Үнийн санал */}
-              <div className="relative group">
-                <Link to="/quotation" className="hover:text-blue-600 font-medium transition-colors flex items-center gap-1">
-                  Үнийн санал
-                  <ChevronDown size={16} className="group-hover:rotate-180 transition-transform" />
-                </Link>
-                
-                <div className="absolute left-0 top-full mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <div className="p-6">
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">Үнийн санал авах</h3>
-                    <p className="text-sm text-gray-600 mb-4">
-                      Таны хэрэгцээнд тохирсон үнийн санал авахын тулд маягт бөглөнө үү.
-                    </p>
-                    <ul className="space-y-2 text-sm text-gray-600">
-                      <li>✓ Үнэгүй зөвлөгөө</li>
-                      <li>✓ 24 цагийн дотор хариу</li>
-                      <li>✓ Тохируулах боломжтой</li>
-                    </ul>
-                    <Link to="/quotation" className="mt-4 block text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-medium text-sm">
-                      Санал авах
-                    </Link>
-                  </div>
-                </div>
-              </div>
+              <Link to="/quotation" className="hover:text-blue-600 font-medium transition-colors">
+                Үнийн санал
+              </Link>
 
               {/* Бидний тухай */}
-              <div className="relative group">
-                <Link to="/about" className="hover:text-blue-600 font-medium transition-colors flex items-center gap-1">
-                  Бидний тухай
-                  <ChevronDown size={16} className="group-hover:rotate-180 transition-transform" />
-                </Link>
-                
-                <div className="absolute left-0 top-full mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <div className="p-6">
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">BIZ PRINT PRO</h3>
-                    <p className="text-sm text-gray-600 mb-4">
-                      Монголд үйл ажиллагаа явуулж буй хэвлэл, маркетингийн мэргэжлийн компани.
-                    </p>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <span className="text-blue-600">✓</span>
-                        <span>10+ жилийн туршлага</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <span className="text-blue-600">✓</span>
-                        <span>Орчин үеийн тоног төхөөрөмж</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <span className="text-blue-600">✓</span>
-                        <span>Мэргэжлийн баг</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <Link to="/about" className="hover:text-blue-600 font-medium transition-colors">
+                Бидний тухай
+              </Link>
 
               {/* Холбоо барих */}
-              <div className="relative group">
-                <Link to="/contact" className="hover:text-blue-600 font-medium transition-colors flex items-center gap-1">
-                  Холбоо барих
-                  <ChevronDown size={16} className="group-hover:rotate-180 transition-transform" />
-                </Link>
-                
-                <div className="absolute left-0 top-full mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <div className="p-6">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Холбогдох</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-start gap-3">
-                        <Phone size={18} className="text-blue-600 mt-1" />
-                        <div>
-                          <p className="font-semibold text-gray-900">Утас</p>
-                          <p className="text-sm text-gray-600">+976 7200-0444</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <Mail size={18} className="text-blue-600 mt-1" />
-                        <div>
-                          <p className="font-semibold text-gray-900">Имэйл</p>
-                          <p className="text-sm text-gray-600">bizprintpro@gmail.com</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <Home size={18} className="text-blue-600 mt-1" />
-                        <div>
-                          <p className="font-semibold text-gray-900">Хаяг</p>
-                          <p className="text-sm text-gray-600">Улаанбаатар, Монгол Улс</p>
-                        </div>
-                      </div>
-                    </div>
-                    <Link to="/contact" className="mt-4 block text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-medium text-sm">
-                      Мессеж илгээх
-                    </Link>
-                  </div>
-                </div>
-              </div>
+              <Link to="/contact" className="hover:text-blue-600 font-medium transition-colors">
+                Холбоо барих
+              </Link>
             </div>
           </div>
         </nav>

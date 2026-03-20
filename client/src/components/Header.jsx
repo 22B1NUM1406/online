@@ -34,9 +34,6 @@ const MARKETING_CATS = [
   { name: 'Сурталчилгаа',      Icon: Megaphone,  color: 'text-orange-500', bg: 'bg-orange-50' },
   { name: 'SEO оптимизаци',    Icon: Search,     color: 'text-blue-500',   bg: 'bg-blue-50'   },
   { name: 'Контент маркетинг', Icon: PenLine,    color: 'text-indigo-500', bg: 'bg-indigo-50' },
-  { name: 'Имэйл маркетинг',   Icon: Mail,       color: 'text-sky-500',    bg: 'bg-sky-50'    },
-  { name: 'Видео контент',     Icon: Video,      color: 'text-rose-500',   bg: 'bg-rose-50'   },
-  { name: 'Вэбсайт',           Icon: Globe,      color: 'text-teal-500',   bg: 'bg-teal-50'   },
 ];
 
 /* ─── Skeleton ─── */

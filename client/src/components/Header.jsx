@@ -29,14 +29,14 @@ const PRINT_CATS = [
 ];
 
 const MARKETING_CATS = [
-  { name: 'SMM',               Icon: Smartphone, color: 'text-purple-500', bg: 'bg-purple-50' },
-  { name: 'SEO',               Icon: Search,     color: 'text-blue-500',   bg: 'bg-blue-50'   },
-  { name: 'Брэнд дизайн',      Icon: Palette,    color: 'text-pink-500',   bg: 'bg-pink-50'   },
-  { name: 'Контент',           Icon: PenLine,    color: 'text-indigo-500', bg: 'bg-indigo-50' },
-  { name: 'Зар сурталчилгаа',  Icon: Megaphone,  color: 'text-orange-500', bg: 'bg-orange-50' },
-  { name: 'Вэбсайт',           Icon: Globe,      color: 'text-sky-500',    bg: 'bg-sky-50'    },
-  { name: 'Видео',              Icon: Video,      color: 'text-rose-500',   bg: 'bg-rose-50'   },
-  { name: 'Бусад',              Icon: Sparkles,   color: 'text-gray-500',   bg: 'bg-gray-100'  },
+  { name: 'Сошиал медиа',      Icon: Smartphone, color: 'text-purple-500', bg: 'bg-purple-50' },
+  { name: 'Брэндинг',          Icon: Palette,    color: 'text-pink-500',   bg: 'bg-pink-50'   },
+  { name: 'Сурталчилгаа',      Icon: Megaphone,  color: 'text-orange-500', bg: 'bg-orange-50' },
+  { name: 'SEO оптимизаци',    Icon: Search,     color: 'text-blue-500',   bg: 'bg-blue-50'   },
+  { name: 'Контент маркетинг', Icon: PenLine,    color: 'text-indigo-500', bg: 'bg-indigo-50' },
+  { name: 'Имэйл маркетинг',   Icon: Mail,       color: 'text-sky-500',    bg: 'bg-sky-50'    },
+  { name: 'Видео контент',     Icon: Video,      color: 'text-rose-500',   bg: 'bg-rose-50'   },
+  { name: 'Вэбсайт',           Icon: Globe,      color: 'text-teal-500',   bg: 'bg-teal-50'   },
 ];
 
 /* ─── Skeleton ─── */
@@ -300,25 +300,24 @@ const Header = () => {
               onMouseEnter={() => clearTimeout(hideTimer.current)}
               onMouseLeave={hide}
             >
-              <div className="max-w-5xl mx-auto">
+              <div className="max-w-6xl mx-auto">
 
               {/* ── BIZ PRINT ── */}
               {activeMenu === 'print' && (
-                <div className="px-6 py-5 flex gap-8">
-                  {/* Зүүн: BestComputers exact layout */}
+                <div className="px-8 py-6 flex gap-10">
                   <div className="flex-1 min-w-0">
-                    {/* Дээд хэсэг: icon + нэр grid (5 багана) */}
+                    {/* Icon grid — томруулсан */}
                     {loadingPrint ? (
-                      <div className="grid grid-cols-5 gap-3 mb-5">
+                      <div className="grid grid-cols-5 gap-4 mb-6">
                         {[...Array(5)].map((_, i) => (
                           <div key={i} className="flex flex-col items-center gap-2">
-                            <div className="w-16 h-12 bg-gray-100 rounded animate-pulse" />
-                            <div className="h-2.5 w-14 bg-gray-100 rounded animate-pulse" />
+                            <div className="w-20 h-16 bg-gray-100 rounded-xl animate-pulse" />
+                            <div className="h-3 w-16 bg-gray-100 rounded animate-pulse" />
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <div className="grid grid-cols-5 gap-2 mb-5">
+                      <div className="grid grid-cols-5 gap-3 mb-6">
                         {(printProducts.length >= 2
                           ? printProducts.slice(1, 6)
                           : PRINT_CATS.slice(0, 5).map(c => ({ _id: c.name, name: c.name, image: null, isStatic: true, Icon: c.Icon, color: c.color }))
@@ -327,42 +326,43 @@ const Header = () => {
                             key={item._id}
                             to={item.isStatic ? '/biz-print' : `/products/${item._id}`}
                             onClick={() => setActiveMenu(null)}
-                            className="flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors group"
+                            className="flex flex-col items-center gap-2.5 p-3 rounded-xl hover:bg-gray-50 transition-colors group"
                           >
-                            <div className="w-full h-14 flex items-center justify-center">
+                            <div className="w-full h-16 flex items-center justify-center">
                               {item.isStatic ? (
-                                <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
-                                  <item.Icon size={22} className={item.color} />
+                                <div className="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center">
+                                  <item.Icon size={26} className={item.color} />
                                 </div>
-                              ) : (
+                              ) : item.image ? (
                                 <img
                                   src={getImageUrl(item.image)}
                                   alt={item.name}
-                                  className="max-h-14 max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
-                                  onError={e => { e.target.src = 'https://via.placeholder.com/80x56?text=P'; }}
+                                  className="max-h-16 max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
                                 />
+                              ) : (
+                                <div className="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center">
+                                  <FileText size={26} className="text-blue-400" />
+                                </div>
                               )}
                             </div>
-                            <span className="text-xs text-gray-600 text-center line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors">{item.name}</span>
+                            <span className="text-xs font-medium text-gray-600 text-center line-clamp-2 leading-snug group-hover:text-blue-600 transition-colors">{item.name}</span>
                           </Link>
                         ))}
                       </div>
                     )}
 
-                    {/* Доод хэсэг: улаан зураас + гарчиг + "Бүгдийг үзэх" */}
                     <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-1 h-6 bg-blue-600 rounded-full" />
-                        <span className="text-lg font-bold text-gray-900">Biz Print</span>
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-1 h-7 bg-blue-600 rounded-full" />
+                        <span className="text-xl font-bold text-gray-900">Biz Print</span>
                       </div>
                       <Link to="/biz-print" onClick={() => setActiveMenu(null)}
-                        className="flex items-center gap-1 text-sm text-gray-600 hover:text-blue-600 border border-gray-200 hover:border-blue-300 px-3 py-1 rounded-lg transition-colors">
-                        Бүгдийг үзэх <ArrowRight size={13} />
+                        className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-blue-600 border border-gray-200 hover:border-blue-300 px-4 py-1.5 rounded-lg transition-colors">
+                        Бүгдийг үзэх <ArrowRight size={14} />
                       </Link>
                     </div>
 
-                    {/* Text-only нэмэлт link-үүд */}
-                    <div className="flex flex-wrap gap-x-6 gap-y-2">
+                    <div className="flex flex-wrap gap-x-7 gap-y-2.5">
                       {(printProducts.length >= 7
                         ? printProducts.slice(6, 10)
                         : PRINT_CATS.slice(5)
@@ -379,22 +379,28 @@ const Header = () => {
                     </div>
                   </div>
 
-                  {/* Баруун: cover зураг */}
-                  <div className="w-64 flex-shrink-0">
+                  {/* Баруун: cover зураг — томруулсан */}
+                  <div className="w-72 flex-shrink-0">
                     {printProducts[0] ? (
                       <Link to={`/products/${printProducts[0]._id}`} onClick={() => setActiveMenu(null)}
-                        className="block w-full h-full rounded-xl overflow-hidden group">
+                        className="block w-full rounded-2xl overflow-hidden group">
                         <img
                           src={getImageUrl(printProducts[0].image)}
                           alt={printProducts[0].name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          style={{ minHeight: '180px', maxHeight: '220px' }}
-                          onError={e => { e.target.src = 'https://via.placeholder.com/256x200?text=Print'; }}
+                          className="w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          style={{ height: '240px' }}
+                          onError={e => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
                         />
+                        <div className="w-full rounded-2xl bg-gradient-to-br from-blue-100 to-blue-200 items-center justify-center" style={{ height: '240px', display: 'none' }}>
+                          <Printer size={56} className="text-blue-400" />
+                        </div>
                       </Link>
                     ) : (
-                      <div className="w-full rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center" style={{ minHeight: '180px' }}>
-                        <Printer size={48} className="text-blue-400" />
+                      <div className="w-full rounded-2xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center" style={{ height: '240px' }}>
+                        <Printer size={56} className="text-blue-400" />
                       </div>
                     )}
                   </div>
@@ -403,19 +409,19 @@ const Header = () => {
 
               {/* ── BIZ MARKETING ── */}
               {activeMenu === 'marketing' && (
-                <div className="px-6 py-5 flex gap-8">
+                <div className="px-8 py-6 flex gap-10">
                   <div className="flex-1 min-w-0">
                     {loadingMarketing ? (
-                      <div className="grid grid-cols-5 gap-3 mb-5">
+                      <div className="grid grid-cols-5 gap-4 mb-6">
                         {[...Array(5)].map((_, i) => (
                           <div key={i} className="flex flex-col items-center gap-2">
-                            <div className="w-16 h-12 bg-gray-100 rounded animate-pulse" />
-                            <div className="h-2.5 w-14 bg-gray-100 rounded animate-pulse" />
+                            <div className="w-20 h-16 bg-gray-100 rounded-xl animate-pulse" />
+                            <div className="h-3 w-16 bg-gray-100 rounded animate-pulse" />
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <div className="grid grid-cols-5 gap-2 mb-5">
+                      <div className="grid grid-cols-5 gap-3 mb-6">
                         {(marketingServices.length >= 2
                           ? marketingServices.slice(1, 6)
                           : MARKETING_CATS.slice(0, 5).map(c => ({ _id: c.name, name: c.name, image: null, isStatic: true, Icon: c.Icon, color: c.color }))
@@ -424,40 +430,43 @@ const Header = () => {
                             key={item._id}
                             to={item.isStatic ? '/biz-marketing' : `/services/${item.slug}`}
                             onClick={() => setActiveMenu(null)}
-                            className="flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors group"
+                            className="flex flex-col items-center gap-2.5 p-3 rounded-xl hover:bg-gray-50 transition-colors group"
                           >
-                            <div className="w-full h-14 flex items-center justify-center">
+                            <div className="w-full h-16 flex items-center justify-center">
                               {item.isStatic ? (
-                                <div className="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center">
-                                  <item.Icon size={22} className={item.color} />
+                                <div className="w-14 h-14 rounded-xl bg-purple-50 flex items-center justify-center">
+                                  <item.Icon size={26} className={item.color} />
                                 </div>
-                              ) : (
+                              ) : item.image ? (
                                 <img
                                   src={getImageUrl(item.image)}
                                   alt={item.name}
-                                  className="max-h-14 max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
-                                  onError={e => { e.target.src = 'https://via.placeholder.com/80x56?text=S'; }}
+                                  className="max-h-16 max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
                                 />
+                              ) : (
+                                <div className="w-14 h-14 rounded-xl bg-purple-50 flex items-center justify-center">
+                                  <Megaphone size={26} className="text-purple-400" />
+                                </div>
                               )}
                             </div>
-                            <span className="text-xs text-gray-600 text-center line-clamp-2 leading-tight group-hover:text-purple-600 transition-colors">{item.name}</span>
+                            <span className="text-xs font-medium text-gray-600 text-center line-clamp-2 leading-snug group-hover:text-purple-600 transition-colors">{item.name}</span>
                           </Link>
                         ))}
                       </div>
                     )}
 
                     <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-1 h-6 bg-purple-600 rounded-full" />
-                        <span className="text-lg font-bold text-gray-900">Biz Marketing</span>
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-1 h-7 bg-purple-600 rounded-full" />
+                        <span className="text-xl font-bold text-gray-900">Biz Marketing</span>
                       </div>
                       <Link to="/biz-marketing" onClick={() => setActiveMenu(null)}
-                        className="flex items-center gap-1 text-sm text-gray-600 hover:text-purple-600 border border-gray-200 hover:border-purple-300 px-3 py-1 rounded-lg transition-colors">
-                        Бүгдийг үзэх <ArrowRight size={13} />
+                        className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-purple-600 border border-gray-200 hover:border-purple-300 px-4 py-1.5 rounded-lg transition-colors">
+                        Бүгдийг үзэх <ArrowRight size={14} />
                       </Link>
                     </div>
 
-                    <div className="flex flex-wrap gap-x-6 gap-y-2">
+                    <div className="flex flex-wrap gap-x-7 gap-y-2.5">
                       {(marketingServices.length >= 7
                         ? marketingServices.slice(6, 10)
                         : MARKETING_CATS.slice(5)
@@ -475,21 +484,27 @@ const Header = () => {
                   </div>
 
                   {/* Баруун: cover зураг */}
-                  <div className="w-64 flex-shrink-0">
+                  <div className="w-72 flex-shrink-0">
                     {marketingServices[0] ? (
                       <Link to={`/services/${marketingServices[0].slug}`} onClick={() => setActiveMenu(null)}
-                        className="block w-full rounded-xl overflow-hidden group">
+                        className="block w-full rounded-2xl overflow-hidden group">
                         <img
                           src={getImageUrl(marketingServices[0].image)}
                           alt={marketingServices[0].name}
                           className="w-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          style={{ minHeight: '180px', maxHeight: '220px' }}
-                          onError={e => { e.target.src = 'https://via.placeholder.com/256x200?text=Marketing'; }}
+                          style={{ height: '240px' }}
+                          onError={e => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
                         />
+                        <div className="w-full rounded-2xl bg-gradient-to-br from-purple-100 to-pink-200 items-center justify-center" style={{ height: '240px', display: 'none' }}>
+                          <Megaphone size={56} className="text-purple-400" />
+                        </div>
                       </Link>
                     ) : (
-                      <div className="w-full rounded-xl bg-gradient-to-br from-purple-100 to-pink-200 flex items-center justify-center" style={{ minHeight: '180px' }}>
-                        <Megaphone size={48} className="text-purple-400" />
+                      <div className="w-full rounded-2xl bg-gradient-to-br from-purple-100 to-pink-200 flex items-center justify-center" style={{ height: '240px' }}>
+                        <Megaphone size={56} className="text-purple-400" />
                       </div>
                     )}
                   </div>

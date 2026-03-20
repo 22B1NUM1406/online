@@ -208,7 +208,7 @@ const Header = () => {
 
           {/* ════ DROPDOWNS ════ */}
           <div
-            className="absolute left-0 right-0 bg-white/95 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-40"
+            className="absolute left-0 right-0 bg-white shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-40"
             style={{
               top: '100%',
               opacity: activeMenu ? 1 : 0,
@@ -259,12 +259,19 @@ const Header = () => {
                     </div>
                     <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
                       <span className="text-xs text-gray-400">Хэвлэлийн бүтээгдэхүүн</span>
-                      <Link
-                        to="/biz-print"
-                        onClick={() => setActiveMenu(null)}
-                        className="flex items-center gap-1.5 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
-                      >
+                      <Link to="/biz-print" onClick={() => setActiveMenu(null)}
+                        className="flex items-center gap-1.5 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">
                         Бүгдийг үзэх <ArrowRight size={14} />
+                      </Link>
+                    </div>
+                    <div className="mt-4 grid grid-cols-2 gap-2">
+                      <Link to="/contact" onClick={() => setActiveMenu(null)}
+                        className="py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold rounded-xl text-center transition-colors duration-200">
+                        Мессеж илгээх
+                      </Link>
+                      <Link to="/quotation" onClick={() => setActiveMenu(null)}
+                        className="py-2.5 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl text-center border border-gray-200 hover:border-gray-300 transition-colors duration-200">
+                        Үнийн санал авах
                       </Link>
                     </div>
                   </>
@@ -309,12 +316,19 @@ const Header = () => {
                     </div>
                     <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
                       <span className="text-xs text-gray-400">Дижитал маркетинг</span>
-                      <Link
-                        to="/biz-marketing"
-                        onClick={() => setActiveMenu(null)}
-                        className="flex items-center gap-1.5 text-sm font-semibold text-purple-600 hover:text-purple-700 transition-colors"
-                      >
+                      <Link to="/biz-marketing" onClick={() => setActiveMenu(null)}
+                        className="flex items-center gap-1.5 text-sm font-semibold text-purple-600 hover:text-purple-700 transition-colors">
                         Бүгдийг үзэх <ArrowRight size={14} />
+                      </Link>
+                    </div>
+                    <div className="mt-4 grid grid-cols-2 gap-2">
+                      <Link to="/contact" onClick={() => setActiveMenu(null)}
+                        className="py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold rounded-xl text-center transition-colors duration-200">
+                        Мессеж илгээх
+                      </Link>
+                      <Link to="/quotation" onClick={() => setActiveMenu(null)}
+                        className="py-2.5 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl text-center border border-gray-200 hover:border-gray-300 transition-colors duration-200">
+                        Үнийн санал авах
                       </Link>
                     </div>
                   </>
@@ -331,12 +345,8 @@ const Header = () => {
                     { title: 'Маркетингийн үнийн санал', desc: 'SEO, SMM, брэнд дизайн', accent: 'border-purple-500 bg-purple-50 hover:bg-purple-100' },
                     { title: 'Тусгай захиалга', desc: 'Өвөрмөц болон том хэмжээний ажил', accent: 'border-orange-500 bg-orange-50 hover:bg-orange-100' },
                   ].map((item, i) => (
-                    <Link
-                      key={i}
-                      to="/quotation"
-                      onClick={() => setActiveMenu(null)}
-                      className={`flex-1 p-5 rounded-xl border-l-4 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md ${item.accent}`}
-                    >
+                    <Link key={i} to="/quotation" onClick={() => setActiveMenu(null)}
+                      className={`flex-1 p-5 rounded-xl border-l-4 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md ${item.accent}`}>
                       <p className="text-sm font-semibold text-gray-800">{item.title}</p>
                       <p className="text-xs text-gray-500 mt-1">{item.desc}</p>
                     </Link>
@@ -346,6 +356,16 @@ const Header = () => {
                     <p className="text-sm font-bold text-gray-800 flex items-center gap-1.5"><Phone size={13} className="text-blue-500" /> +976 7200-0444</p>
                     <p className="text-xs text-gray-500 flex items-center gap-1.5"><Clock size={12} className="text-gray-400" /> Да–Ба 09:00–18:00</p>
                   </div>
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <Link to="/contact" onClick={() => setActiveMenu(null)}
+                    className="py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold rounded-xl text-center transition-colors duration-200">
+                    Мессеж илгээх
+                  </Link>
+                  <Link to="/quotation" onClick={() => setActiveMenu(null)}
+                    className="py-2.5 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl text-center border border-gray-200 hover:border-gray-300 transition-colors duration-200">
+                    Үнийн санал авах
+                  </Link>
                 </div>
               </div>
             )}
@@ -361,12 +381,8 @@ const Header = () => {
                       { title: 'Хэвлэлийн үйлчилгээ', desc: 'Ном, каталог, баннер болон бусад', link: '/biz-print' },
                       { title: 'Маркетингийн үйлчилгээ', desc: 'Брэнд, SMM, SEO, контент', link: '/biz-marketing' },
                     ].map((item, i) => (
-                      <Link
-                        key={i}
-                        to={item.link}
-                        onClick={() => setActiveMenu(null)}
-                        className="p-4 rounded-xl border border-gray-200 hover:border-blue-400 hover:bg-blue-50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 ease-out"
-                      >
+                      <Link key={i} to={item.link} onClick={() => setActiveMenu(null)}
+                        className="p-4 rounded-xl border border-gray-200 hover:border-blue-400 hover:bg-blue-50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 ease-out">
                         <p className="text-sm font-semibold text-gray-800">{item.title}</p>
                         <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
                       </Link>
@@ -381,20 +397,30 @@ const Header = () => {
                     ))}
                   </div>
                 </div>
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <Link to="/contact" onClick={() => setActiveMenu(null)}
+                    className="py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold rounded-xl text-center transition-colors duration-200">
+                    Мессеж илгээх
+                  </Link>
+                  <Link to="/quotation" onClick={() => setActiveMenu(null)}
+                    className="py-2.5 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl text-center border border-gray-200 hover:border-gray-300 transition-colors duration-200">
+                    Үнийн санал авах
+                  </Link>
+                </div>
               </div>
             )}
 
             {/* ── ХОЛБОО БАРИХ ── */}
             {activeMenu === 'contact' && (
               <div className="max-w-7xl mx-auto px-6 py-7" style={{ minHeight: "260px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <div className="flex gap-4">
+                <div className="grid grid-cols-4 gap-4">
                   {[
                     { icon: <Phone size={16} className="text-blue-600" />, label: 'Утас', value: '+976 7200-0444', bg: 'bg-blue-50 border-blue-100' },
                     { icon: <Mail size={16} className="text-purple-600" />, label: 'И-мэйл', value: 'bizprintpro@gmail.com', bg: 'bg-purple-50 border-purple-100' },
                     { icon: <MapPin size={16} className="text-red-500" />, label: 'Хаяг', value: 'СБД, B Center 505 тоот', bg: 'bg-red-50 border-red-100' },
                     { icon: <Clock size={16} className="text-green-600" />, label: 'Ажлын цаг', value: 'Да–Ба 09:00–18:00', bg: 'bg-green-50 border-green-100' },
                   ].map((item, i) => (
-                    <div key={i} className={`flex-1 flex items-start gap-3 p-4 rounded-xl border hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 ease-out ${item.bg}`}>
+                    <div key={i} className={`flex items-start gap-3 p-4 rounded-xl border hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 ease-out ${item.bg}`}>
                       <div className="mt-0.5">{item.icon}</div>
                       <div>
                         <p className="text-[11px] text-gray-400 font-medium">{item.label}</p>
@@ -402,16 +428,16 @@ const Header = () => {
                       </div>
                     </div>
                   ))}
-                  <div className="flex flex-col gap-2 justify-center flex-shrink-0">
-                    <Link to="/contact" onClick={() => setActiveMenu(null)}
-                      className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors whitespace-nowrap">
-                      Мессеж илгээх
-                    </Link>
-                    <Link to="/quotation" onClick={() => setActiveMenu(null)}
-                      className="px-5 py-2 bg-white hover:bg-gray-50 text-gray-700 text-sm font-semibold rounded-lg border border-gray-200 transition-colors whitespace-nowrap text-center">
-                      Үнийн санал авах
-                    </Link>
-                  </div>
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <Link to="/contact" onClick={() => setActiveMenu(null)}
+                    className="py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold rounded-xl text-center transition-colors duration-200">
+                    Мессеж илгээх
+                  </Link>
+                  <Link to="/quotation" onClick={() => setActiveMenu(null)}
+                    className="py-2.5 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl text-center border border-gray-200 hover:border-gray-300 transition-colors duration-200">
+                    Үнийн санал авах
+                  </Link>
                 </div>
               </div>
             )}

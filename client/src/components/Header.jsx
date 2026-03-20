@@ -3,7 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   ShoppingCart, Phone, Menu, X, Mail,
   ChevronDown, User, Home, Heart, LogOut, Settings,
-  MapPin, Clock
+  MapPin, Clock, CreditCard, FileText, Image, BookOpen,
+  Tag, Book, CalendarDays, Package,
+  Smartphone, Search, Palette, PenLine,
+  Megaphone, Globe, Video, Sparkles
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -280,19 +283,21 @@ const Header = () => {
                     /* Статик subcategory grid — API хоосон үед */
                     <div className="grid grid-cols-4 gap-3">
                       {[
-                        { name: 'Визит карт', icon: '🪪' },
-                        { name: 'Флаер', icon: '📄' },
-                        { name: 'Баннер', icon: '🖼️' },
-                        { name: 'Каталог', icon: '📚' },
-                        { name: 'Наклейк', icon: '🏷️' },
-                        { name: 'Ном', icon: '📖' },
-                        { name: 'Хуанли', icon: '📅' },
-                        { name: 'Бусад', icon: '✨' },
-                      ].map((item, i) => (
-                        <Link key={i} to="/biz-print" onClick={() => setActiveMenu(null)}
+                        { name: 'Визит карт',  Icon: CreditCard,    color: 'text-blue-500',   bg: 'bg-blue-50'   },
+                        { name: 'Флаер',        Icon: FileText,      color: 'text-sky-500',    bg: 'bg-sky-50'    },
+                        { name: 'Баннер',       Icon: Image,         color: 'text-indigo-500', bg: 'bg-indigo-50' },
+                        { name: 'Каталог',      Icon: BookOpen,      color: 'text-violet-500', bg: 'bg-violet-50' },
+                        { name: 'Наклейк',      Icon: Tag,           color: 'text-pink-500',   bg: 'bg-pink-50'   },
+                        { name: 'Ном',          Icon: Book,          color: 'text-rose-500',   bg: 'bg-rose-50'   },
+                        { name: 'Хуанли',       Icon: CalendarDays,  color: 'text-orange-500', bg: 'bg-orange-50' },
+                        { name: 'Бусад',        Icon: Package,       color: 'text-gray-500',   bg: 'bg-gray-50'   },
+                      ].map(({ name, Icon, color, bg }) => (
+                        <Link key={name} to="/biz-print" onClick={() => setActiveMenu(null)}
                           className="flex items-center gap-2.5 p-2.5 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition-all duration-200 group">
-                          <span className="text-xl">{item.icon}</span>
-                          <span className="text-xs font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">{item.name}</span>
+                          <div className={`w-8 h-8 flex-shrink-0 rounded-lg flex items-center justify-center ${bg}`}>
+                            <Icon size={16} className={color} />
+                          </div>
+                          <span className="text-xs font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">{name}</span>
                         </Link>
                       ))}
                     </div>
@@ -355,19 +360,21 @@ const Header = () => {
                   ) : (
                     <div className="grid grid-cols-4 gap-3">
                       {[
-                        { name: 'SMM', icon: '📱' },
-                        { name: 'SEO', icon: '🔍' },
-                        { name: 'Брэнд дизайн', icon: '🎨' },
-                        { name: 'Контент', icon: '✍️' },
-                        { name: 'Зар сурталчилгаа', icon: '📢' },
-                        { name: 'Вэбсайт', icon: '🌐' },
-                        { name: 'Видео', icon: '🎬' },
-                        { name: 'Бусад', icon: '✨' },
-                      ].map((item, i) => (
-                        <Link key={i} to="/biz-marketing" onClick={() => setActiveMenu(null)}
+                        { name: 'SMM',              Icon: Smartphone,  color: 'text-purple-500', bg: 'bg-purple-50' },
+                        { name: 'SEO',              Icon: Search,      color: 'text-blue-500',   bg: 'bg-blue-50'   },
+                        { name: 'Брэнд дизайн',     Icon: Palette,     color: 'text-pink-500',   bg: 'bg-pink-50'   },
+                        { name: 'Контент',          Icon: PenLine,     color: 'text-indigo-500', bg: 'bg-indigo-50' },
+                        { name: 'Зар сурталчилгаа', Icon: Megaphone,   color: 'text-orange-500', bg: 'bg-orange-50' },
+                        { name: 'Вэбсайт',          Icon: Globe,       color: 'text-sky-500',    bg: 'bg-sky-50'    },
+                        { name: 'Видео',             Icon: Video,       color: 'text-rose-500',   bg: 'bg-rose-50'   },
+                        { name: 'Бусад',             Icon: Sparkles,    color: 'text-gray-500',   bg: 'bg-gray-50'   },
+                      ].map(({ name, Icon, color, bg }) => (
+                        <Link key={name} to="/biz-marketing" onClick={() => setActiveMenu(null)}
                           className="flex items-center gap-2.5 p-2.5 rounded-xl border border-gray-100 hover:border-purple-200 hover:bg-purple-50 transition-all duration-200 group">
-                          <span className="text-xl">{item.icon}</span>
-                          <span className="text-xs font-semibold text-gray-700 group-hover:text-purple-600 transition-colors">{item.name}</span>
+                          <div className={`w-8 h-8 flex-shrink-0 rounded-lg flex items-center justify-center ${bg}`}>
+                            <Icon size={16} className={color} />
+                          </div>
+                          <span className="text-xs font-semibold text-gray-700 group-hover:text-purple-600 transition-colors">{name}</span>
                         </Link>
                       ))}
                     </div>
@@ -399,15 +406,17 @@ const Header = () => {
                 {/* Баруун: Картууд */}
                 <div className="flex-1 grid grid-cols-3 gap-3 content-start">
                   {[
-                    { title: 'Хэвлэлийн үнийн санал', desc: 'Ном, каталог, флаер, баннер болон бусад хэвлэлийн бүтээгдэхүүн', icon: '🖨️', accent: 'hover:border-blue-300 hover:bg-blue-50' },
-                    { title: 'Маркетингийн үнийн санал', desc: 'SEO, SMM, брэнд дизайн, контент маркетинг', icon: '📊', accent: 'hover:border-purple-300 hover:bg-purple-50' },
-                    { title: 'Тусгай захиалга', desc: 'Өвөрмөц болон том хэмжээний захиалгын ажлууд', icon: '⭐', accent: 'hover:border-orange-300 hover:bg-orange-50' },
-                  ].map((item, i) => (
-                    <Link key={i} to="/quotation" onClick={() => setActiveMenu(null)}
-                      className={`p-4 rounded-xl border border-gray-100 transition-all duration-200 ${item.accent}`}>
-                      <span className="text-2xl">{item.icon}</span>
-                      <p className="text-sm font-semibold text-gray-800 mt-2">{item.title}</p>
-                      <p className="text-xs text-gray-500 mt-1 leading-relaxed">{item.desc}</p>
+                    { title: 'Хэвлэлийн үнийн санал', desc: 'Ном, каталог, флаер, баннер болон бусад хэвлэлийн бүтээгдэхүүн', Icon: FileText,  iconColor: 'text-blue-500',   iconBg: 'bg-blue-50',   accent: 'hover:border-blue-300 hover:bg-blue-50' },
+                    { title: 'Маркетингийн үнийн санал', desc: 'SEO, SMM, брэнд дизайн, контент маркетинг',                        Icon: Megaphone, iconColor: 'text-purple-500', iconBg: 'bg-purple-50', accent: 'hover:border-purple-300 hover:bg-purple-50' },
+                    { title: 'Тусгай захиалга',          desc: 'Өвөрмөц болон том хэмжээний захиалгын ажлууд',                     Icon: Sparkles,  iconColor: 'text-orange-500', iconBg: 'bg-orange-50', accent: 'hover:border-orange-300 hover:bg-orange-50' },
+                  ].map(({ title, desc, Icon, iconColor, iconBg, accent }) => (
+                    <Link key={title} to="/quotation" onClick={() => setActiveMenu(null)}
+                      className={`p-4 rounded-xl border border-gray-100 transition-all duration-200 ${accent}`}>
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${iconBg}`}>
+                        <Icon size={18} className={iconColor} />
+                      </div>
+                      <p className="text-sm font-semibold text-gray-800 mt-2">{title}</p>
+                      <p className="text-xs text-gray-500 mt-1 leading-relaxed">{desc}</p>
                     </Link>
                   ))}
                   <div className="col-span-3 flex items-center gap-4 px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 mt-1">
@@ -442,17 +451,19 @@ const Header = () => {
                 {/* Баруун: Links grid */}
                 <div className="flex-1 grid grid-cols-2 gap-3 content-start">
                   {[
-                    { title: 'Манай тухай', desc: 'Компанийн түүх, алсын харагдлага', link: '/about', icon: '🏢' },
-                    { title: 'Манай баг', desc: 'Мэргэжлийн туршлагатай хамт олон', link: '/about', icon: '👥' },
-                    { title: 'Хэвлэлийн үйлчилгээ', desc: 'Ном, каталог, баннер болон бусад', link: '/biz-print', icon: '🖨️' },
-                    { title: 'Маркетингийн үйлчилгээ', desc: 'Брэнд, SMM, SEO, контент', link: '/biz-marketing', icon: '📣' },
-                  ].map((item, i) => (
-                    <Link key={i} to={item.link} onClick={() => setActiveMenu(null)}
+                    { title: 'Манай тухай',           desc: 'Компанийн түүх, алсын харагдлага',  link: '/about',         Icon: BookOpen,  color: 'text-blue-500',   bg: 'bg-blue-50'   },
+                    { title: 'Манай баг',              desc: 'Мэргэжлийн туршлагатай хамт олон',  link: '/about',         Icon: User,      color: 'text-violet-500', bg: 'bg-violet-50' },
+                    { title: 'Хэвлэлийн үйлчилгээ',   desc: 'Ном, каталог, баннер болон бусад',  link: '/biz-print',     Icon: FileText,  color: 'text-sky-500',    bg: 'bg-sky-50'    },
+                    { title: 'Маркетингийн үйлчилгээ', desc: 'Брэнд, SMM, SEO, контент',          link: '/biz-marketing', Icon: Megaphone, color: 'text-purple-500', bg: 'bg-purple-50' },
+                  ].map(({ title, desc, link, Icon, color, bg }) => (
+                    <Link key={title} to={link} onClick={() => setActiveMenu(null)}
                       className="flex items-start gap-3 p-3.5 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition-all duration-200 group">
-                      <span className="text-xl mt-0.5">{item.icon}</span>
+                      <div className={`w-8 h-8 flex-shrink-0 rounded-lg flex items-center justify-center mt-0.5 ${bg}`}>
+                        <Icon size={15} className={color} />
+                      </div>
                       <div>
-                        <p className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">{item.title}</p>
-                        <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
+                        <p className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">{title}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{desc}</p>
                       </div>
                     </Link>
                   ))}

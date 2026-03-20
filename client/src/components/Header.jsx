@@ -171,9 +171,9 @@ const Header = () => {
     </div>
   );
 
-  /* ── Footer row (Бүгдийг үзэх + CTA buttons) ── */
+  /* ── "Бүгдийг үзэх" only — CTA товч байхгүй ── */
   const DropFooter = ({ viewTo, viewLabel, color = 'blue' }) => (
-    <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between gap-3">
+    <div className="mt-3 pt-3 border-t border-gray-100">
       <Link
         to={viewTo}
         onClick={() => setActiveMenu(null)}
@@ -182,16 +182,6 @@ const Header = () => {
       >
         {viewLabel} <ArrowRight size={14} />
       </Link>
-      <div className="flex items-center gap-2">
-        <Link to="/contact" onClick={() => setActiveMenu(null)}
-          className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
-          Мессеж илгээх
-        </Link>
-        <Link to="/quotation" onClick={() => setActiveMenu(null)}
-          className="px-4 py-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg border border-gray-200 hover:border-gray-300 transition-colors whitespace-nowrap">
-          Үнийн санал авах
-        </Link>
-      </div>
     </div>
   );
 
@@ -310,46 +300,45 @@ const Header = () => {
               onMouseEnter={() => clearTimeout(hideTimer.current)}
               onMouseLeave={hide}
             >
+              <div className="max-w-5xl mx-auto">
 
               {/* ── BIZ PRINT ── */}
               {activeMenu === 'print' && (
-                <div className="max-w-7xl mx-auto px-6 py-6 flex gap-8">
-
-                  {/* Зүүн: Subcategory list (2 багана × 4 мөр) */}
+                <div className="px-6 py-5 flex gap-6">
                   <div className="flex-1">
-                    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-3">
-                      Хэвлэлийн төрлүүд
-                    </p>
+                    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-3">Хэвлэлийн төрлүүд</p>
                     {loadingPrint ? <SkeletonRow /> : (
                       <div className="grid grid-cols-2 gap-2">
-                        {(printProducts.length > 1
-                          ? printProducts.slice(1, 9).map(p => ({
-                              name: p.name,
-                              Icon: FileText,
-                              color: 'text-blue-500',
-                              bg: 'bg-blue-50',
-                              to: `/products/${p._id}`,
-                            }))
-                          : PRINT_CATS.map(c => ({ ...c, to: '/biz-print' }))
-                        ).map(({ name, Icon, color, bg, to }) => (
-                          <Link key={name} to={to} onClick={() => setActiveMenu(null)}
-                            className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition-all duration-200 group">
-                            <div className={`w-8 h-8 flex-shrink-0 rounded-lg flex items-center justify-center ${bg}`}>
-                              <Icon size={15} className={color} />
-                            </div>
-                            <span className="text-xs font-semibold text-gray-700 group-hover:text-blue-600 line-clamp-1 transition-colors">{name}</span>
-                          </Link>
-                        ))}
+                        {(printProducts.length >= 2
+                          ? printProducts.slice(1, 9)
+                          : []
+                        ).concat(
+                          printProducts.length < 2
+                            ? PRINT_CATS.map(c => ({ ...c, _id: c.name, to: '/biz-print', isStatic: true }))
+                            : []
+                        ).slice(0, 8).map((item) => {
+                          const isStatic = item.isStatic;
+                          const Icon = isStatic ? item.Icon : FileText;
+                          const color = isStatic ? item.color : 'text-blue-500';
+                          const bg    = isStatic ? item.bg    : 'bg-blue-50';
+                          const to    = isStatic ? item.to    : `/products/${item._id}`;
+                          const name  = item.name;
+                          return (
+                            <Link key={name} to={to} onClick={() => setActiveMenu(null)}
+                              className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition-all duration-200 group">
+                              <div className={`w-8 h-8 flex-shrink-0 rounded-lg flex items-center justify-center ${bg}`}>
+                                <Icon size={15} className={color} />
+                              </div>
+                              <span className="text-xs font-semibold text-gray-700 group-hover:text-blue-600 line-clamp-1 transition-colors">{name}</span>
+                            </Link>
+                          );
+                        })}
                       </div>
                     )}
                     <DropFooter viewTo="/biz-print" viewLabel="Бүгдийг үзэх" />
                   </div>
-
-                  {/* Баруун: Featured бүтээгдэхүүн (1-р бараа) */}
-                  <div className="flex flex-col">
-                    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-3">
-                      Онцлох бүтээгдэхүүн
-                    </p>
+                  <div className="flex flex-col flex-shrink-0">
+                    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-3">Онцлох бүтээгдэхүүн</p>
                     <FeaturedCard
                       item={printProducts[0] ?? null}
                       to={printProducts[0] ? `/products/${printProducts[0]._id}` : '/biz-print'}
@@ -361,41 +350,41 @@ const Header = () => {
 
               {/* ── BIZ MARKETING ── */}
               {activeMenu === 'marketing' && (
-                <div className="max-w-7xl mx-auto px-6 py-6 flex gap-8">
-
+                <div className="px-6 py-5 flex gap-6">
                   <div className="flex-1">
-                    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-3">
-                      Маркетингийн үйлчилгээ
-                    </p>
+                    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-3">Маркетингийн үйлчилгээ</p>
                     {loadingMarketing ? <SkeletonRow /> : (
                       <div className="grid grid-cols-2 gap-2">
-                        {(marketingServices.length > 1
-                          ? marketingServices.slice(1, 9).map(s => ({
-                              name: s.name,
-                              Icon: Megaphone,
-                              color: 'text-purple-500',
-                              bg: 'bg-purple-50',
-                              to: `/services/${s.slug}`,
-                            }))
-                          : MARKETING_CATS.map(c => ({ ...c, to: '/biz-marketing' }))
-                        ).map(({ name, Icon, color, bg, to }) => (
-                          <Link key={name} to={to} onClick={() => setActiveMenu(null)}
-                            className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border border-gray-100 hover:border-purple-200 hover:bg-purple-50 transition-all duration-200 group">
-                            <div className={`w-8 h-8 flex-shrink-0 rounded-lg flex items-center justify-center ${bg}`}>
-                              <Icon size={15} className={color} />
-                            </div>
-                            <span className="text-xs font-semibold text-gray-700 group-hover:text-purple-600 line-clamp-1 transition-colors">{name}</span>
-                          </Link>
-                        ))}
+                        {(marketingServices.length >= 2
+                          ? marketingServices.slice(1, 9)
+                          : []
+                        ).concat(
+                          marketingServices.length < 2
+                            ? MARKETING_CATS.map(c => ({ ...c, _id: c.name, to: '/biz-marketing', isStatic: true }))
+                            : []
+                        ).slice(0, 8).map((item) => {
+                          const isStatic = item.isStatic;
+                          const Icon = isStatic ? item.Icon : Megaphone;
+                          const color = isStatic ? item.color : 'text-purple-500';
+                          const bg    = isStatic ? item.bg    : 'bg-purple-50';
+                          const to    = isStatic ? item.to    : `/services/${item.slug}`;
+                          const name  = item.name;
+                          return (
+                            <Link key={name} to={to} onClick={() => setActiveMenu(null)}
+                              className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border border-gray-100 hover:border-purple-200 hover:bg-purple-50 transition-all duration-200 group">
+                              <div className={`w-8 h-8 flex-shrink-0 rounded-lg flex items-center justify-center ${bg}`}>
+                                <Icon size={15} className={color} />
+                              </div>
+                              <span className="text-xs font-semibold text-gray-700 group-hover:text-purple-600 line-clamp-1 transition-colors">{name}</span>
+                            </Link>
+                          );
+                        })}
                       </div>
                     )}
                     <DropFooter viewTo="/biz-marketing" viewLabel="Бүгдийг үзэх" color="purple" />
                   </div>
-
-                  <div className="flex flex-col">
-                    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-3">
-                      Онцлох үйлчилгээ
-                    </p>
+                  <div className="flex flex-col flex-shrink-0">
+                    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-3">Онцлох үйлчилгээ</p>
                     <FeaturedCard
                       item={marketingServices[0]
                         ? { ...marketingServices[0], price: marketingServices[0].price ?? 0, discount: 0 }
@@ -409,9 +398,9 @@ const Header = () => {
 
               {/* ── ҮНИЙН САНАЛ ── */}
               {activeMenu === 'quotation' && (
-                <div className="max-w-7xl mx-auto px-6 py-6">
+                <div className="px-6 py-5">
                   <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-3">Үнийн санал авах</p>
-                  <div className="flex gap-4">
+                  <div className="flex gap-3">
                     {[
                       { title: 'Хэвлэлийн үнийн санал',   desc: 'Ном, каталог, флаер, баннер',  Icon: FileText,  iColor: 'text-blue-500',   iBg: 'bg-blue-50',   hover: 'hover:border-blue-200 hover:bg-blue-50'   },
                       { title: 'Маркетингийн үнийн санал', desc: 'SEO, SMM, брэнд дизайн',       Icon: Megaphone, iColor: 'text-purple-500', iBg: 'bg-purple-50', hover: 'hover:border-purple-200 hover:bg-purple-50' },
@@ -428,24 +417,14 @@ const Header = () => {
                         </div>
                       </Link>
                     ))}
-                    <div className="w-52 flex-shrink-0 bg-gray-50 rounded-xl p-4 border border-gray-100 flex flex-col justify-center gap-2">
-                      <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Шуурхай холбогдох</p>
+                    <div className="w-44 flex-shrink-0 bg-gray-50 rounded-xl p-4 border border-gray-100 flex flex-col justify-center gap-2">
+                      <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Холбоо барих</p>
                       <p className="text-sm font-bold text-gray-800 flex items-center gap-1.5 mt-1">
                         <Phone size={13} className="text-blue-500" /> +976 7200-0444
                       </p>
                       <p className="text-xs text-gray-500 flex items-center gap-1.5">
                         <Clock size={12} className="text-gray-400" /> Да–Ба 09:00–18:00
                       </p>
-                      <div className="flex flex-col gap-1.5 mt-2">
-                        <Link to="/contact" onClick={() => setActiveMenu(null)}
-                          className="py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg text-center transition-colors">
-                          Мессеж илгээх
-                        </Link>
-                        <Link to="/quotation" onClick={() => setActiveMenu(null)}
-                          className="py-1.5 bg-white hover:bg-gray-100 text-gray-700 text-xs font-semibold rounded-lg text-center border border-gray-200 transition-colors">
-                          Үнийн санал авах
-                        </Link>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -453,9 +432,9 @@ const Header = () => {
 
               {/* ── БИДНИЙ ТУХАЙ ── */}
               {activeMenu === 'about' && (
-                <div className="max-w-7xl mx-auto px-6 py-6">
+                <div className="px-6 py-5">
                   <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-3">Бидний тухай</p>
-                  <div className="grid grid-cols-2 gap-2 max-w-xl">
+                  <div className="grid grid-cols-2 gap-2 max-w-lg">
                     {[
                       { title: 'Манай тухай',           desc: 'Компанийн түүх, алсын харагдлага',  link: '/about',         Icon: Building2, color: 'text-blue-500',   bg: 'bg-blue-50'   },
                       { title: 'Манай баг',              desc: 'Мэргэжлийн туршлагатай хамт олон',  link: '/about',         Icon: Users,     color: 'text-violet-500', bg: 'bg-violet-50' },
@@ -474,34 +453,22 @@ const Header = () => {
                       </Link>
                     ))}
                   </div>
-                  <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between gap-3">
-                    <div className="flex gap-6">
-                      {[['15+', 'Жилийн туршлага'], ['10,000+', 'Үйлчлүүлэгч'], ['100%', 'Чанарын баталгаа']].map(([n, l]) => (
-                        <div key={n}>
-                          <p className="text-base font-bold text-blue-600">{n}</p>
-                          <p className="text-[11px] text-gray-400">{l}</p>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Link to="/contact" onClick={() => setActiveMenu(null)}
-                        className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors">
-                        Мессеж илгээх
-                      </Link>
-                      <Link to="/quotation" onClick={() => setActiveMenu(null)}
-                        className="px-4 py-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg border border-gray-200 transition-colors">
-                        Үнийн санал авах
-                      </Link>
-                    </div>
+                  <div className="mt-3 pt-3 border-t border-gray-100 flex gap-6">
+                    {[['15+', 'Жилийн туршлага'], ['10,000+', 'Үйлчлүүлэгч'], ['100%', 'Чанарын баталгаа']].map(([n, l]) => (
+                      <div key={n}>
+                        <p className="text-base font-bold text-blue-600">{n}</p>
+                        <p className="text-[11px] text-gray-400">{l}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
 
               {/* ── ХОЛБОО БАРИХ ── */}
               {activeMenu === 'contact' && (
-                <div className="max-w-7xl mx-auto px-6 py-6">
+                <div className="px-6 py-5">
                   <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-3">Холбоо барих</p>
-                  <div className="flex gap-4">
+                  <div className="flex gap-3">
                     {[
                       { Icon: Phone,  label: 'Утас',      value: '+976 7200-0444',        bg: 'bg-blue-50   border-blue-100',   iColor: 'text-blue-600'   },
                       { Icon: Mail,   label: 'И-мэйл',    value: 'bizprintpro@gmail.com', bg: 'bg-purple-50 border-purple-100', iColor: 'text-purple-600' },
@@ -532,6 +499,7 @@ const Header = () => {
                 </div>
               )}
 
+            </div>{/* /max-w-5xl */}
             </div>
           )}
         </div>

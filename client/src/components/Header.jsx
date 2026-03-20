@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   ShoppingCart, Phone, Menu, X, Mail,
   ChevronDown, User, Home, Heart, LogOut, Settings,
-  MapPin, Clock, ArrowRight
+  MapPin, Clock
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -206,15 +206,15 @@ const Header = () => {
             </nav>
           </div>
 
-          {/* ════ DROPDOWNS ════ */}
+          {/* ════ DROPDOWNS — BestComputers.mn загвар ════ */}
           <div
-            className="absolute left-0 right-0 bg-white shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-40"
+            className="absolute left-0 right-0 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.10)] z-40 border-t border-gray-100"
             style={{
               top: '100%',
               opacity: activeMenu ? 1 : 0,
-              transform: activeMenu ? 'translateY(0px)' : 'translateY(15px)',
+              transform: activeMenu ? 'translateY(0px)' : 'translateY(12px)',
               pointerEvents: activeMenu ? 'auto' : 'none',
-              transition: 'opacity 0.25s ease, transform 0.25s ease',
+              transition: 'opacity 0.22s ease, transform 0.22s ease',
             }}
             onMouseEnter={() => clearTimeout(hideTimer.current)}
             onMouseLeave={hide}
@@ -222,222 +222,288 @@ const Header = () => {
 
             {/* ── BIZ PRINT ── */}
             {activeMenu === 'print' && (
-              <div className="max-w-7xl mx-auto px-6 py-7" style={{ minHeight: "260px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                {loadingPrint ? <SkeletonGrid /> : (
-                  <>
-                    <div className="grid grid-cols-8 gap-5">
-                      {printProducts.map(p => (
-                        <Link
-                          key={p._id}
-                          to={`/products/${p._id}`}
-                          onClick={() => setActiveMenu(null)}
-                          className="group/c rounded-xl border border-gray-200 overflow-hidden hover:border-blue-500 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 ease-out bg-white"
-                        >
-                          <div className="h-20 bg-gray-50 overflow-hidden p-2">
-                            <img
-                              src={getImageUrl(p.image)}
-                              alt={p.name}
-                              className="w-full h-full object-contain group-hover/c:scale-110 transition-transform duration-500 ease-out"
-                              onError={e => { e.target.src = 'https://via.placeholder.com/300x300?text=Product'; }}
-                            />
+              <div className="max-w-7xl mx-auto px-6 py-6 flex gap-6">
+                {/* Зүүн: Cover зураг + "Бүгдийг үзэх" */}
+                <div className="w-48 flex-shrink-0 flex flex-col gap-3">
+                  <div className="relative rounded-xl overflow-hidden bg-gradient-to-br from-blue-600 to-blue-400 h-36">
+                    <div className="absolute inset-0 flex flex-col justify-end p-4">
+                      <p className="text-white text-xs font-medium opacity-80">Хэвлэлийн</p>
+                      <p className="text-white text-lg font-bold leading-tight">Biz Print</p>
+                    </div>
+                  </div>
+                  <Link to="/biz-print" onClick={() => setActiveMenu(null)}
+                    className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg text-center transition-colors duration-200">
+                    Бүгдийг үзэх →
+                  </Link>
+                  <Link to="/quotation" onClick={() => setActiveMenu(null)}
+                    className="w-full py-2 bg-white hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg text-center border border-gray-200 hover:border-gray-300 transition-colors duration-200">
+                    Үнийн санал авах
+                  </Link>
+                </div>
+
+                {/* Баруун: Products grid */}
+                <div className="flex-1">
+                  {loadingPrint ? (
+                    <div className="grid grid-cols-4 gap-3">
+                      {[...Array(8)].map((_, i) => (
+                        <div key={i} className="rounded-xl border border-gray-100 overflow-hidden">
+                          <div className="h-16 bg-gray-100 animate-pulse" />
+                          <div className="p-2.5 space-y-1.5">
+                            <div className="h-2.5 bg-gray-100 rounded animate-pulse" />
+                            <div className="h-2 bg-gray-100 rounded animate-pulse w-2/3" />
                           </div>
-                          <div className="p-4 border-t border-gray-100">
-                            <p className="text-xs font-semibold text-gray-800 line-clamp-2 min-h-[28px] group-hover/c:text-blue-600 group-hover/c:underline underline-offset-2 transition-colors">{p.name}</p>
-                            <div className="mt-1.5">
-                              {p.discount ? (
-                                <div className="flex items-baseline gap-1.5">
-                                  <span className="text-sm font-bold text-red-600">{formatPrice(p.price * (1 - p.discount / 100))}₮</span>
-                                  <span className="text-xs text-gray-400 line-through">{formatPrice(p.price)}₮</span>
-                                </div>
-                              ) : (
-                                <span className="text-sm font-bold text-gray-900">{formatPrice(p.price)}₮</span>
-                              )}
-                            </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : printProducts.length > 0 ? (
+                    <div className="grid grid-cols-4 gap-3">
+                      {printProducts.map(p => (
+                        <Link key={p._id} to={`/products/${p._id}`} onClick={() => setActiveMenu(null)}
+                          className="group/c flex items-center gap-2.5 p-2.5 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition-all duration-200">
+                          <div className="w-10 h-10 flex-shrink-0 bg-gray-50 rounded-lg overflow-hidden">
+                            <img src={getImageUrl(p.image)} alt={p.name}
+                              className="w-full h-full object-contain group-hover/c:scale-110 transition-transform duration-300"
+                              onError={e => { e.target.src = 'https://via.placeholder.com/80x80?text=P'; }} />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold text-gray-700 line-clamp-1 group-hover/c:text-blue-600 transition-colors">{p.name}</p>
+                            <p className="text-xs font-bold text-blue-600 mt-0.5">
+                              {p.discount
+                                ? formatPrice(p.price * (1 - p.discount / 100)) + '₮'
+                                : formatPrice(p.price) + '₮'}
+                            </p>
                           </div>
                         </Link>
                       ))}
                     </div>
-                    <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
-                      <span className="text-xs text-gray-400">Хэвлэлийн бүтээгдэхүүн</span>
-                      <Link to="/biz-print" onClick={() => setActiveMenu(null)}
-                        className="flex items-center gap-1.5 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">
-                        Бүгдийг үзэх <ArrowRight size={14} />
-                      </Link>
+                  ) : (
+                    /* Статик subcategory grid — API хоосон үед */
+                    <div className="grid grid-cols-4 gap-3">
+                      {[
+                        { name: 'Визит карт', icon: '🪪' },
+                        { name: 'Флаер', icon: '📄' },
+                        { name: 'Баннер', icon: '🖼️' },
+                        { name: 'Каталог', icon: '📚' },
+                        { name: 'Наклейк', icon: '🏷️' },
+                        { name: 'Ном', icon: '📖' },
+                        { name: 'Хуанли', icon: '📅' },
+                        { name: 'Бусад', icon: '✨' },
+                      ].map((item, i) => (
+                        <Link key={i} to="/biz-print" onClick={() => setActiveMenu(null)}
+                          className="flex items-center gap-2.5 p-2.5 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition-all duration-200 group">
+                          <span className="text-xl">{item.icon}</span>
+                          <span className="text-xs font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">{item.name}</span>
+                        </Link>
+                      ))}
                     </div>
-                    <div className="mt-4 grid grid-cols-2 gap-2">
-                      <Link to="/contact" onClick={() => setActiveMenu(null)}
-                        className="py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold rounded-xl text-center transition-colors duration-200">
-                        Мессеж илгээх
-                      </Link>
-                      <Link to="/quotation" onClick={() => setActiveMenu(null)}
-                        className="py-2.5 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl text-center border border-gray-200 hover:border-gray-300 transition-colors duration-200">
-                        Үнийн санал авах
-                      </Link>
-                    </div>
-                  </>
-                )}
+                  )}
+                </div>
               </div>
             )}
 
             {/* ── BIZ MARKETING ── */}
             {activeMenu === 'marketing' && (
-              <div className="max-w-7xl mx-auto px-6 py-7" style={{ minHeight: "260px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                {loadingMarketing ? <SkeletonGrid /> : (
-                  <>
-                    <div className="grid grid-cols-8 gap-5">
-                      {marketingServices.map(s => (
-                        <Link
-                          key={s._id}
-                          to={`/services/${s.slug}`}
-                          onClick={() => setActiveMenu(null)}
-                          className="group/c rounded-xl border border-gray-200 overflow-hidden hover:border-purple-500 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 ease-out bg-white"
-                        >
-                          <div className="h-20 bg-gray-50 overflow-hidden">
-                            {s.image ? (
-                              <img
-                                src={getImageUrl(s.image)}
-                                alt={s.name}
-                                className="w-full h-full object-cover group-hover/c:scale-110 transition-transform duration-500 ease-out"
-                                onError={e => { e.target.src = 'https://via.placeholder.com/300x200?text=Service'; }}
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-gradient-to-br from-purple-50 to-pink-50" />
-                            )}
+              <div className="max-w-7xl mx-auto px-6 py-6 flex gap-6">
+                {/* Зүүн: Cover */}
+                <div className="w-48 flex-shrink-0 flex flex-col gap-3">
+                  <div className="relative rounded-xl overflow-hidden bg-gradient-to-br from-purple-600 to-pink-400 h-36">
+                    <div className="absolute inset-0 flex flex-col justify-end p-4">
+                      <p className="text-white text-xs font-medium opacity-80">Дижитал</p>
+                      <p className="text-white text-lg font-bold leading-tight">Biz Marketing</p>
+                    </div>
+                  </div>
+                  <Link to="/biz-marketing" onClick={() => setActiveMenu(null)}
+                    className="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded-lg text-center transition-colors duration-200">
+                    Бүгдийг үзэх →
+                  </Link>
+                  <Link to="/quotation" onClick={() => setActiveMenu(null)}
+                    className="w-full py-2 bg-white hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg text-center border border-gray-200 hover:border-gray-300 transition-colors duration-200">
+                    Үнийн санал авах
+                  </Link>
+                </div>
+
+                {/* Баруун: Services grid */}
+                <div className="flex-1">
+                  {loadingMarketing ? (
+                    <div className="grid grid-cols-4 gap-3">
+                      {[...Array(8)].map((_, i) => (
+                        <div key={i} className="rounded-xl border border-gray-100 overflow-hidden">
+                          <div className="h-16 bg-gray-100 animate-pulse" />
+                          <div className="p-2.5 space-y-1.5">
+                            <div className="h-2.5 bg-gray-100 rounded animate-pulse" />
                           </div>
-                          <div className="p-4 border-t border-gray-100">
-                            <p className="text-xs font-semibold text-gray-800 line-clamp-2 min-h-[28px] group-hover/c:text-purple-600 group-hover/c:underline underline-offset-2 transition-colors">{s.name}</p>
-                            {s.shortDescription && (
-                              <p className="text-[11px] text-gray-400 line-clamp-1 mt-1">{s.shortDescription}</p>
-                            )}
-                            {s.price && <p className="text-sm font-bold text-purple-600 mt-1.5">{s.price}</p>}
+                        </div>
+                      ))}
+                    </div>
+                  ) : marketingServices.length > 0 ? (
+                    <div className="grid grid-cols-4 gap-3">
+                      {marketingServices.map(s => (
+                        <Link key={s._id} to={`/services/${s.slug}`} onClick={() => setActiveMenu(null)}
+                          className="group/c flex items-center gap-2.5 p-2.5 rounded-xl border border-gray-100 hover:border-purple-200 hover:bg-purple-50 transition-all duration-200">
+                          <div className="w-10 h-10 flex-shrink-0 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg overflow-hidden">
+                            {s.image
+                              ? <img src={getImageUrl(s.image)} alt={s.name} className="w-full h-full object-cover group-hover/c:scale-110 transition-transform duration-300" onError={e => { e.target.src = 'https://via.placeholder.com/80x80?text=S'; }} />
+                              : <div className="w-full h-full" />}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold text-gray-700 line-clamp-1 group-hover/c:text-purple-600 transition-colors">{s.name}</p>
+                            {s.price && <p className="text-xs font-bold text-purple-600 mt-0.5">{s.price}</p>}
                           </div>
                         </Link>
                       ))}
                     </div>
-                    <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
-                      <span className="text-xs text-gray-400">Дижитал маркетинг</span>
-                      <Link to="/biz-marketing" onClick={() => setActiveMenu(null)}
-                        className="flex items-center gap-1.5 text-sm font-semibold text-purple-600 hover:text-purple-700 transition-colors">
-                        Бүгдийг үзэх <ArrowRight size={14} />
-                      </Link>
+                  ) : (
+                    <div className="grid grid-cols-4 gap-3">
+                      {[
+                        { name: 'SMM', icon: '📱' },
+                        { name: 'SEO', icon: '🔍' },
+                        { name: 'Брэнд дизайн', icon: '🎨' },
+                        { name: 'Контент', icon: '✍️' },
+                        { name: 'Зар сурталчилгаа', icon: '📢' },
+                        { name: 'Вэбсайт', icon: '🌐' },
+                        { name: 'Видео', icon: '🎬' },
+                        { name: 'Бусад', icon: '✨' },
+                      ].map((item, i) => (
+                        <Link key={i} to="/biz-marketing" onClick={() => setActiveMenu(null)}
+                          className="flex items-center gap-2.5 p-2.5 rounded-xl border border-gray-100 hover:border-purple-200 hover:bg-purple-50 transition-all duration-200 group">
+                          <span className="text-xl">{item.icon}</span>
+                          <span className="text-xs font-semibold text-gray-700 group-hover:text-purple-600 transition-colors">{item.name}</span>
+                        </Link>
+                      ))}
                     </div>
-                    <div className="mt-4 grid grid-cols-2 gap-2">
-                      <Link to="/contact" onClick={() => setActiveMenu(null)}
-                        className="py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold rounded-xl text-center transition-colors duration-200">
-                        Мессеж илгээх
-                      </Link>
-                      <Link to="/quotation" onClick={() => setActiveMenu(null)}
-                        className="py-2.5 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl text-center border border-gray-200 hover:border-gray-300 transition-colors duration-200">
-                        Үнийн санал авах
-                      </Link>
-                    </div>
-                  </>
-                )}
+                  )}
+                </div>
               </div>
             )}
 
             {/* ── ҮНИЙН САНАЛ ── */}
             {activeMenu === 'quotation' && (
-              <div className="max-w-7xl mx-auto px-6 py-7" style={{ minHeight: "260px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <div className="flex gap-4">
-                  {[
-                    { title: 'Хэвлэлийн үнийн санал', desc: 'Ном, каталог, флаер, баннер', accent: 'border-blue-500 bg-blue-50 hover:bg-blue-100' },
-                    { title: 'Маркетингийн үнийн санал', desc: 'SEO, SMM, брэнд дизайн', accent: 'border-purple-500 bg-purple-50 hover:bg-purple-100' },
-                    { title: 'Тусгай захиалга', desc: 'Өвөрмөц болон том хэмжээний ажил', accent: 'border-orange-500 bg-orange-50 hover:bg-orange-100' },
-                  ].map((item, i) => (
-                    <Link key={i} to="/quotation" onClick={() => setActiveMenu(null)}
-                      className={`flex-1 p-5 rounded-xl border-l-4 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md ${item.accent}`}>
-                      <p className="text-sm font-semibold text-gray-800">{item.title}</p>
-                      <p className="text-xs text-gray-500 mt-1">{item.desc}</p>
-                    </Link>
-                  ))}
-                  <div className="w-56 flex-shrink-0 bg-gray-50 rounded-xl p-5 border border-gray-200 space-y-2">
-                    <p className="text-xs font-semibold text-gray-500 mb-2">Шуурхай холбогдох</p>
-                    <p className="text-sm font-bold text-gray-800 flex items-center gap-1.5"><Phone size={13} className="text-blue-500" /> +976 7200-0444</p>
-                    <p className="text-xs text-gray-500 flex items-center gap-1.5"><Clock size={12} className="text-gray-400" /> Да–Ба 09:00–18:00</p>
+              <div className="max-w-7xl mx-auto px-6 py-6 flex gap-6">
+                {/* Зүүн: Cover */}
+                <div className="w-48 flex-shrink-0 flex flex-col gap-3">
+                  <div className="relative rounded-xl overflow-hidden bg-gradient-to-br from-orange-500 to-yellow-400 h-36">
+                    <div className="absolute inset-0 flex flex-col justify-end p-4">
+                      <p className="text-white text-xs font-medium opacity-80">Хямд, хурдан</p>
+                      <p className="text-white text-lg font-bold leading-tight">Үнийн санал</p>
+                    </div>
                   </div>
-                </div>
-                <div className="mt-4 grid grid-cols-2 gap-2">
                   <Link to="/contact" onClick={() => setActiveMenu(null)}
-                    className="py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold rounded-xl text-center transition-colors duration-200">
+                    className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg text-center transition-colors duration-200">
                     Мессеж илгээх
                   </Link>
                   <Link to="/quotation" onClick={() => setActiveMenu(null)}
-                    className="py-2.5 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl text-center border border-gray-200 hover:border-gray-300 transition-colors duration-200">
+                    className="w-full py-2 bg-white hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg text-center border border-gray-200 hover:border-gray-300 transition-colors duration-200">
                     Үнийн санал авах
                   </Link>
+                </div>
+                {/* Баруун: Картууд */}
+                <div className="flex-1 grid grid-cols-3 gap-3 content-start">
+                  {[
+                    { title: 'Хэвлэлийн үнийн санал', desc: 'Ном, каталог, флаер, баннер болон бусад хэвлэлийн бүтээгдэхүүн', icon: '🖨️', accent: 'hover:border-blue-300 hover:bg-blue-50' },
+                    { title: 'Маркетингийн үнийн санал', desc: 'SEO, SMM, брэнд дизайн, контент маркетинг', icon: '📊', accent: 'hover:border-purple-300 hover:bg-purple-50' },
+                    { title: 'Тусгай захиалга', desc: 'Өвөрмөц болон том хэмжээний захиалгын ажлууд', icon: '⭐', accent: 'hover:border-orange-300 hover:bg-orange-50' },
+                  ].map((item, i) => (
+                    <Link key={i} to="/quotation" onClick={() => setActiveMenu(null)}
+                      className={`p-4 rounded-xl border border-gray-100 transition-all duration-200 ${item.accent}`}>
+                      <span className="text-2xl">{item.icon}</span>
+                      <p className="text-sm font-semibold text-gray-800 mt-2">{item.title}</p>
+                      <p className="text-xs text-gray-500 mt-1 leading-relaxed">{item.desc}</p>
+                    </Link>
+                  ))}
+                  <div className="col-span-3 flex items-center gap-4 px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 mt-1">
+                    <Phone size={14} className="text-blue-500 flex-shrink-0" />
+                    <span className="text-sm font-bold text-gray-800">+976 7200-0444</span>
+                    <span className="text-xs text-gray-400 flex items-center gap-1"><Clock size={11} /> Да–Ба 09:00–18:00</span>
+                  </div>
                 </div>
               </div>
             )}
 
             {/* ── БИДНИЙ ТУХАЙ ── */}
             {activeMenu === 'about' && (
-              <div className="max-w-7xl mx-auto px-6 py-7" style={{ minHeight: "260px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <div className="flex gap-6">
-                  <div className="flex-1 grid grid-cols-2 gap-4">
-                    {[
-                      { title: 'Манай тухай', desc: 'Компанийн түүх, алсын харагдлага', link: '/about' },
-                      { title: 'Манай баг', desc: 'Мэргэжлийн туршлагатай хамт олон', link: '/about' },
-                      { title: 'Хэвлэлийн үйлчилгээ', desc: 'Ном, каталог, баннер болон бусад', link: '/biz-print' },
-                      { title: 'Маркетингийн үйлчилгээ', desc: 'Брэнд, SMM, SEO, контент', link: '/biz-marketing' },
-                    ].map((item, i) => (
-                      <Link key={i} to={item.link} onClick={() => setActiveMenu(null)}
-                        className="p-4 rounded-xl border border-gray-200 hover:border-blue-400 hover:bg-blue-50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 ease-out">
-                        <p className="text-sm font-semibold text-gray-800">{item.title}</p>
-                        <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
-                      </Link>
-                    ))}
+              <div className="max-w-7xl mx-auto px-6 py-6 flex gap-6">
+                {/* Зүүн: Cover */}
+                <div className="w-48 flex-shrink-0 flex flex-col gap-3">
+                  <div className="relative rounded-xl overflow-hidden bg-gradient-to-br from-gray-700 to-gray-500 h-36">
+                    <div className="absolute inset-0 flex flex-col justify-end p-4">
+                      <p className="text-white text-xs font-medium opacity-80">15+ жил</p>
+                      <p className="text-white text-lg font-bold leading-tight">BIZ PRINT PRO</p>
+                    </div>
                   </div>
-                  <div className="w-52 flex-shrink-0 border-l border-gray-100 pl-6 flex flex-col justify-center gap-4">
+                  <Link to="/contact" onClick={() => setActiveMenu(null)}
+                    className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg text-center transition-colors duration-200">
+                    Мессеж илгээх
+                  </Link>
+                  <Link to="/quotation" onClick={() => setActiveMenu(null)}
+                    className="w-full py-2 bg-white hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg text-center border border-gray-200 hover:border-gray-300 transition-colors duration-200">
+                    Үнийн санал авах
+                  </Link>
+                </div>
+                {/* Баруун: Links grid */}
+                <div className="flex-1 grid grid-cols-2 gap-3 content-start">
+                  {[
+                    { title: 'Манай тухай', desc: 'Компанийн түүх, алсын харагдлага', link: '/about', icon: '🏢' },
+                    { title: 'Манай баг', desc: 'Мэргэжлийн туршлагатай хамт олон', link: '/about', icon: '👥' },
+                    { title: 'Хэвлэлийн үйлчилгээ', desc: 'Ном, каталог, баннер болон бусад', link: '/biz-print', icon: '🖨️' },
+                    { title: 'Маркетингийн үйлчилгээ', desc: 'Брэнд, SMM, SEO, контент', link: '/biz-marketing', icon: '📣' },
+                  ].map((item, i) => (
+                    <Link key={i} to={item.link} onClick={() => setActiveMenu(null)}
+                      className="flex items-start gap-3 p-3.5 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition-all duration-200 group">
+                      <span className="text-xl mt-0.5">{item.icon}</span>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">{item.title}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
+                      </div>
+                    </Link>
+                  ))}
+                  <div className="col-span-2 flex gap-6 px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 mt-1">
                     {[['15+', 'Жилийн туршлага'], ['10,000+', 'Үйлчлүүлэгч'], ['100%', 'Чанарын баталгаа']].map(([n, l]) => (
                       <div key={n}>
-                        <p className="text-lg font-bold text-blue-600">{n}</p>
+                        <p className="text-base font-bold text-blue-600">{n}</p>
                         <p className="text-xs text-gray-500">{l}</p>
                       </div>
                     ))}
                   </div>
-                </div>
-                <div className="mt-4 grid grid-cols-2 gap-2">
-                  <Link to="/contact" onClick={() => setActiveMenu(null)}
-                    className="py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold rounded-xl text-center transition-colors duration-200">
-                    Мессеж илгээх
-                  </Link>
-                  <Link to="/quotation" onClick={() => setActiveMenu(null)}
-                    className="py-2.5 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl text-center border border-gray-200 hover:border-gray-300 transition-colors duration-200">
-                    Үнийн санал авах
-                  </Link>
                 </div>
               </div>
             )}
 
             {/* ── ХОЛБОО БАРИХ ── */}
             {activeMenu === 'contact' && (
-              <div className="max-w-7xl mx-auto px-6 py-7" style={{ minHeight: "260px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <div className="grid grid-cols-4 gap-4">
-                  {[
-                    { icon: <Phone size={16} className="text-blue-600" />, label: 'Утас', value: '+976 7200-0444', bg: 'bg-blue-50 border-blue-100' },
-                    { icon: <Mail size={16} className="text-purple-600" />, label: 'И-мэйл', value: 'bizprintpro@gmail.com', bg: 'bg-purple-50 border-purple-100' },
-                    { icon: <MapPin size={16} className="text-red-500" />, label: 'Хаяг', value: 'СБД, B Center 505 тоот', bg: 'bg-red-50 border-red-100' },
-                    { icon: <Clock size={16} className="text-green-600" />, label: 'Ажлын цаг', value: 'Да–Ба 09:00–18:00', bg: 'bg-green-50 border-green-100' },
-                  ].map((item, i) => (
-                    <div key={i} className={`flex items-start gap-3 p-4 rounded-xl border hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 ease-out ${item.bg}`}>
-                      <div className="mt-0.5">{item.icon}</div>
-                      <div>
-                        <p className="text-[11px] text-gray-400 font-medium">{item.label}</p>
-                        <p className="text-sm font-semibold text-gray-800 mt-0.5">{item.value}</p>
-                      </div>
+              <div className="max-w-7xl mx-auto px-6 py-6 flex gap-6">
+                {/* Зүүн: Cover */}
+                <div className="w-48 flex-shrink-0 flex flex-col gap-3">
+                  <div className="relative rounded-xl overflow-hidden bg-gradient-to-br from-blue-500 to-cyan-400 h-36">
+                    <div className="absolute inset-0 flex flex-col justify-end p-4">
+                      <p className="text-white text-xs font-medium opacity-80">Шуурхай</p>
+                      <p className="text-white text-lg font-bold leading-tight">Холбоо барих</p>
                     </div>
-                  ))}
-                </div>
-                <div className="mt-4 grid grid-cols-2 gap-2">
+                  </div>
                   <Link to="/contact" onClick={() => setActiveMenu(null)}
-                    className="py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold rounded-xl text-center transition-colors duration-200">
+                    className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg text-center transition-colors duration-200">
                     Мессеж илгээх
                   </Link>
                   <Link to="/quotation" onClick={() => setActiveMenu(null)}
-                    className="py-2.5 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl text-center border border-gray-200 hover:border-gray-300 transition-colors duration-200">
+                    className="w-full py-2 bg-white hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg text-center border border-gray-200 hover:border-gray-300 transition-colors duration-200">
                     Үнийн санал авах
                   </Link>
+                </div>
+                {/* Баруун: Contact cards */}
+                <div className="flex-1 grid grid-cols-2 gap-3 content-start">
+                  {[
+                    { icon: <Phone size={18} className="text-blue-600" />, label: 'Утас', value: '+976 7200-0444', bg: 'bg-blue-50 border-blue-100 hover:border-blue-300' },
+                    { icon: <Mail size={18} className="text-purple-600" />, label: 'И-мэйл', value: 'bizprintpro@gmail.com', bg: 'bg-purple-50 border-purple-100 hover:border-purple-300' },
+                    { icon: <MapPin size={18} className="text-red-500" />, label: 'Хаяг', value: 'СБД, B Center 505 тоот', bg: 'bg-red-50 border-red-100 hover:border-red-300' },
+                    { icon: <Clock size={18} className="text-green-600" />, label: 'Ажлын цаг', value: 'Да–Ба 09:00–18:00', bg: 'bg-green-50 border-green-100 hover:border-green-300' },
+                  ].map((item, i) => (
+                    <div key={i} className={`flex items-center gap-3 p-3.5 rounded-xl border transition-all duration-200 ${item.bg}`}>
+                      <div className="flex-shrink-0">{item.icon}</div>
+                      <div>
+                        <p className="text-[11px] text-gray-400 font-medium">{item.label}</p>
+                        <p className="text-sm font-semibold text-gray-800">{item.value}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}

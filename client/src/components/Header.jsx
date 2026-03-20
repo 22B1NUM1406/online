@@ -80,11 +80,11 @@ const Header = () => {
   );
 
   const SkeletonGrid = () => (
-    <div className="grid grid-cols-8 gap-4 p-5">
+    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-5 p-5">
       {[...Array(8)].map((_, i) => (
         <div key={i} className="rounded-xl overflow-hidden border border-gray-100">
-          <div className="h-16 bg-gray-100 animate-pulse" />
-          <div className="p-3 space-y-1.5">
+          <div className="h-20 bg-gray-100 animate-pulse" />
+          <div className="p-4 space-y-1.5">
             <div className="h-2.5 bg-gray-100 rounded animate-pulse" />
             <div className="h-2.5 bg-gray-100 rounded animate-pulse w-1/2" />
           </div>
@@ -138,7 +138,9 @@ const Header = () => {
                 <ChevronDown size={12} />
               </button>
               {userMenuOpen && (
-                <div className="absolute right-0 mt-1 w-52 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 z-50">
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setUserMenuOpen(false)} />
+                  <div className="absolute right-0 mt-1 w-52 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 z-50">
                   {!isAuthenticated ? (
                     <Link to="/login" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
                       <User size={15} /> Нэвтрэх / Бүртгүүлэх
@@ -160,6 +162,7 @@ const Header = () => {
                     </>
                   )}
                 </div>
+                </>
               )}
             </div>
 
@@ -204,14 +207,14 @@ const Header = () => {
           </div>
 
           {/* ════ DROPDOWNS ════ */}
-          {/* ── #1 & #8 & #9: Floating panel + fade+slide animation + premium shadow ── */}
           <div
-            className="absolute left-0 right-0 bg-white/95 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-40 transition-all duration-300 ease-out"
+            className="absolute left-0 right-0 bg-white/95 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-40"
             style={{
               top: '100%',
               opacity: activeMenu ? 1 : 0,
-              transform: activeMenu ? 'translateY(0px)' : 'translateY(10px)',
+              transform: activeMenu ? 'translateY(0px)' : 'translateY(15px)',
               pointerEvents: activeMenu ? 'auto' : 'none',
+              transition: 'opacity 0.25s ease, transform 0.25s ease',
             }}
             onMouseEnter={() => clearTimeout(hideTimer.current)}
             onMouseLeave={hide}
@@ -219,21 +222,18 @@ const Header = () => {
 
             {/* ── BIZ PRINT ── */}
             {activeMenu === 'print' && (
-              <div className="max-w-7xl mx-auto px-6 py-7" style={{ minHeight: "220px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+              <div className="max-w-7xl mx-auto px-6 py-7" style={{ minHeight: "260px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                 {loadingPrint ? <SkeletonGrid /> : (
                   <>
-                    {/* ── #5: gap-4, card p-3.5 ── */}
-                    <div className="grid grid-cols-8 gap-4">
+                    <div className="grid grid-cols-8 gap-5">
                       {printProducts.map(p => (
                         <Link
                           key={p._id}
                           to={`/products/${p._id}`}
                           onClick={() => setActiveMenu(null)}
-                          // ── #2: hover -translate-y-1, shadow-lg, duration-300 ease-out ──
-                          className="group/c rounded-xl border border-gray-200 overflow-hidden hover:border-blue-500 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out bg-white"
+                          className="group/c rounded-xl border border-gray-200 overflow-hidden hover:border-blue-500 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 ease-out bg-white"
                         >
                           <div className="h-20 bg-gray-50 overflow-hidden p-2">
-                            {/* ── #3: scale-110, duration-500 ── */}
                             <img
                               src={getImageUrl(p.image)}
                               alt={p.name}
@@ -241,8 +241,7 @@ const Header = () => {
                               onError={e => { e.target.src = 'https://via.placeholder.com/300x300?text=Product'; }}
                             />
                           </div>
-                          <div className="p-3.5 border-t border-gray-100">
-                            {/* ── #4: underline on hover ── */}
+                          <div className="p-4 border-t border-gray-100">
                             <p className="text-xs font-semibold text-gray-800 line-clamp-2 min-h-[28px] group-hover/c:text-blue-600 group-hover/c:underline underline-offset-2 transition-colors">{p.name}</p>
                             <div className="mt-1.5">
                               {p.discount ? (
@@ -258,7 +257,6 @@ const Header = () => {
                         </Link>
                       ))}
                     </div>
-                    {/* ── #6: mt-6 ── */}
                     <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
                       <span className="text-xs text-gray-400">Хэвлэлийн бүтээгдэхүүн</span>
                       <Link
@@ -276,16 +274,16 @@ const Header = () => {
 
             {/* ── BIZ MARKETING ── */}
             {activeMenu === 'marketing' && (
-              <div className="max-w-7xl mx-auto px-6 py-7" style={{ minHeight: "220px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+              <div className="max-w-7xl mx-auto px-6 py-7" style={{ minHeight: "260px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                 {loadingMarketing ? <SkeletonGrid /> : (
                   <>
-                    <div className="grid grid-cols-8 gap-4">
+                    <div className="grid grid-cols-8 gap-5">
                       {marketingServices.map(s => (
                         <Link
                           key={s._id}
                           to={`/services/${s.slug}`}
                           onClick={() => setActiveMenu(null)}
-                          className="group/c rounded-xl border border-gray-200 overflow-hidden hover:border-purple-500 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out bg-white"
+                          className="group/c rounded-xl border border-gray-200 overflow-hidden hover:border-purple-500 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 ease-out bg-white"
                         >
                           <div className="h-20 bg-gray-50 overflow-hidden">
                             {s.image ? (
@@ -299,7 +297,7 @@ const Header = () => {
                               <div className="w-full h-full bg-gradient-to-br from-purple-50 to-pink-50" />
                             )}
                           </div>
-                          <div className="p-3.5 border-t border-gray-100">
+                          <div className="p-4 border-t border-gray-100">
                             <p className="text-xs font-semibold text-gray-800 line-clamp-2 min-h-[28px] group-hover/c:text-purple-600 group-hover/c:underline underline-offset-2 transition-colors">{s.name}</p>
                             {s.shortDescription && (
                               <p className="text-[11px] text-gray-400 line-clamp-1 mt-1">{s.shortDescription}</p>
@@ -326,7 +324,7 @@ const Header = () => {
 
             {/* ── ҮНИЙН САНАЛ ── */}
             {activeMenu === 'quotation' && (
-              <div className="max-w-7xl mx-auto px-6 py-7" style={{ minHeight: "220px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+              <div className="max-w-7xl mx-auto px-6 py-7" style={{ minHeight: "260px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                 <div className="flex gap-4">
                   {[
                     { title: 'Хэвлэлийн үнийн санал', desc: 'Ном, каталог, флаер, баннер', accent: 'border-blue-500 bg-blue-50 hover:bg-blue-100' },
@@ -354,7 +352,7 @@ const Header = () => {
 
             {/* ── БИДНИЙ ТУХАЙ ── */}
             {activeMenu === 'about' && (
-              <div className="max-w-7xl mx-auto px-6 py-7" style={{ minHeight: "220px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+              <div className="max-w-7xl mx-auto px-6 py-7" style={{ minHeight: "260px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                 <div className="flex gap-6">
                   <div className="flex-1 grid grid-cols-2 gap-4">
                     {[
@@ -388,7 +386,7 @@ const Header = () => {
 
             {/* ── ХОЛБОО БАРИХ ── */}
             {activeMenu === 'contact' && (
-              <div className="max-w-7xl mx-auto px-6 py-7" style={{ minHeight: "220px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+              <div className="max-w-7xl mx-auto px-6 py-7" style={{ minHeight: "260px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                 <div className="flex gap-4">
                   {[
                     { icon: <Phone size={16} className="text-blue-600" />, label: 'Утас', value: '+976 7200-0444', bg: 'bg-blue-50 border-blue-100' },

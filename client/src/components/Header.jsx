@@ -304,94 +304,194 @@ const Header = () => {
 
               {/* ── BIZ PRINT ── */}
               {activeMenu === 'print' && (
-                <div className="px-6 py-5 flex gap-6">
-                  <div className="flex-1">
-                    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-3">Хэвлэлийн төрлүүд</p>
-                    {loadingPrint ? <SkeletonRow /> : (
-                      <div className="grid grid-cols-2 gap-2">
+                <div className="px-6 py-5 flex gap-8">
+                  {/* Зүүн: BestComputers exact layout */}
+                  <div className="flex-1 min-w-0">
+                    {/* Дээд хэсэг: icon + нэр grid (5 багана) */}
+                    {loadingPrint ? (
+                      <div className="grid grid-cols-5 gap-3 mb-5">
+                        {[...Array(5)].map((_, i) => (
+                          <div key={i} className="flex flex-col items-center gap-2">
+                            <div className="w-16 h-12 bg-gray-100 rounded animate-pulse" />
+                            <div className="h-2.5 w-14 bg-gray-100 rounded animate-pulse" />
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-5 gap-2 mb-5">
                         {(printProducts.length >= 2
-                          ? printProducts.slice(1, 9)
-                          : []
-                        ).concat(
-                          printProducts.length < 2
-                            ? PRINT_CATS.map(c => ({ ...c, _id: c.name, to: '/biz-print', isStatic: true }))
-                            : []
-                        ).slice(0, 8).map((item) => {
-                          const isStatic = item.isStatic;
-                          const Icon = isStatic ? item.Icon : FileText;
-                          const color = isStatic ? item.color : 'text-blue-500';
-                          const bg    = isStatic ? item.bg    : 'bg-blue-50';
-                          const to    = isStatic ? item.to    : `/products/${item._id}`;
-                          const name  = item.name;
-                          return (
-                            <Link key={name} to={to} onClick={() => setActiveMenu(null)}
-                              className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition-all duration-200 group">
-                              <div className={`w-8 h-8 flex-shrink-0 rounded-lg flex items-center justify-center ${bg}`}>
-                                <Icon size={15} className={color} />
-                              </div>
-                              <span className="text-xs font-semibold text-gray-700 group-hover:text-blue-600 line-clamp-1 transition-colors">{name}</span>
-                            </Link>
-                          );
-                        })}
+                          ? printProducts.slice(1, 6)
+                          : PRINT_CATS.slice(0, 5).map(c => ({ _id: c.name, name: c.name, image: null, isStatic: true, Icon: c.Icon, color: c.color }))
+                        ).map((item) => (
+                          <Link
+                            key={item._id}
+                            to={item.isStatic ? '/biz-print' : `/products/${item._id}`}
+                            onClick={() => setActiveMenu(null)}
+                            className="flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors group"
+                          >
+                            <div className="w-full h-14 flex items-center justify-center">
+                              {item.isStatic ? (
+                                <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
+                                  <item.Icon size={22} className={item.color} />
+                                </div>
+                              ) : (
+                                <img
+                                  src={getImageUrl(item.image)}
+                                  alt={item.name}
+                                  className="max-h-14 max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
+                                  onError={e => { e.target.src = 'https://via.placeholder.com/80x56?text=P'; }}
+                                />
+                              )}
+                            </div>
+                            <span className="text-xs text-gray-600 text-center line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors">{item.name}</span>
+                          </Link>
+                        ))}
                       </div>
                     )}
-                    <DropFooter viewTo="/biz-print" viewLabel="Бүгдийг үзэх" />
+
+                    {/* Доод хэсэг: улаан зураас + гарчиг + "Бүгдийг үзэх" */}
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-1 h-6 bg-blue-600 rounded-full" />
+                        <span className="text-lg font-bold text-gray-900">Biz Print</span>
+                      </div>
+                      <Link to="/biz-print" onClick={() => setActiveMenu(null)}
+                        className="flex items-center gap-1 text-sm text-gray-600 hover:text-blue-600 border border-gray-200 hover:border-blue-300 px-3 py-1 rounded-lg transition-colors">
+                        Бүгдийг үзэх <ArrowRight size={13} />
+                      </Link>
+                    </div>
+
+                    {/* Text-only нэмэлт link-үүд */}
+                    <div className="flex flex-wrap gap-x-6 gap-y-2">
+                      {(printProducts.length >= 7
+                        ? printProducts.slice(6, 10)
+                        : PRINT_CATS.slice(5)
+                      ).map((item) => (
+                        <Link
+                          key={item._id ?? item.name}
+                          to={item._id && !item.isStatic ? `/products/${item._id}` : '/biz-print'}
+                          onClick={() => setActiveMenu(null)}
+                          className="text-sm text-gray-500 hover:text-blue-600 transition-colors"
+                        >
+                          {item.name}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex flex-col flex-shrink-0">
-                    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-3">Онцлох бүтээгдэхүүн</p>
-                    <FeaturedCard
-                      item={printProducts[0] ?? null}
-                      to={printProducts[0] ? `/products/${printProducts[0]._id}` : '/biz-print'}
-                      accent="blue"
-                    />
+
+                  {/* Баруун: cover зураг */}
+                  <div className="w-64 flex-shrink-0">
+                    {printProducts[0] ? (
+                      <Link to={`/products/${printProducts[0]._id}`} onClick={() => setActiveMenu(null)}
+                        className="block w-full h-full rounded-xl overflow-hidden group">
+                        <img
+                          src={getImageUrl(printProducts[0].image)}
+                          alt={printProducts[0].name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          style={{ minHeight: '180px', maxHeight: '220px' }}
+                          onError={e => { e.target.src = 'https://via.placeholder.com/256x200?text=Print'; }}
+                        />
+                      </Link>
+                    ) : (
+                      <div className="w-full rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center" style={{ minHeight: '180px' }}>
+                        <Printer size={48} className="text-blue-400" />
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
 
               {/* ── BIZ MARKETING ── */}
               {activeMenu === 'marketing' && (
-                <div className="px-6 py-5 flex gap-6">
-                  <div className="flex-1">
-                    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-3">Маркетингийн үйлчилгээ</p>
-                    {loadingMarketing ? <SkeletonRow /> : (
-                      <div className="grid grid-cols-2 gap-2">
+                <div className="px-6 py-5 flex gap-8">
+                  <div className="flex-1 min-w-0">
+                    {loadingMarketing ? (
+                      <div className="grid grid-cols-5 gap-3 mb-5">
+                        {[...Array(5)].map((_, i) => (
+                          <div key={i} className="flex flex-col items-center gap-2">
+                            <div className="w-16 h-12 bg-gray-100 rounded animate-pulse" />
+                            <div className="h-2.5 w-14 bg-gray-100 rounded animate-pulse" />
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-5 gap-2 mb-5">
                         {(marketingServices.length >= 2
-                          ? marketingServices.slice(1, 9)
-                          : []
-                        ).concat(
-                          marketingServices.length < 2
-                            ? MARKETING_CATS.map(c => ({ ...c, _id: c.name, to: '/biz-marketing', isStatic: true }))
-                            : []
-                        ).slice(0, 8).map((item) => {
-                          const isStatic = item.isStatic;
-                          const Icon = isStatic ? item.Icon : Megaphone;
-                          const color = isStatic ? item.color : 'text-purple-500';
-                          const bg    = isStatic ? item.bg    : 'bg-purple-50';
-                          const to    = isStatic ? item.to    : `/services/${item.slug}`;
-                          const name  = item.name;
-                          return (
-                            <Link key={name} to={to} onClick={() => setActiveMenu(null)}
-                              className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border border-gray-100 hover:border-purple-200 hover:bg-purple-50 transition-all duration-200 group">
-                              <div className={`w-8 h-8 flex-shrink-0 rounded-lg flex items-center justify-center ${bg}`}>
-                                <Icon size={15} className={color} />
-                              </div>
-                              <span className="text-xs font-semibold text-gray-700 group-hover:text-purple-600 line-clamp-1 transition-colors">{name}</span>
-                            </Link>
-                          );
-                        })}
+                          ? marketingServices.slice(1, 6)
+                          : MARKETING_CATS.slice(0, 5).map(c => ({ _id: c.name, name: c.name, image: null, isStatic: true, Icon: c.Icon, color: c.color }))
+                        ).map((item) => (
+                          <Link
+                            key={item._id}
+                            to={item.isStatic ? '/biz-marketing' : `/services/${item.slug}`}
+                            onClick={() => setActiveMenu(null)}
+                            className="flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors group"
+                          >
+                            <div className="w-full h-14 flex items-center justify-center">
+                              {item.isStatic ? (
+                                <div className="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center">
+                                  <item.Icon size={22} className={item.color} />
+                                </div>
+                              ) : (
+                                <img
+                                  src={getImageUrl(item.image)}
+                                  alt={item.name}
+                                  className="max-h-14 max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
+                                  onError={e => { e.target.src = 'https://via.placeholder.com/80x56?text=S'; }}
+                                />
+                              )}
+                            </div>
+                            <span className="text-xs text-gray-600 text-center line-clamp-2 leading-tight group-hover:text-purple-600 transition-colors">{item.name}</span>
+                          </Link>
+                        ))}
                       </div>
                     )}
-                    <DropFooter viewTo="/biz-marketing" viewLabel="Бүгдийг үзэх" color="purple" />
+
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-1 h-6 bg-purple-600 rounded-full" />
+                        <span className="text-lg font-bold text-gray-900">Biz Marketing</span>
+                      </div>
+                      <Link to="/biz-marketing" onClick={() => setActiveMenu(null)}
+                        className="flex items-center gap-1 text-sm text-gray-600 hover:text-purple-600 border border-gray-200 hover:border-purple-300 px-3 py-1 rounded-lg transition-colors">
+                        Бүгдийг үзэх <ArrowRight size={13} />
+                      </Link>
+                    </div>
+
+                    <div className="flex flex-wrap gap-x-6 gap-y-2">
+                      {(marketingServices.length >= 7
+                        ? marketingServices.slice(6, 10)
+                        : MARKETING_CATS.slice(5)
+                      ).map((item) => (
+                        <Link
+                          key={item._id ?? item.name}
+                          to={item._id && !item.isStatic ? `/services/${item.slug}` : '/biz-marketing'}
+                          onClick={() => setActiveMenu(null)}
+                          className="text-sm text-gray-500 hover:text-purple-600 transition-colors"
+                        >
+                          {item.name}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex flex-col flex-shrink-0">
-                    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-3">Онцлох үйлчилгээ</p>
-                    <FeaturedCard
-                      item={marketingServices[0]
-                        ? { ...marketingServices[0], price: marketingServices[0].price ?? 0, discount: 0 }
-                        : null}
-                      to={marketingServices[0] ? `/services/${marketingServices[0].slug}` : '/biz-marketing'}
-                      accent="purple"
-                    />
+
+                  {/* Баруун: cover зураг */}
+                  <div className="w-64 flex-shrink-0">
+                    {marketingServices[0] ? (
+                      <Link to={`/services/${marketingServices[0].slug}`} onClick={() => setActiveMenu(null)}
+                        className="block w-full rounded-xl overflow-hidden group">
+                        <img
+                          src={getImageUrl(marketingServices[0].image)}
+                          alt={marketingServices[0].name}
+                          className="w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          style={{ minHeight: '180px', maxHeight: '220px' }}
+                          onError={e => { e.target.src = 'https://via.placeholder.com/256x200?text=Marketing'; }}
+                        />
+                      </Link>
+                    ) : (
+                      <div className="w-full rounded-xl bg-gradient-to-br from-purple-100 to-pink-200 flex items-center justify-center" style={{ minHeight: '180px' }}>
+                        <Megaphone size={48} className="text-purple-400" />
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

@@ -24,71 +24,23 @@ import Notification from '../components/Notification';
 import DashboardTab from '../components/DashboardTab';
 import EnhancedTextarea from '../components/EnhancedTextarea';
 
-/* ─── Global styles injected once ─── */
+/* ─── Global styles ─── */
 const GLOBAL_CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
   .adm-root {
     font-family: 'Outfit', system-ui, sans-serif;
-    background: #060b18;
+    background: #f1f5f9;
     min-height: 100vh;
-  }
-
-  /* Animated mesh background */
-  .adm-bg {
-    position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
-  }
-  .adm-orb {
-    position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.45;
-    animation: adm-drift 18s ease-in-out infinite;
-  }
-  .adm-orb-1 { width:700px;height:700px;background:radial-gradient(circle,#1e3a5f,transparent); top:-200px;left:-150px; animation-delay:0s; }
-  .adm-orb-2 { width:500px;height:500px;background:radial-gradient(circle,#0f3d2e,transparent); top:40%;right:-100px; animation-delay:-6s; }
-  .adm-orb-3 { width:450px;height:450px;background:radial-gradient(circle,#2d1b4e,transparent); bottom:-100px;left:35%; animation-delay:-12s; }
-  @keyframes adm-drift {
-    0%,100% { transform: translate(0,0) scale(1); }
-    33% { transform: translate(30px,-25px) scale(1.06); }
-    66% { transform: translate(-18px,18px) scale(0.96); }
-  }
-
-  /* Grid dots texture */
-  .adm-grid {
-    position: fixed; inset: 0; z-index: 0; pointer-events: none;
-    background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
-    background-size: 28px 28px;
-  }
-
-  /* ── Glass primitives ── */
-  .glass {
-    background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.10);
-  }
-  .glass-strong {
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(32px);
-    -webkit-backdrop-filter: blur(32px);
-    border: 1px solid rgba(255,255,255,0.13);
-  }
-  .glass-hover {
-    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.2s;
-  }
-  .glass-hover:hover {
-    background: rgba(255,255,255,0.10);
-    border-color: rgba(255,255,255,0.20);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    transform: translateY(-1px);
   }
 
   /* ── Sidebar ── */
   .adm-sidebar {
-    background: rgba(6,11,24,0.7);
-    backdrop-filter: blur(32px);
-    -webkit-backdrop-filter: blur(32px);
-    border-right: 1px solid rgba(255,255,255,0.08);
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
     flex-shrink: 0;
     transition: width 0.25s cubic-bezier(.4,0,.2,1);
+    box-shadow: 2px 0 8px rgba(0,0,0,0.04);
   }
   .adm-sidebar-open  { width: 220px; }
   .adm-sidebar-close { width: 60px; }
@@ -97,48 +49,43 @@ const GLOBAL_CSS = `
     display: flex; align-items: center; border-radius: 10px;
     transition: background 0.15s, color 0.15s;
     cursor: pointer; border: none; background: transparent;
-    color: rgba(255,255,255,0.45); width: 100%;
+    color: #64748b; width: 100%;
   }
-  .adm-nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85); }
+  .adm-nav-item:hover { background: #f1f5f9; color: #1e293b; }
   .adm-nav-item.active {
-    background: rgba(255,255,255,0.10);
-    color: #fff;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+    background: #eff6ff;
+    color: #1d4ed8;
+    box-shadow: inset 0 0 0 1px #dbeafe;
   }
 
   /* ── Topbar ── */
   .adm-topbar {
-    background: rgba(6,11,24,0.6);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border-bottom: 1px solid rgba(255,255,255,0.07);
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
     height: 56px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
   }
 
   /* ── Cards ── */
   .adm-card {
-    background: rgba(255,255,255,0.04);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255,255,255,0.09);
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
     border-radius: 14px;
-    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.18s;
+    transition: border-color 0.2s, box-shadow 0.18s, transform 0.18s;
   }
   .adm-card:hover {
-    background: rgba(255,255,255,0.07);
-    border-color: rgba(255,255,255,0.16);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07);
     transform: translateY(-1px);
   }
 
   /* ── Form panel ── */
   .adm-formpanel {
-    background: rgba(255,255,255,0.04);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.10);
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
     border-radius: 16px;
     animation: adm-fadein 0.25s ease both;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   }
   @keyframes adm-fadein {
     from { opacity:0; transform:translateY(-8px); }
@@ -148,21 +95,21 @@ const GLOBAL_CSS = `
   /* ── Inputs ── */
   .adm-input {
     width: 100%; padding: 9px 13px; font-size: 13.5px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.10);
-    border-radius: 9px; color: rgba(255,255,255,0.9);
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 9px; color: #1e293b;
     font-family: 'Outfit', sans-serif;
     transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
     outline: none;
   }
-  .adm-input::placeholder { color: rgba(255,255,255,0.28); }
+  .adm-input::placeholder { color: #94a3b8; }
   .adm-input:focus {
-    border-color: rgba(99,179,237,0.55);
-    background: rgba(255,255,255,0.09);
-    box-shadow: 0 0 0 3px rgba(99,179,237,0.12);
+    border-color: #3b82f6;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.10);
   }
   .adm-select { appearance: none; cursor: pointer; }
-  .adm-select option { background: #0f1a2e; color: #e2e8f0; }
+  .adm-select option { background: #ffffff; color: #1e293b; }
 
   /* ── Buttons ── */
   .adm-btn {
@@ -174,82 +121,82 @@ const GLOBAL_CSS = `
   .adm-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
   .adm-btn-primary {
-    background: rgba(99,179,237,0.18);
-    border: 1px solid rgba(99,179,237,0.35);
-    color: #90cdf4;
+    background: #2563eb;
+    border: 1px solid #2563eb;
+    color: #ffffff;
     padding: 8px 16px;
   }
   .adm-btn-primary:hover {
-    background: rgba(99,179,237,0.28);
-    border-color: rgba(99,179,237,0.6);
-    box-shadow: 0 0 16px rgba(99,179,237,0.2);
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.25);
   }
 
   .adm-btn-secondary {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    color: rgba(255,255,255,0.6);
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #475569;
     padding: 8px 16px;
   }
-  .adm-btn-secondary:hover { background: rgba(255,255,255,0.10); color: rgba(255,255,255,0.85); }
+  .adm-btn-secondary:hover { background: #e2e8f0; color: #1e293b; }
 
   .adm-btn-danger {
-    background: rgba(252,129,74,0.10);
-    border: 1px solid rgba(252,129,74,0.25);
-    color: rgba(252,129,74,0.8);
+    background: #fff5f5;
+    border: 1px solid #fed7d7;
+    color: #e53e3e;
     padding: 7px 10px;
   }
-  .adm-btn-danger:hover { background: rgba(252,129,74,0.20); border-color: rgba(252,129,74,0.5); }
+  .adm-btn-danger:hover { background: #fed7d7; border-color: #fc8181; }
 
   .adm-btn-ghost {
     background: transparent; border: 1px solid transparent;
-    color: rgba(255,255,255,0.4); padding: 6px 9px;
+    color: #64748b; padding: 6px 9px;
   }
-  .adm-btn-ghost:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.1); }
+  .adm-btn-ghost:hover { background: #f1f5f9; color: #1e293b; border-color: #e2e8f0; }
 
-  .adm-btn-icon-danger { color: rgba(252,129,74,0.65); }
-  .adm-btn-icon-danger:hover { background: rgba(252,129,74,0.12); color: rgba(252,129,74,1); border-color: rgba(252,129,74,0.25); }
+  .adm-btn-icon-danger { color: #e53e3e; }
+  .adm-btn-icon-danger:hover { background: #fff5f5; color: #c53030; border-color: #fed7d7; }
 
   /* ── Badges ── */
   .adm-badge {
     display: inline-flex; align-items: center;
     padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600;
   }
-  .adm-badge-pending  { background:rgba(251,191,36,0.12); color:#fcd34d; border:1px solid rgba(251,191,36,0.25); }
-  .adm-badge-paid     { background:rgba(52,211,153,0.12); color:#6ee7b7; border:1px solid rgba(52,211,153,0.25); }
-  .adm-badge-processing{background:rgba(99,179,237,0.12); color:#90cdf4; border:1px solid rgba(99,179,237,0.25); }
-  .adm-badge-completed{ background:rgba(52,211,153,0.12); color:#6ee7b7; border:1px solid rgba(52,211,153,0.25); }
-  .adm-badge-cancelled{ background:rgba(252,129,74,0.12); color:#fdba74; border:1px solid rgba(252,129,74,0.25); }
-  .adm-badge-new      { background:rgba(99,179,237,0.12); color:#90cdf4; border:1px solid rgba(99,179,237,0.25); }
-  .adm-badge-read     { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.45); border:1px solid rgba(255,255,255,0.1); }
-  .adm-badge-replied  { background:rgba(52,211,153,0.12); color:#6ee7b7; border:1px solid rgba(52,211,153,0.25); }
-  .adm-badge-archived { background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.3); border:1px solid rgba(255,255,255,0.08); }
-  .adm-badge-draft    { background:rgba(251,191,36,0.12); color:#fcd34d; border:1px solid rgba(251,191,36,0.25); }
-  .adm-badge-published{ background:rgba(52,211,153,0.12); color:#6ee7b7; border:1px solid rgba(52,211,153,0.25); }
-  .adm-badge-featured { background:rgba(167,139,250,0.12); color:#c4b5fd; border:1px solid rgba(167,139,250,0.25); }
-  .adm-badge-purple   { background:rgba(167,139,250,0.12); color:#c4b5fd; border:1px solid rgba(167,139,250,0.25); }
-  .adm-badge-default  { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1px solid rgba(255,255,255,0.1); }
+  .adm-badge-pending   { background:#fffbeb; color:#92400e; border:1px solid #fde68a; }
+  .adm-badge-paid      { background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; }
+  .adm-badge-processing{ background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; }
+  .adm-badge-completed { background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; }
+  .adm-badge-cancelled { background:#fff5f5; color:#c53030; border:1px solid #fed7d7; }
+  .adm-badge-new       { background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; }
+  .adm-badge-read      { background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; }
+  .adm-badge-replied   { background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; }
+  .adm-badge-archived  { background:#f8fafc; color:#94a3b8; border:1px solid #e2e8f0; }
+  .adm-badge-draft     { background:#fffbeb; color:#92400e; border:1px solid #fde68a; }
+  .adm-badge-published { background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; }
+  .adm-badge-featured  { background:#faf5ff; color:#6b21a8; border:1px solid #e9d5ff; }
+  .adm-badge-purple    { background:#faf5ff; color:#6b21a8; border:1px solid #e9d5ff; }
+  .adm-badge-default   { background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; }
 
   /* ── Text colors ── */
-  .adm-text-primary   { color: rgba(255,255,255,0.92); }
-  .adm-text-secondary { color: rgba(255,255,255,0.55); }
-  .adm-text-muted     { color: rgba(255,255,255,0.32); }
-  .adm-text-accent    { color: #90cdf4; }
-  .adm-text-price     { color: #6ee7b7; }
+  .adm-text-primary   { color: #1e293b; }
+  .adm-text-secondary { color: #475569; }
+  .adm-text-muted     { color: #94a3b8; }
+  .adm-text-accent    { color: #2563eb; }
+  .adm-text-price     { color: #16a34a; }
 
   /* ── Label ── */
   .adm-label {
     display: block; font-size: 11px; font-weight: 600;
     text-transform: uppercase; letter-spacing: 0.07em;
-    color: rgba(255,255,255,0.38); margin-bottom: 6px;
+    color: #64748b; margin-bottom: 6px;
   }
 
   /* ── Divider ── */
-  .adm-divider { border-color: rgba(255,255,255,0.07); }
+  .adm-divider { border-color: #e2e8f0; }
 
   /* ── Section header ── */
   .adm-section-title {
-    font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.88);
+    font-size: 15px; font-weight: 700; color: #1e293b;
     letter-spacing: -0.02em;
   }
 
@@ -257,35 +204,37 @@ const GLOBAL_CSS = `
   .adm-collapse-btn {
     position: absolute; right: -12px; top: 68px;
     width: 24px; height: 24px; border-radius: 50%;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.14);
-    color: rgba(255,255,255,0.5);
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; transition: all 0.15s; z-index: 10;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   }
-  .adm-collapse-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+  .adm-collapse-btn:hover { background: #f1f5f9; color: #1e293b; }
 
   /* ── Alert badge ── */
   .adm-alert-chip {
     display: inline-flex; align-items: center; gap: 5px;
     padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 600;
-    background: rgba(252,129,74,0.12);
-    border: 1px solid rgba(252,129,74,0.25);
-    color: #fdba74;
+    background: #fff5f5;
+    border: 1px solid #fed7d7;
+    color: #e53e3e;
   }
 
   /* ── Image upload area ── */
   .adm-upload {
-    border: 1.5px dashed rgba(255,255,255,0.15); border-radius: 10px;
+    border: 1.5px dashed #cbd5e1; border-radius: 10px;
     padding: 24px; text-align: center; cursor: pointer;
     transition: border-color 0.2s, background 0.2s;
+    background: #f8fafc;
   }
-  .adm-upload:hover { border-color: rgba(99,179,237,0.4); background: rgba(99,179,237,0.04); }
+  .adm-upload:hover { border-color: #3b82f6; background: #eff6ff; }
 
   /* ── Scrollbar ── */
   .adm-scroll::-webkit-scrollbar { width: 4px; }
   .adm-scroll::-webkit-scrollbar-track { background: transparent; }
-  .adm-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+  .adm-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 
   /* ── Page enter animation ── */
   .adm-page-enter { animation: adm-fadein 0.3s ease both; }
@@ -293,23 +242,23 @@ const GLOBAL_CSS = `
   /* ── Status select ── */
   .adm-status-select {
     font-size: 12px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
     border-radius: 8px; padding: 5px 10px;
-    color: rgba(255,255,255,0.75);
+    color: #475569;
     font-family: 'Outfit', sans-serif;
     cursor: pointer; outline: none;
     transition: border-color 0.15s;
   }
-  .adm-status-select:focus { border-color: rgba(99,179,237,0.4); }
-  .adm-status-select option { background: #0f1a2e; }
+  .adm-status-select:focus { border-color: #3b82f6; }
+  .adm-status-select option { background: #ffffff; color: #1e293b; }
 
   /* ── Mobile sidebar ── */
   .adm-mobile-sidebar {
     position: fixed; inset-y: 0; left: 0; z-index: 50; width: 240px;
-    background: rgba(6,11,24,0.92);
-    backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
-    border-right: 1px solid rgba(255,255,255,0.09);
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    box-shadow: 4px 0 16px rgba(0,0,0,0.08);
     transform: translateX(-100%);
     transition: transform 0.25s cubic-bezier(.4,0,.2,1);
   }
@@ -317,33 +266,39 @@ const GLOBAL_CSS = `
 
   .adm-overlay {
     position: fixed; inset: 0; z-index: 40;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.3);
     backdrop-filter: blur(2px);
   }
 
   /* ── Checkbox ── */
-  .adm-checkbox { accent-color: #63b3ed; width: 15px; height: 15px; }
+  .adm-checkbox { accent-color: #2563eb; width: 15px; height: 15px; }
 
   /* ── Featured row ── */
   .adm-featured-row {
     display: flex; align-items: center; gap: 10px;
     padding: 10px 14px; border-radius: 10px;
-    background: rgba(251,191,36,0.06);
-    border: 1px solid rgba(251,191,36,0.15);
+    background: #fffbeb;
+    border: 1px solid #fde68a;
   }
 
   /* ── Reply box ── */
   .adm-reply-box {
     margin-top: 10px; padding: 10px 14px;
-    background: rgba(52,211,153,0.06);
-    border-left: 2px solid rgba(52,211,153,0.4);
+    background: #f0fdf4;
+    border-left: 2px solid #4ade80;
     border-radius: 0 8px 8px 0;
   }
 
   /* ── Sub-category indent ── */
   .adm-subcategory { margin-left: 24px; margin-top: 6px; }
-  .adm-cat-primary  { border-left: 2px solid rgba(99,179,237,0.4) !important; }
-  .adm-cat-secondary{ border-left: 2px solid rgba(255,255,255,0.1) !important; }
+  .adm-cat-primary  { border-left: 2px solid #3b82f6 !important; }
+  .adm-cat-secondary{ border-left: 2px solid #cbd5e1 !important; }
+
+  /* ── Glass (unused but kept for compat) ── */
+  .glass       { background: rgba(255,255,255,0.8); border: 1px solid #e2e8f0; }
+  .glass-strong{ background: rgba(255,255,255,0.95); border: 1px solid #e2e8f0; }
+  .glass-hover { transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.2s; }
+  .glass-hover:hover { background: #f8fafc; border-color: #cbd5e1; box-shadow: 0 4px 16px rgba(0,0,0,0.06); transform: translateY(-1px); }
 `;
 
 /* ─── Inject CSS once ─── */
@@ -381,16 +336,16 @@ const Field = ({ label, required, children, hint }) => (
   <div>
     {label && (
       <label className="adm-label">
-        {label}{required && <span style={{ color: '#fc8181', marginLeft: 2 }}>*</span>}
+        {label}{required && <span style={{ color: '#e53e3e', marginLeft: 2 }}>*</span>}
       </label>
     )}
     {children}
-    {hint && <p style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.28)' }}>{hint}</p>}
+    {hint && <p style={{ marginTop: 4, fontSize: 11, color: '#94a3b8' }}>{hint}</p>}
   </div>
 );
 
 const SectionHeader = ({ title, action }) => (
-  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom: 20, paddingBottom: 14, borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom: 20, paddingBottom: 14, borderBottom: '1px solid #e2e8f0' }}>
     <h2 className="adm-section-title">{title}</h2>
     {action}
   </div>
@@ -398,7 +353,7 @@ const SectionHeader = ({ title, action }) => (
 
 const FormPanel = ({ title, children }) => (
   <div className="adm-formpanel" style={{ padding: 20, marginBottom: 20 }}>
-    <h3 style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.6)', marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+    <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid #e2e8f0' }}>
       {title}
     </h3>
     {children}
@@ -406,8 +361,8 @@ const FormPanel = ({ title, children }) => (
 );
 
 const EmptyState = ({ icon: Icon, message }) => (
-  <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding: '64px 0', color: 'rgba(255,255,255,0.25)' }}>
-    <div style={{ width:48, height:48, background:'rgba(255,255,255,0.05)', borderRadius:14, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12, border:'1px solid rgba(255,255,255,0.08)' }}>
+  <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding: '64px 0', color: '#94a3b8' }}>
+    <div style={{ width:48, height:48, background:'#f1f5f9', borderRadius:14, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12, border:'1px solid #e2e8f0' }}>
       <Icon size={20} />
     </div>
     <p style={{ fontSize: 13 }}>{message}</p>
@@ -505,7 +460,7 @@ const AdminPage = () => {
   };
   const loadData = () => loadTabData(activeTab);
 
-  /* ── Handlers (unchanged logic) ── */
+  /* ── Handlers ── */
   const handleProductSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -550,7 +505,6 @@ const AdminPage = () => {
   const activeNav = navItems.find(n=>n.id===activeTab);
   const totalAlerts = navItems.reduce((s,n)=>s+(n.badge||0),0);
 
-  /* ── Sidebar nav items ── */
   const NavItems = ({ collapsed }) => (
     <>
       {navItems.map(item => {
@@ -574,7 +528,7 @@ const AdminPage = () => {
                   </span>
                 )}
                 {!item.badge && item.stat > 0 && (
-                  <span style={{ fontSize: 11, padding: '1px 7px', borderRadius: 6, background: isActive ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.05)', color: isActive ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.3)' }}>
+                  <span style={{ fontSize: 11, padding: '1px 7px', borderRadius: 6, background: isActive ? '#dbeafe' : '#f1f5f9', color: isActive ? '#1d4ed8' : '#94a3b8' }}>
                     {item.stat}
                   </span>
                 )}
@@ -591,14 +545,6 @@ const AdminPage = () => {
 
   return (
     <div className="adm-root" style={{ display:'flex', height:'100vh', overflow:'hidden' }}>
-      {/* Background */}
-      <div className="adm-bg">
-        <div className="adm-orb adm-orb-1" />
-        <div className="adm-orb adm-orb-2" />
-        <div className="adm-orb adm-orb-3" />
-      </div>
-      <div className="adm-grid" />
-
       {notification && <Notification type={notification.type} message={notification.message} onClose={()=>setNotification(null)} />}
 
       {/* Mobile overlay */}
@@ -606,21 +552,21 @@ const AdminPage = () => {
 
       {/* Mobile sidebar */}
       <div className={`adm-mobile-sidebar ${mobileSidebarOpen?'open':''}`} style={{ display:'flex', flexDirection:'column' }}>
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'18px 16px', borderBottom:'1px solid rgba(255,255,255,0.07)' }}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'18px 16px', borderBottom:'1px solid #e2e8f0' }}>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-            <div style={{ width:30, height:30, borderRadius:8, background:'rgba(99,179,237,0.15)', border:'1px solid rgba(99,179,237,0.25)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <span style={{ color:'#90cdf4', fontWeight:700, fontSize:13 }}>A</span>
+            <div style={{ width:30, height:30, borderRadius:8, background:'#eff6ff', border:'1px solid #bfdbfe', display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <span style={{ color:'#2563eb', fontWeight:700, fontSize:13 }}>A</span>
             </div>
-            <span className="adm-text-primary" style={{ fontWeight:600, fontSize:14 }}>Admin Panel</span>
+            <span style={{ color:'#1e293b', fontWeight:600, fontSize:14 }}>Admin Panel</span>
           </div>
           <button onClick={()=>setMobileSidebarOpen(false)} className="adm-btn adm-btn-ghost" style={{ padding:'5px' }}><X size={16}/></button>
         </div>
         <nav className="adm-scroll" style={{ flex:1, padding:'10px 8px', display:'flex', flexDirection:'column', gap:3, overflowY:'auto' }}>
           <NavItems collapsed={false} />
         </nav>
-        <div style={{ padding:'10px 8px', borderTop:'1px solid rgba(255,255,255,0.07)' }}>
+        <div style={{ padding:'10px 8px', borderTop:'1px solid #e2e8f0' }}>
           <button onClick={()=>{logout();navigate('/');}} className="adm-nav-item" style={{ padding:'9px 12px', gap:10 }}>
-            <LogOut size={15}/><span style={{ fontSize:13 }}>Гарах</span>
+            <LogOut size={15} style={{ color:'#e53e3e' }}/><span style={{ fontSize:13 }}>Гарах</span>
           </button>
         </div>
       </div>
@@ -631,34 +577,30 @@ const AdminPage = () => {
         style={{ display:'none', flexDirection:'column', position:'relative', zIndex:10 }}
         ref={el => { if(el) el.style.display = 'flex'; }}
       >
-        {/* Logo */}
-        <div style={{ display:'flex', alignItems:'center', gap:10, padding: sidebarOpen?'18px 16px':'16px', borderBottom:'1px solid rgba(255,255,255,0.07)', overflow:'hidden' }}>
-          <div style={{ width:32, height:32, borderRadius:9, background:'rgba(99,179,237,0.15)', border:'1px solid rgba(99,179,237,0.25)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-            <span style={{ color:'#90cdf4', fontWeight:700, fontSize:14 }}>A</span>
+        <div style={{ display:'flex', alignItems:'center', gap:10, padding: sidebarOpen?'18px 16px':'16px', borderBottom:'1px solid #e2e8f0', overflow:'hidden' }}>
+          <div style={{ width:32, height:32, borderRadius:9, background:'#eff6ff', border:'1px solid #bfdbfe', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+            <span style={{ color:'#2563eb', fontWeight:700, fontSize:14 }}>A</span>
           </div>
           {sidebarOpen && (
             <div style={{ overflow:'hidden' }}>
-              <div className="adm-text-primary" style={{ fontWeight:600, fontSize:14, lineHeight:1.3 }}>Admin Panel</div>
-              <div className="adm-text-muted" style={{ fontSize:11, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:140 }}>{user?.name}</div>
+              <div style={{ color:'#1e293b', fontWeight:600, fontSize:14, lineHeight:1.3 }}>Admin Panel</div>
+              <div style={{ color:'#94a3b8', fontSize:11, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:140 }}>{user?.name}</div>
             </div>
           )}
         </div>
 
-        {/* Nav */}
         <nav className="adm-scroll" style={{ flex:1, padding:'10px 8px', display:'flex', flexDirection:'column', gap:3, overflowY:'auto' }}>
-          {sidebarOpen && <p style={{ padding:'6px 10px 4px', fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.1em', color:'rgba(255,255,255,0.25)' }}>Цэс</p>}
+          {sidebarOpen && <p style={{ padding:'6px 10px 4px', fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.1em', color:'#cbd5e1' }}>Цэс</p>}
           <NavItems collapsed={!sidebarOpen} />
         </nav>
 
-        {/* Logout */}
-        <div style={{ padding:'10px 8px', borderTop:'1px solid rgba(255,255,255,0.07)' }}>
+        <div style={{ padding:'10px 8px', borderTop:'1px solid #e2e8f0' }}>
           <button onClick={()=>{logout();navigate('/');}} className="adm-nav-item" style={{ padding: sidebarOpen?'9px 12px':'10px', justifyContent: sidebarOpen?'flex-start':'center', gap: sidebarOpen?10:0 }} title={!sidebarOpen?'Гарах':undefined}>
-            <LogOut size={15} style={{ color:'rgba(252,129,74,0.6)' }}/>
+            <LogOut size={15} style={{ color:'#e53e3e' }}/>
             {sidebarOpen && <span style={{ fontSize:13 }}>Гарах</span>}
           </button>
         </div>
 
-        {/* Collapse toggle */}
         <button className="adm-collapse-btn" onClick={()=>setSidebarOpen(!sidebarOpen)}>
           {sidebarOpen ? <ChevronLeft size={11}/> : <ChevronRight size={11}/>}
         </button>
@@ -674,9 +616,9 @@ const AdminPage = () => {
               <Menu size={17}/>
             </button>
             <div style={{ display:'flex', alignItems:'center', gap:6, fontSize:13 }}>
-              <span className="adm-text-muted">Удирдлага</span>
-              <ChevronRight size={12} style={{ color:'rgba(255,255,255,0.2)' }}/>
-              <span className="adm-text-primary" style={{ fontWeight:500 }}>{activeNav?.label}</span>
+              <span style={{ color:'#94a3b8' }}>Удирдлага</span>
+              <ChevronRight size={12} style={{ color:'#cbd5e1' }}/>
+              <span style={{ color:'#1e293b', fontWeight:500 }}>{activeNav?.label}</span>
             </div>
           </div>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
@@ -685,7 +627,7 @@ const AdminPage = () => {
                 <AlertCircle size={11}/><span>{totalAlerts} шинэ</span>
               </div>
             )}
-            <div style={{ width:32, height:32, borderRadius:9, background:'rgba(99,179,237,0.15)', border:'1px solid rgba(99,179,237,0.25)', display:'flex', alignItems:'center', justifyContent:'center', color:'#90cdf4', fontWeight:700, fontSize:13 }}>
+            <div style={{ width:32, height:32, borderRadius:9, background:'#eff6ff', border:'1px solid #bfdbfe', display:'flex', alignItems:'center', justifyContent:'center', color:'#2563eb', fontWeight:700, fontSize:13 }}>
               {user?.name?.[0]?.toUpperCase()||'A'}
             </div>
           </div>
@@ -695,7 +637,6 @@ const AdminPage = () => {
         <main className="adm-scroll" style={{ flex:1, overflowY:'auto', padding:24 }}>
           <div style={{ maxWidth:880, margin:'0 auto' }} className="adm-page-enter">
 
-            {/* Dashboard */}
             {activeTab==='dashboard' && <DashboardTab onTabChange={setActiveTab} />}
 
             {/* ── PRODUCTS ── */}
@@ -738,12 +679,12 @@ const AdminPage = () => {
                           <div style={{ flex:1 }}>
                             <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" id="productImage"/>
                             <label htmlFor="productImage" className="adm-upload" style={{ display:'flex', alignItems:'center', gap:8 }}>
-                              <Upload size={15} style={{ color:'rgba(255,255,255,0.35)' }}/>
-                              <span style={{ fontSize:13, color:'rgba(255,255,255,0.4)' }}>{selectedImage?selectedImage.name:'Зураг сонгох'}</span>
+                              <Upload size={15} style={{ color:'#94a3b8' }}/>
+                              <span style={{ fontSize:13, color:'#94a3b8' }}>{selectedImage?selectedImage.name:'Зураг сонгох'}</span>
                             </label>
                           </div>
                           {imagePreview && (
-                            <div style={{ width:56, height:56, borderRadius:10, overflow:'hidden', border:'1px solid rgba(255,255,255,0.12)', flexShrink:0 }}>
+                            <div style={{ width:56, height:56, borderRadius:10, overflow:'hidden', border:'1px solid #e2e8f0', flexShrink:0 }}>
                               <img src={imagePreview} alt="Preview" style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
                             </div>
                           )}
@@ -751,10 +692,10 @@ const AdminPage = () => {
                       </Field>
                       <div className="adm-featured-row">
                         <input type="checkbox" id="featured" checked={productForm.featured} onChange={e=>setProductForm({...productForm,featured:e.target.checked})} className="adm-checkbox"/>
-                        <label htmlFor="featured" style={{ fontSize:13, fontWeight:500, color:'rgba(251,191,36,0.85)', cursor:'pointer' }}>Онцлох бүтээгдэхүүн — нүүр хуудсанд харагдана</label>
+                        <label htmlFor="featured" style={{ fontSize:13, fontWeight:500, color:'#92400e', cursor:'pointer' }}>Онцлох бүтээгдэхүүн — нүүр хуудсанд харагдана</label>
                       </div>
-                      <div style={{ padding:'14px 16px', background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:10 }}>
-                        <p style={{ fontSize:11, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.07em', color:'rgba(255,255,255,0.3)', marginBottom:10 }}>Хямдрал</p>
+                      <div style={{ padding:'14px 16px', background:'#f8fafc', border:'1px solid #e2e8f0', borderRadius:10 }}>
+                        <p style={{ fontSize:11, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.07em', color:'#94a3b8', marginBottom:10 }}>Хямдрал</p>
                         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
                           <Field label="Хувь (%)"><input type="number" min="0" max="100" value={productForm.discount} onChange={e=>{const d=e.target.value;setProductForm(prev=>{const up={...prev,discount:d};if(d&&prev.price)up.oldPrice=Math.round(parseFloat(prev.price)/(1-parseFloat(d)/100)).toString();return up;})}} className={inputCls}/></Field>
                           <Field label="Хуучин үнэ (₮)"><input type="number" value={productForm.oldPrice} onChange={e=>setProductForm({...productForm,oldPrice:e.target.value})} className={inputCls}/></Field>
@@ -771,11 +712,11 @@ const AdminPage = () => {
                   <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
                     {products.map(p=>(
                       <Card key={p._id} style={{ display:'flex', alignItems:'center', gap:14 }}>
-                        <img src={getImageUrl(p.image)} alt={p.name} style={{ width:48, height:48, objectFit:'cover', borderRadius:10, border:'1px solid rgba(255,255,255,0.08)', flexShrink:0 }} onError={e=>{e.target.src='/placeholder.png';}}/>
+                        <img src={getImageUrl(p.image)} alt={p.name} style={{ width:48, height:48, objectFit:'cover', borderRadius:10, border:'1px solid #e2e8f0', flexShrink:0 }} onError={e=>{e.target.src='/placeholder.png';}}/>
                         <div style={{ flex:1, minWidth:0 }}>
-                          <p className="adm-text-primary" style={{ fontSize:14, fontWeight:600, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{p.name}</p>
-                          <p className="adm-text-price" style={{ fontSize:13, fontWeight:700 }}>{formatPrice(p.price)}</p>
-                          <p className="adm-text-muted" style={{ fontSize:12 }}>{typeof p.category==='object'?p.category?.name:p.category}</p>
+                          <p style={{ fontSize:14, fontWeight:600, color:'#1e293b', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{p.name}</p>
+                          <p style={{ fontSize:13, fontWeight:700, color:'#16a34a' }}>{formatPrice(p.price)}</p>
+                          <p style={{ fontSize:12, color:'#94a3b8' }}>{typeof p.category==='object'?p.category?.name:p.category}</p>
                         </div>
                         <div style={{ display:'flex', gap:4 }}>
                           <Btn variant="ghost" onClick={()=>handleEditProduct(p)}><Edit size={14}/></Btn>
@@ -799,14 +740,14 @@ const AdminPage = () => {
                         <div style={{ display:'flex', flexWrap:'wrap', alignItems:'flex-start', justifyContent:'space-between', gap:12 }}>
                           <div>
                             <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
-                              <span className="adm-text-accent" style={{ fontSize:13, fontFamily:'monospace', fontWeight:600 }}>#{o._id.slice(-6).toUpperCase()}</span>
+                              <span style={{ fontSize:13, fontFamily:'monospace', fontWeight:600, color:'#2563eb' }}>#{o._id.slice(-6).toUpperCase()}</span>
                               <Badge variant={o.status}>{statusLabel[o.status]||o.status}</Badge>
                             </div>
-                            <p className="adm-text-secondary" style={{ fontSize:13 }}>{o.shippingInfo.name} — {o.shippingInfo.phone}</p>
-                            <p className="adm-text-muted" style={{ fontSize:12, marginTop:2 }}>{formatDate(o.createdAt)}</p>
+                            <p style={{ fontSize:13, color:'#475569' }}>{o.shippingInfo.name} — {o.shippingInfo.phone}</p>
+                            <p style={{ fontSize:12, color:'#94a3b8', marginTop:2 }}>{formatDate(o.createdAt)}</p>
                           </div>
                           <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap' }}>
-                            <span className="adm-text-price" style={{ fontSize:15, fontWeight:700 }}>{formatPrice(o.total)}</span>
+                            <span style={{ fontSize:15, fontWeight:700, color:'#16a34a' }}>{formatPrice(o.total)}</span>
                             <select value={o.status} onChange={e=>handleUpdateOrderStatus(o._id,e.target.value)} className="adm-status-select">
                               <option value="pending">Хүлээгдэж буй</option>
                               <option value="paid">Төлөгдсөн</option>
@@ -835,16 +776,16 @@ const AdminPage = () => {
                         <div style={{ display:'flex', justifyContent:'space-between', gap:12 }}>
                           <div style={{ flex:1, minWidth:0 }}>
                             <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap', marginBottom:4 }}>
-                              <span className="adm-text-primary" style={{ fontSize:14, fontWeight:600 }}>{q.name}</span>
+                              <span style={{ fontSize:14, fontWeight:600, color:'#1e293b' }}>{q.name}</span>
                               <Badge variant={q.status==='pending'?'pending':'replied'}>{q.status==='pending'?'Хүлээгдэж буй':'Хариулсан'}</Badge>
                             </div>
-                            <p className="adm-text-muted" style={{ fontSize:12, marginBottom:8 }}>{q.phone} · {q.email}</p>
-                            <p className="adm-text-secondary" style={{ fontSize:13, marginBottom:6 }}><span style={{ color:'rgba(255,255,255,0.55)', fontWeight:500 }}>Төрөл:</span> {q.productType}</p>
-                            <p className="adm-text-secondary" style={{ fontSize:13, padding:'8px 12px', background:'rgba(255,255,255,0.04)', borderRadius:8, border:'1px solid rgba(255,255,255,0.07)' }}>{q.description}</p>
+                            <p style={{ fontSize:12, color:'#94a3b8', marginBottom:8 }}>{q.phone} · {q.email}</p>
+                            <p style={{ fontSize:13, color:'#475569', marginBottom:6 }}><span style={{ color:'#64748b', fontWeight:500 }}>Төрөл:</span> {q.productType}</p>
+                            <p style={{ fontSize:13, color:'#475569', padding:'8px 12px', background:'#f8fafc', borderRadius:8, border:'1px solid #e2e8f0' }}>{q.description}</p>
                             {q.designFile && (
-                              <div style={{ marginTop:8, padding:'8px 12px', background:'rgba(99,179,237,0.05)', borderRadius:8, border:'1px solid rgba(99,179,237,0.15)' }}>
-                                <p style={{ fontSize:11, fontWeight:700, color:'rgba(144,205,244,0.6)', marginBottom:2 }}>Дизайн файл</p>
-                                <a href={getImageUrl(q.designFile.fileUrl)} target="_blank" rel="noopener noreferrer" style={{ fontSize:12, color:'#90cdf4' }}>{q.designFile.fileName}</a>
+                              <div style={{ marginTop:8, padding:'8px 12px', background:'#eff6ff', borderRadius:8, border:'1px solid #bfdbfe' }}>
+                                <p style={{ fontSize:11, fontWeight:700, color:'#3b82f6', marginBottom:2 }}>Дизайн файл</p>
+                                <a href={getImageUrl(q.designFile.fileUrl)} target="_blank" rel="noopener noreferrer" style={{ fontSize:12, color:'#2563eb' }}>{q.designFile.fileName}</a>
                               </div>
                             )}
                           </div>
@@ -868,22 +809,22 @@ const AdminPage = () => {
                         <div style={{ display:'flex', justifyContent:'space-between', gap:12 }}>
                           <div style={{ flex:1, minWidth:0 }}>
                             <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap', marginBottom:4 }}>
-                              <span className="adm-text-primary" style={{ fontSize:14, fontWeight:600 }}>{m.name}</span>
+                              <span style={{ fontSize:14, fontWeight:600, color:'#1e293b' }}>{m.name}</span>
                               <Badge variant={m.status}>{statusLabel[m.status]||m.status}</Badge>
                             </div>
-                            <p className="adm-text-muted" style={{ fontSize:12, marginBottom:6 }}>{m.email} · {formatDate(m.createdAt)}</p>
-                            <p className="adm-text-secondary" style={{ fontSize:13, fontWeight:500, marginBottom:4 }}>{m.subject}</p>
-                            <p className="adm-text-secondary" style={{ fontSize:13, padding:'8px 12px', background:'rgba(255,255,255,0.04)', borderRadius:8, border:'1px solid rgba(255,255,255,0.07)' }}>{m.message}</p>
+                            <p style={{ fontSize:12, color:'#94a3b8', marginBottom:6 }}>{m.email} · {formatDate(m.createdAt)}</p>
+                            <p style={{ fontSize:13, fontWeight:500, color:'#475569', marginBottom:4 }}>{m.subject}</p>
+                            <p style={{ fontSize:13, color:'#475569', padding:'8px 12px', background:'#f8fafc', borderRadius:8, border:'1px solid #e2e8f0' }}>{m.message}</p>
                             {m.adminReply && (
                               <div className="adm-reply-box">
-                                <p style={{ fontSize:11, fontWeight:700, color:'rgba(110,231,183,0.7)', marginBottom:3 }}>Админ хариу</p>
-                                <p className="adm-text-secondary" style={{ fontSize:13 }}>{m.adminReply.message}</p>
-                                <p style={{ fontSize:11, color:'rgba(110,231,183,0.4)', marginTop:4 }}>{formatDate(m.adminReply.repliedAt)}</p>
+                                <p style={{ fontSize:11, fontWeight:700, color:'#16a34a', marginBottom:3 }}>Админ хариу</p>
+                                <p style={{ fontSize:13, color:'#475569' }}>{m.adminReply.message}</p>
+                                <p style={{ fontSize:11, color:'#86efac', marginTop:4 }}>{formatDate(m.adminReply.repliedAt)}</p>
                               </div>
                             )}
                           </div>
                           <div style={{ display:'flex', flexDirection:'column', gap:4, flexShrink:0 }}>
-                            {m.status==='new' && <Btn variant="ghost" onClick={()=>handleMessageStatusUpdate(m._id,'read')} title="Уншсан" style={{ color:'rgba(99,179,237,0.6)' }}><CheckCircle size={14}/></Btn>}
+                            {m.status==='new' && <Btn variant="ghost" onClick={()=>handleMessageStatusUpdate(m._id,'read')} title="Уншсан" style={{ color:'#2563eb' }}><CheckCircle size={14}/></Btn>}
                             {m.status!=='archived' && <Btn variant="ghost" onClick={()=>handleMessageStatusUpdate(m._id,'archived')} title="Архивлах"><XCircle size={14}/></Btn>}
                             <Btn variant="ghost" className="adm-btn-icon-danger" onClick={()=>handleDeleteMessage(m._id)}><Trash2 size={14}/></Btn>
                           </div>
@@ -920,9 +861,9 @@ const AdminPage = () => {
                         <Card className="adm-cat-primary" style={{ borderLeftWidth:2 }}>
                           <div style={{ display:'flex', alignItems:'center', gap:12 }}>
                             <div style={{ flex:1, minWidth:0 }}>
-                              <p className="adm-text-primary" style={{ fontSize:14, fontWeight:600 }}>{cat.name}</p>
-                              {cat.description && <p className="adm-text-muted" style={{ fontSize:12, marginTop:2 }}>{cat.description}</p>}
-                              <p className="adm-text-muted" style={{ fontSize:11, marginTop:2 }}>Icon: {cat.icon} · Order: {cat.order}</p>
+                              <p style={{ fontSize:14, fontWeight:600, color:'#1e293b' }}>{cat.name}</p>
+                              {cat.description && <p style={{ fontSize:12, color:'#94a3b8', marginTop:2 }}>{cat.description}</p>}
+                              <p style={{ fontSize:11, color:'#94a3b8', marginTop:2 }}>Icon: {cat.icon} · Order: {cat.order}</p>
                             </div>
                             <div style={{ display:'flex', gap:4 }}>
                               <Btn variant="ghost" onClick={()=>handleEditCategory(cat)}><Edit size={14}/></Btn>
@@ -935,8 +876,8 @@ const AdminPage = () => {
                             <Card className="adm-cat-secondary" style={{ borderLeftWidth:2 }}>
                               <div style={{ display:'flex', alignItems:'center', gap:12 }}>
                                 <div style={{ flex:1 }}>
-                                  <p className="adm-text-secondary" style={{ fontSize:13, fontWeight:500 }}>{s.name}</p>
-                                  {s.description && <p className="adm-text-muted" style={{ fontSize:12 }}>{s.description}</p>}
+                                  <p style={{ fontSize:13, fontWeight:500, color:'#475569' }}>{s.name}</p>
+                                  {s.description && <p style={{ fontSize:12, color:'#94a3b8' }}>{s.description}</p>}
                                 </div>
                                 <div style={{ display:'flex', gap:4 }}>
                                   <Btn variant="ghost" onClick={()=>handleEditCategory(s)}><Edit size={14}/></Btn>
@@ -970,18 +911,18 @@ const AdminPage = () => {
                       <Field label="Tags" hint="Таслалаар: хэвлэл, дизайн"><input type="text" value={blogForm.tags} onChange={e=>setBlogForm({...blogForm,tags:e.target.value})} className={inputCls} placeholder="хэвлэл, дизайн"/></Field>
                       <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                         <input type="checkbox" id="blogFeatured" checked={blogForm.featured} onChange={e=>setBlogForm({...blogForm,featured:e.target.checked})} className="adm-checkbox"/>
-                        <label htmlFor="blogFeatured" className="adm-text-secondary" style={{ fontSize:13, cursor:'pointer' }}>Онцлох блог</label>
+                        <label htmlFor="blogFeatured" style={{ fontSize:13, color:'#475569', cursor:'pointer' }}>Онцлох блог</label>
                       </div>
                       <Field label="Зураг">
                         {blogImagePreview?(
                           <div style={{ position:'relative' }}>
                             <img src={blogImagePreview} alt="Preview" style={{ width:'100%', height:160, objectFit:'cover', borderRadius:10 }}/>
-                            <button type="button" onClick={()=>{setBlogImage(null);setBlogImagePreview('');}} style={{ position:'absolute', top:8, right:8, width:28, height:28, borderRadius:'50%', background:'rgba(0,0,0,0.5)', border:'1px solid rgba(255,255,255,0.2)', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' }}><X size={13}/></button>
+                            <button type="button" onClick={()=>{setBlogImage(null);setBlogImagePreview('');}} style={{ position:'absolute', top:8, right:8, width:28, height:28, borderRadius:'50%', background:'rgba(0,0,0,0.4)', border:'1px solid rgba(255,255,255,0.3)', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' }}><X size={13}/></button>
                           </div>
                         ):(
                           <div className="adm-upload">
                             <input type="file" accept="image/*" onChange={e=>{const f=e.target.files[0];if(f){setBlogImage(f);const r=new FileReader();r.onloadend=()=>setBlogImagePreview(r.result);r.readAsDataURL(f);}}} className="hidden" id="blog-img"/>
-                            <label htmlFor="blog-img" style={{ cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:6, color:'rgba(255,255,255,0.35)' }}>
+                            <label htmlFor="blog-img" style={{ cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:6, color:'#94a3b8' }}>
                               <Upload size={18}/><span style={{ fontSize:13 }}>Зураг сонгох</span>
                             </label>
                           </div>
@@ -997,12 +938,12 @@ const AdminPage = () => {
                       <Card key={b._id} style={{ display:'flex', alignItems:'flex-start', gap:12 }}>
                         <div style={{ flex:1, minWidth:0 }}>
                           <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap', marginBottom:4 }}>
-                            <span className="adm-text-primary" style={{ fontSize:14, fontWeight:600 }}>{b.title}</span>
+                            <span style={{ fontSize:14, fontWeight:600, color:'#1e293b' }}>{b.title}</span>
                             <Badge variant={b.status}>{statusLabel[b.status]||b.status}</Badge>
                             {b.featured && <Badge variant="featured">Онцлох</Badge>}
                           </div>
-                          {b.excerpt && <p className="adm-text-muted" style={{ fontSize:12, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{b.excerpt}</p>}
-                          <p className="adm-text-muted" style={{ fontSize:11, marginTop:4 }}>{formatDate(b.createdAt)}</p>
+                          {b.excerpt && <p style={{ fontSize:12, color:'#94a3b8', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{b.excerpt}</p>}
+                          <p style={{ fontSize:11, color:'#94a3b8', marginTop:4 }}>{formatDate(b.createdAt)}</p>
                         </div>
                         <div style={{ display:'flex', gap:4, flexShrink:0 }}>
                           <Btn variant="ghost" onClick={()=>handleEditBlog(b)}><Edit size={14}/></Btn>
@@ -1032,18 +973,18 @@ const AdminPage = () => {
                       </div>
                       <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                         <input type="checkbox" id="svcFeat" checked={serviceForm.featured} onChange={e=>setServiceForm({...serviceForm,featured:e.target.checked})} className="adm-checkbox"/>
-                        <label htmlFor="svcFeat" className="adm-text-secondary" style={{ fontSize:13, cursor:'pointer' }}>Онцлох үйлчилгээ</label>
+                        <label htmlFor="svcFeat" style={{ fontSize:13, color:'#475569', cursor:'pointer' }}>Онцлох үйлчилгээ</label>
                       </div>
                       <Field label="Зураг">
                         {serviceImagePreview?(
                           <div style={{ position:'relative' }}>
                             <img src={serviceImagePreview} alt="Preview" style={{ width:'100%', height:160, objectFit:'cover', borderRadius:10 }}/>
-                            <button type="button" onClick={()=>{setServiceImage(null);setServiceImagePreview('');}} style={{ position:'absolute', top:8, right:8, width:28, height:28, borderRadius:'50%', background:'rgba(0,0,0,0.5)', border:'1px solid rgba(255,255,255,0.2)', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' }}><X size={13}/></button>
+                            <button type="button" onClick={()=>{setServiceImage(null);setServiceImagePreview('');}} style={{ position:'absolute', top:8, right:8, width:28, height:28, borderRadius:'50%', background:'rgba(0,0,0,0.4)', border:'1px solid rgba(255,255,255,0.3)', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' }}><X size={13}/></button>
                           </div>
                         ):(
                           <div className="adm-upload">
                             <input type="file" accept="image/*" onChange={e=>{const f=e.target.files[0];if(f){setServiceImage(f);const r=new FileReader();r.onloadend=()=>setServiceImagePreview(r.result);r.readAsDataURL(f);}}} className="hidden" id="svc-img"/>
-                            <label htmlFor="svc-img" style={{ cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:6, color:'rgba(255,255,255,0.35)' }}>
+                            <label htmlFor="svc-img" style={{ cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:6, color:'#94a3b8' }}>
                               <Upload size={18}/><span style={{ fontSize:13 }}>Зураг сонгох</span>
                             </label>
                           </div>
@@ -1059,12 +1000,12 @@ const AdminPage = () => {
                       <Card key={s._id} style={{ display:'flex', alignItems:'flex-start', gap:12 }}>
                         <div style={{ flex:1, minWidth:0 }}>
                           <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap', marginBottom:4 }}>
-                            <span className="adm-text-primary" style={{ fontSize:14, fontWeight:600 }}>{s.name}</span>
+                            <span style={{ fontSize:14, fontWeight:600, color:'#1e293b' }}>{s.name}</span>
                             <Badge variant="purple">{s.category==='social-media'?'Сошиал':s.category==='seo'?'SEO':s.category==='content'?'Контент':s.category==='advertising'?'Реклам':s.category==='branding'?'Брэнд':'Бусад'}</Badge>
                             {s.featured && <Badge variant="featured">Онцлох</Badge>}
                           </div>
-                          {s.shortDescription && <p className="adm-text-muted" style={{ fontSize:12, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{s.shortDescription}</p>}
-                          {s.price && <p className="adm-text-accent" style={{ fontSize:12, fontWeight:600, marginTop:4 }}>{s.price}</p>}
+                          {s.shortDescription && <p style={{ fontSize:12, color:'#94a3b8', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{s.shortDescription}</p>}
+                          {s.price && <p style={{ fontSize:12, fontWeight:600, color:'#2563eb', marginTop:4 }}>{s.price}</p>}
                         </div>
                         <div style={{ display:'flex', gap:4, flexShrink:0 }}>
                           <Btn variant="ghost" onClick={()=>handleEditService(s)}><Edit size={14}/></Btn>
